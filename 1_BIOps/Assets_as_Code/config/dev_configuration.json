@@ -1,0 +1,8 @@
+{"aws_account_number" : <<aws-account-id>>,
+"role_name" : "admin",
+"aws_region" : "us-east-1",
+"assets_owner": "arn:aws:quicksight:us-east-1:<<aws-account-id>>:user/default/Administrator",
+"dev_folder": <<folder id>> for example: "3b5e65b1-18f8-416d-87c5-261fba5b8776",
+"qa_folder": <<folder id>>,
+"prod_folder": <<folder id>>"
+}

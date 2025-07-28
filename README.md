@@ -1,11 +1,8 @@
-## My Project
+## Projects from AWS SSA GenAI Team
 
-TODO: Fill this README out!
+1. BIOps
+2. Admin Console of Usage Metrics Updates and Assets Management
 
-Be sure to:
-
-* Change the title in this README
-* Edit your repository description on GitHub
 
 ## Security
 

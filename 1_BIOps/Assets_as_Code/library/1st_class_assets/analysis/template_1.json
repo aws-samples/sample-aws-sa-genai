@@ -1,0 +1,19 @@
+{
+  "AnalysisId": "0b35736a-fdc2-4d71-b561-7990de169acf",
+  "Arn": "arn:aws:quicksight:us-east-1:889399602426:analysis/0b35736a-fdc2-4d71-b561-7990de169acf",
+  "Name": "analysis_assets_as_code_v1",
+  "Status": "CREATION_SUCCESSFUL",
+  "Errors": [],
+  "DataSetArns": [
+    "arn:aws:quicksight:us-east-1:889399602426:dataset/46caa086-6e63-40c0-8f99-a35807c4abad"
+  ],
+  "DataSetIdentifierDeclarations": [
+    {
+      "Identifier": "ds_assets_as_code",
+      "DataSetArn": "arn:aws:quicksight:us-east-1:889399602426:dataset/46caa086-6e63-40c0-8f99-a35807c4abad"
+    }
+  ],
+  "ThemeArn": "arn:aws:quicksight:us-east-1:889399602426:theme/e7a1f1dc-e7ec-426c-af28-51cada837932",
+  "CreatedTime": "2021-11-18T15:11:24.179000+00:00",
+  "LastUpdatedTime": "2021-12-03T10:41:47+00:00"
+}

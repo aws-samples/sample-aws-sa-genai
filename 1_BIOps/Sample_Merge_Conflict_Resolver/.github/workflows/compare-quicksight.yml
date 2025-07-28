@@ -1,0 +1,51 @@
+name: Compare QuickSight Datasets
+
+on:
+  workflow_dispatch:
+
+jobs:
+  compare-datasets:
+    runs-on: ubuntu-latest
+
+    env:
+      AWS_REGION: us-east-1  # Or your preferred region
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      QUICKSIGHT_ACCOUNT_ID: ${{ secrets.QUICKSIGHT_ACCOUNT_ID }}
+      NEW_DATASET_ID: ${{ secrets.NEW_DATASET_ID }}
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install boto3
+        run: |
+          pip install boto3
+
+      - name: Debug env (safe)
+        run: |
+           echo "Account ID is set: ${QUICKSIGHT_ACCOUNT_ID:+yes}"
+           echo "New dataset ID is set: ${NEW_DATASET_ID:+yes}"
+
+      - name: Run Dataset Comparison
+        env:
+          AWS_REGION: us-east-1  # Or your preferred region
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          QUICKSIGHT_ACCOUNT_ID: ${{ secrets.QUICKSIGHT_ACCOUNT_ID }}
+          NEW_DATASET_ID: ${{ secrets.NEW_DATASET_ID }}
+        run: |
+          python compare_quicksight_datasets.py
+
+
+      - name: Upload comparison results
+        uses: actions/upload-artifact@v4
+        with:
+          name: quicksight-column-diff
+          path: quicksight_column_diff.json
+

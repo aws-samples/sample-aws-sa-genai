@@ -1,0 +1,5 @@
+{"aws_account_number" : <<aws-account-id>>,
+"role_name" : "admin",
+"aws_region" : "us-east-1",
+"assets_owner": "arn:aws:quicksight:us-east-1:<<aws-account-id>>:user/default/Administrator"
+}

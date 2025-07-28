@@ -1,0 +1,180 @@
+{
+    "Status": 200,
+    "DataSet": {
+        "Arn": "arn:aws:quicksight:us-east-1:889399602426:dataset/46caa086-6e63-40c0-8f99-a35807c4abad",
+        "DataSetId": "46caa086-6e63-40c0-8f99-a35807c4abad",
+        "Name": "ds_assets_as_code",
+        "CreatedTime": "2021-11-18T15:10:56.937000-05:00",
+        "LastUpdatedTime": "2021-11-18T19:00:08.705000-05:00",
+        "PhysicalTableMap": {
+            "507b83ce-2783-47ad-8ef8-cae17a86cb4b": {
+                "CustomSql": {
+                    "DataSourceArn": "arn:aws:quicksight:us-east-1:889399602426:datasource/46e0c37e-e952-4024-b790-78d33b4ca1ca",
+                    "Name": "assets_as_code",
+                    "SqlQuery": "select \"country/region\" as country, \"province/state\" as state, \"last update\" as date_time, confirmed, recovered from default.geo \ngroup by 1,2,3,4,5",
+                    "Columns": [
+                        {
+                            "Name": "country",
+                            "Type": "STRING"
+                        },
+                        {
+                            "Name": "state",
+                            "Type": "STRING"
+                        },
+                        {
+                            "Name": "date_time",
+                            "Type": "DATETIME"
+                        },
+                        {
+                            "Name": "confirmed",
+                            "Type": "INTEGER"
+                        },
+                        {
+                            "Name": "recovered",
+                            "Type": "INTEGER"
+                        }
+                    ]
+                }
+            }
+        },
+        "LogicalTableMap": {
+            "507b83ce-2783-47ad-8ef8-cae17a86cb4b": {
+                "Alias": "assets_as_code",
+                "DataTransforms": [
+                    {
+                        "TagColumnOperation": {
+                            "ColumnName": "country",
+                            "Tags": [
+                                {
+                                    "ColumnGeographicRole": "COUNTRY"
+                                },
+                                {
+                                    "ColumnDescription": {
+                                        "Text": "Country or Region"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "TagColumnOperation": {
+                            "ColumnName": "state",
+                            "Tags": [
+                                {
+                                    "ColumnGeographicRole": "STATE"
+                                },
+                                {
+                                    "ColumnDescription": {
+                                        "Text": "State or Province of a country/region"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "TagColumnOperation": {
+                            "ColumnName": "confirmed",
+                            "Tags": [
+                                {
+                                    "ColumnDescription": {
+                                        "Text": "number of daily covid confirmed cases"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "TagColumnOperation": {
+                            "ColumnName": "recovered",
+                            "Tags": [
+                                {
+                                    "ColumnDescription": {
+                                        "Text": "number of daily covid recovered cases"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "CreateColumnsOperation": {
+                            "Columns": [
+                                {
+                                    "ColumnName": "active",
+                                    "ColumnId": "2e322296-083e-404b-9d09-60d44cb849a9",
+                                    "Expression": "{confirmed}-{recovered}"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "ProjectOperation": {
+                            "ProjectedColumns": [
+                                "country",
+                                "state",
+                                "date_time",
+                                "confirmed",
+                                "recovered",
+                                "active"
+                            ]
+                        }
+                    },
+                    {
+                        "TagColumnOperation": {
+                            "ColumnName": "active",
+                            "Tags": [
+                                {
+                                    "ColumnDescription": {
+                                        "Text": "confirmed-recovered"
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "Source": {
+                    "PhysicalTableId": "507b83ce-2783-47ad-8ef8-cae17a86cb4b"
+                }
+            }
+        },
+        "OutputColumns": [
+            {
+                "Name": "country",
+                "Description": "Country or Region",
+                "Type": "STRING"
+            },
+            {
+                "Name": "state",
+                "Description": "State or Province of a country/region",
+                "Type": "STRING"
+            },
+            {
+                "Name": "date_time",
+                "Type": "DATETIME"
+            },
+            {
+                "Name": "confirmed",
+                "Description": "number of daily covid confirmed cases",
+                "Type": "INTEGER"
+            },
+            {
+                "Name": "recovered",
+                "Description": "number of daily covid recovered cases",
+                "Type": "INTEGER"
+            },
+            {
+                "Name": "active",
+                "Description": "confirmed-recovered",
+                "Type": "INTEGER"
+            }
+        ],
+        "ImportMode": "SPICE",
+        "ConsumedSpiceCapacityInBytes": 102932,
+        "ColumnGroups": [],
+        "FieldFolders": {},
+        "DataSetUsageConfiguration": {
+            "DisableUseAsDirectQuerySource": false,
+            "DisableUseAsImportedSource": false
+        }
+    },
+    "RequestId": "a4ff24d0-4ef1-4a4f-bb41-0370c98a492f"
+}
