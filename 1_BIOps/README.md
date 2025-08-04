@@ -1,26 +1,30 @@
-## Amazon quicksight sdk SSA BIOps-scripts
+# Amazon quicksight sdk SSA BIOps-scripts
 
 Quicksight BIOps Scripts
 
-Author: Ying Wang        Email: wangzyn@amazon.com
+Author: Ying Wang        
+Email: wangzyn@amazon.com
 
 
 ## Solution overview
 ![image](placeholder)
 
 We provide the sample Python scripts for BIOps.
-**Assets as Code:** 
-How to use decribe/describe_definition APIs to run version control, and assets as code.
 
-**Notebooks for assets deployment**
---Assets as Bundle Option:
-BIOPS_QS_JSON_Option_Use_Case_1 – Using QS Assets as Bundle APIs to deploy assets across accounts or cross regions. The QS assets are in QuickSight JSON format. This notebook is only deploying one dashboard with all the dependency, without permissions. The permissions will be updated after the deployment completed. The sample code and logs are provided. Note: we are using S3 bucket to backup the JSON files.
+### Assets as Code: 
+How to use decribe/describe_definition/create/update APIs to run version control, and assets as code.
 
-BIOPS_CFT_Option_Use_Case_1 – Using QS Assets as Bundle APIs to deploy assets across accounts or cross regions. The QS assets are in Cloud Formation Template format. This notebook is only deploying one dashboard with all the dependency, without permissions. The permissions will be updated after the deployment completed. The sample code and logs are provided. Note: we are using S3 bucket to backup the JSON files.
+### Notebooks for assets deployment
+**Assets as Bundle Option:**
+
+**BIOPS_QS_JSON_Option_Use_Case_1** – Using QS Assets as Bundle APIs to deploy assets across accounts or cross regions. The QS assets are in QuickSight JSON format. This notebook is only deploying one dashboard with all the dependency, without permissions. The permissions will be updated after the deployment completed. The sample code and logs are provided. Note: we are using S3 bucket to backup the JSON files.
+
+**BIOPS_CFT_Option_Use_Case_1** – Using QS Assets as Bundle APIs to deploy assets across accounts or cross regions. The QS assets are in Cloud Formation Template format. This notebook is only deploying one dashboard with all the dependency, without permissions. The permissions will be updated after the deployment completed. The sample code and logs are provided. Note: we are using S3 bucket to backup the JSON files.
 
 [Coming soon] BIOPS_QS_JSON_Option_Use_Case_2 – Using QS Desribe Definition APIs to provide assets backup solutions.
 
---Template_API_Option: 
+**Template_API_Option:**
+ 
 Deploy assets across accounts or cross regions with three SageMaker notebooks: 
 1/Batch to deploy all the assets in one QS account
 2/Incremental to deploy with an input list
