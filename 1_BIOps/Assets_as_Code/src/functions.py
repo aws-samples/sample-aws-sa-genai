@@ -419,6 +419,57 @@ def copy_analysis(session, source, Id, Name, principal, Permissions = 'owner', r
     response = qs.create_analysis(**args)
     return response
 
+def create_analysis(session, source, Id, Name, principal, Permissions = 'owner', region='us-east-1'):
+    qs = session.client('quicksight')
+    sts_client = session.client("sts")
+    AccountId = sts_client.get_caller_identity()["Account"]
+    args: Dict[str, Any] = {
+        "AwsAccountId":  AccountId,
+        "AnalysisId": Id,
+        "Name": Name,
+        #"ThemeArn": source['ThemeArn'],
+        "Definition": {
+            "DataSetIdentifierDeclarations": source['Definition']['DataSetIdentifierDeclarations'],
+            "Sheets": source['Definition']['Sheets'],
+            "CalculatedFields": source['Definition']['CalculatedFields'],
+            "ParameterDeclarations": source['Definition']['ParameterDeclarations'],
+            "FilterGroups": source['Definition']['FilterGroups'],
+            "AnalysisDefaults": source['Definition']['AnalysisDefaults']
+        }
+    }
+    
+    if "Parameters" in source:
+        args["Parameters"] = source["Parameters"]
+    if Permissions == 'owner':
+        args["Permissions"] = [
+                {
+                    'Principal': principal,
+                    'Actions': [
+                        'quicksight:RestoreAnalysis',
+                        'quicksight:UpdateAnalysisPermissions',
+                        'quicksight:DeleteAnalysis',
+                        'quicksight:QueryAnalysis',
+                        'quicksight:DescribeAnalysisPermissions',
+                        'quicksight:DescribeAnalysis',
+                        'quicksight:UpdateAnalysis'
+
+                    ]
+                }
+            ]
+    elif Permissions == 'user':
+        args["Permissions"] = [
+                {
+                    'Principal': principal,
+                    'Actions': [
+                        'quicksight:QueryAnalysis',
+                        'quicksight:DescribeAnalysis'
+                    ]
+                }
+            ]
+    print(args)
+    response = qs.create_analysis(**args)
+    return response
+
 def incremental_migration(dev_config, prod_config,migrate_p, m_list):
     source_session = s_func._assume_role(dev_config["aws_account_number"], dev_config["role_name"],
                                          dev_config["aws_region"])
@@ -757,27 +808,23 @@ def update_analysis(session, id, name, source, component_type, component_body):
         "AwsAccountId":  account_id,
         "AnalysisId": id,
         "Name": name,
-        "ThemeArn": source['Analysis']['ThemeArn'],
-        "SourceEntity": {
-            "Definition": {
-                "DataSetIdentifierDeclarations": source['Definition']['DataSetIdentifierDeclarations'],
-                "Sheets": source['Definition']['Sheets'],
-                "CalculatedFields": source['Definition']['CalculatedFields'],
-                "ParameterDeclarations": source['Definition']['ParameterDeclarations'],
-                "FilterGroups": source['Definition']['FilterGroups'],
-                "DefaultConfiguration": source['Definition']['DefaultConfiguration']
-            }
+       # "ThemeArn": source['ThemeArn'],
+        "Definition": {
+            "DataSetIdentifierDeclarations": source['Definition']['DataSetIdentifierDeclarations'],
+            "Sheets": source['Definition']['Sheets'],
+            "CalculatedFields": source['Definition']['CalculatedFields'],
+            "ParameterDeclarations": source['Definition']['ParameterDeclarations'],
+            "FilterGroups": source['Definition']['FilterGroups'],
+            "AnalysisDefaults": source['Definition']['AnalysisDefaults']
         }
+        
     }
     #if component_type == 'Parameters':
         #args["Parameters"] = component_body
     if component_type == '':
         response = qs.update_analysis(**args)
-    elif component_type == 'theme':
-        args["ThemeArn"] = component_body
-        response = qs.update_analysis(**args)
     else:
-        args["SourceEntity"]["Definition"][component_type].append(component_body)
+        args["Definition"][component_type].append(component_body)
         response = qs.update_analysis(**args)
     return response
 
@@ -1159,6 +1206,7 @@ def loaddsinput(file, part):
 def check_object_status(type, id, session):
     if type == 'analysis':
         res = describe_analysis(session,id)
+        print(res)
         if res['Status']==200:
             status=res['Analysis']['Status']
             return status
