@@ -1,0 +1,9 @@
+key,value
+source_account,<source_account_id>
+target_account,<target_account_id>
+source_role_name,<source_account_qs_admin_role>
+target_role_name,<target_account_qs_admin_role>
+source_asset,<dashboard_id_in_dev>
+target_asset,<dashboard_id_in_prod>
+source_admin_user,<source_account_qs_admin_user>
+target_admin_user,<target_account_qs_admin_user>
