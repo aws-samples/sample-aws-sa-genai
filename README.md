@@ -1,7 +1,7 @@
 ## Projects from AWS SSA GenAI Team
 
 1. BIOps
-2. Admin Console of Usage Metrics Updates and Assets Management
+2. Quick Admin Suite of Assets Management, Cost/Usage analytics, and Performance Metrics 
 
 
 ## Security
