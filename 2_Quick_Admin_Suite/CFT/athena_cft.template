@@ -359,6 +359,116 @@ Resources:
               Name: vpcendpointid
               Type: string
           InputFormat: com.amazon.emr.cloudtrail.CloudTrailInputFormat
+          Location: !Ref CloudtrailLocation
+          OutputFormat: org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat
+          SerdeInfo:
+            SerializationLibrary: com.amazon.emr.hive.serde.CloudTrailSerde
+          StoredAsSubDirectories: false
+        PartitionKeys:
+          - Name: region
+            Comment: aws_region
+            Type: string
+          - Name: timestamp
+            Comment: timestamp
+            Type: string
+        Parameters:
+          classification: cloudtrail
+          projection.enabled: true
+          projection.region.type: enum
+          projection.region.values: 'us-east-1,us-east-2,us-west-1,us-west-2,eu-west-1,eu-central-1,ap-southeast-1,ap-southeast-2,ap-northeast-1,ap-northeast-2,sa-east-1'
+          projection.timestamp.type: date
+          projection.timestamp.format: yyyy/MM/dd
+          projection.timestamp.range: !Join
+            - ','
+            - - !Ref StartDateParameter
+              - NOW
+          projection.timestamp.interval: '1'
+          projection.timestamp.interval.unit: DAYS
+          storage.location.template: !Join
+            - ''
+            - - !Ref CloudtrailLocation
+              - /${region}
+              - /${timestamp}
+        TableType: EXTERNAL_TABLE
+    Type: AWS::Glue::Table
+    Properties:
+      CatalogId: !Ref AWS::AccountId
+      DatabaseName: !Ref adminconsoledb2025
+      TableInput:
+        Description: cloudtrail logs
+        Name: cloudtrail_logs_pp
+        StorageDescriptor:
+          Columns:
+            - Comment: eventversion
+              Name: eventversion
+              Type: string
+            - Comment: useridentity
+              Name: useridentity
+              Type: struct<type:string,principalid:string,arn:string,accountid:string,invokedby:string,accesskeyid:string,username:string,sessioncontext:struct<attributes:struct<mfaauthenticated:string,creationdate:string>,sessionissuer:struct<type:string,principalid:string,arn:string,accountid:string,username:string>>>
+            - Comment: eventtime
+              Name: eventtime
+              Type: string
+            - Comment: eventsource
+              Name: eventsource
+              Type: string
+            - Comment: eventname
+              Name: eventname
+              Type: string
+            - Comment: awsregion
+              Name: awsregion
+              Type: string
+            - Comment: sourceipaddress
+              Name: sourceipaddress
+              Type: string
+            - Comment: useragent
+              Name: useragent
+              Type: string
+            - Comment: errorcode
+              Name: errorcode
+              Type: string
+            - Comment: errormessage
+              Name: errormessage
+              Type: string
+            - Comment: requestparameters
+              Name: requestparameters
+              Type: string
+            - Comment: responseelements
+              Name: responseelements
+              Type: string
+            - Comment: additionaleventdata
+              Name: additionaleventdata
+              Type: string
+            - Comment: requestid
+              Name: requestid
+              Type: string
+            - Comment: eventid
+              Name: eventid
+              Type: string
+            - Comment: resources
+              Name: resources
+              Type: array<struct<arn:string,accountid:string,type:string>>
+            - Comment: eventtype
+              Name: eventtype
+              Type: string
+            - Comment: apiversion
+              Name: apiversion
+              Type: string
+            - Comment: readonly
+              Name: readonly
+              Type: string
+            - Comment: recipientaccountid
+              Name: recipientaccountid
+              Type: string
+            - Comment: serviceeventdetails
+              Name: serviceeventdetails
+              Type: string
+            - Comment: sharedeventid
+              Name: sharedeventid
+              Type: string
+            - Comment: vpcendpointid
+              Name: vpcendpointid
+              Type: string
+          InputFormat: com.amazon.emr.cloudtrail.CloudTrailInputFormat
           Location: !Join
             - ''
             - - !Ref CloudtrailLocation
