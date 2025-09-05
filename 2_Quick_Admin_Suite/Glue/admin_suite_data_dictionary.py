@@ -222,7 +222,6 @@ if __name__ == "__main__":
     
     # Create S3 resource
     s3 = boto3.resource('s3')
-    #bucketname = 'admin-console-new-' + account_id
     bucketname = get_s3_bucket_name(account_id)
     bucket = s3.Bucket(bucketname)
 
