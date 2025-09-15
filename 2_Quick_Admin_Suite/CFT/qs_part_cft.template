@@ -1,0 +1,115 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'QuickSight SPICE Ingestion Partitioned ETL Setup'
+
+Parameters:
+  AssetPrefix:
+    Type: String
+    Description: 'Prefix to be added to asset names (optional)'
+    Default: ''
+  QuickSightIdentityRegion:
+    Type: String
+    Description: 'Region where QuickSight users are managed (mandatory)'
+    AllowedValues:
+      - us-east-1
+      - us-east-2
+      - us-west-2
+      - us-west-1
+      - ca-central-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-west-3
+      - eu-north-1
+      - ap-east-1
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-northeast-3
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-3
+      - ap-south-1
+      - sa-east-1
+      - me-south-1
+      - af-south-1
+    ConstraintDescription: 'Must be a valid QuickSight supported region'
+
+Resources:
+  QuickSightSpiceIngestionS3Bucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: !Sub 'qs-spice-ingestion-data-${AWS::AccountId}-${AWS::Region}'
+
+  GlueJobRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      RoleName: !Sub '${AssetPrefix}qs-spice-glue-role-${AWS::Region}'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: glue.amazonaws.com
+            Action: 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AWSGlueServiceRole'
+      Policies:
+        - PolicyName: QuickSightAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'quicksight:*'
+                  - 's3:*'
+                  - 'cloudwatch:GetMetricData'
+                Resource: '*'
+
+  GlueJobSPICEInfo:
+    Type: 'AWS::Glue::Job'
+    Properties:
+      Name: !Sub '${AssetPrefix}ETL-qs-spice-ingestion-job'
+      Role: !GetAtt GlueJobRole.Arn
+      Command:
+        Name: pythonshell
+        PythonVersion: '3.9'
+        ScriptLocation: 's3://admin-console-cfn-dataprepare-code/glue/scripts/2025/admin_suite_datasets_part.py'
+      DefaultArguments:
+        '--AWS_REGION': !Ref 'AWS::Region'
+        '--QUICKSIGHT_IDENTITY_REGION': !Ref 'QuickSightIdentityRegion'
+      MaxRetries: 0
+      Timeout: 2880
+      GlueVersion: '3.0'
+
+  GlueTrigger:
+    Type: 'AWS::Glue::Trigger'
+    Properties:
+      Name: !Sub '${AssetPrefix}QuickSightIngestionDailyTrigger'
+      Type: SCHEDULED
+      Schedule: 'cron(0 11 * * ? *)'
+      StartOnCreation: true  
+      Actions:
+        - JobName: !Ref GlueJobSPICEInfo
+    DependsOn:
+      - GlueJobSPICEInfo
+
+Outputs:
+  S3BucketName:
+    Description: 'Name of the created S3 bucket'
+    Value: !Ref QuickSightSpiceIngestionS3Bucket
+  GlueJobRoleARN:
+    Description: 'ARN of the IAM role for Glue jobs'
+    Value: !GetAtt GlueJobRole.Arn
+
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: "Configuration"
+        Parameters:
+          - AssetPrefix
+          - QuickSightIdentityRegion
+    ParameterLabels:
+      AssetPrefix:
+        default: "Asset Name Prefix (optional)"
+      QuickSightIdentityRegion:
+        default: "QuickSight Identity Region"
