@@ -79,6 +79,9 @@ Resources:
       MaxRetries: 0
       Timeout: 2880
       GlueVersion: '3.0'
+    DependsOn:
+      - QuickSightSpiceIngestionS3Bucket
+      - GlueJobRole
 
   GlueTrigger:
     Type: 'AWS::Glue::Trigger'
