@@ -1,0 +1,84 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Stream CloudWatch metrics into S3 via Kinesis Data Firehose with dynamic partitioning
+
+Resources:
+  MetricsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: cw-metrics-streaming-bucket
+
+  FirehoseRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: firehose.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: FirehoseS3Policy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:PutObject
+                  - s3:AbortMultipartUpload
+                Resource: !Sub "${MetricsBucket.Arn}/*"
+              - Effect: Allow
+                Action:
+                  - logs:PutLogEvents
+                Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/kinesisfirehose/${FirehoseStream}*:log-stream:*"
+
+  FirehoseStream:
+    Type: AWS::KinesisFirehose::DeliveryStream
+    Properties:
+      DeliveryStreamType: DirectPut
+      DeliveryStreamName: cw-metrics-to-s3
+      S3DestinationConfiguration:
+        BucketARN: !GetAtt MetricsBucket.Arn
+        RoleARN: !GetAtt FirehoseRole.Arn
+        Prefix: "year=!{partitionKeyFromQuery:year}/month=!{partitionKeyFromQuery:month}/day=!{partitionKeyFromQuery:day}/hour=!{partitionKeyFromQuery:hour}/"
+        DynamicPartitioningConfiguration:
+          Enabled: true
+          RetryOptions:
+            DurationInSeconds: 900
+          RoleARN: !GetAtt FirehoseRole.Arn
+          PartitionKeys:
+            - Name: year
+              JQExpression: "(.timestamp / 1000) | strftime(\"%Y\")"
+            - Name: month
+              JQExpression: "(.timestamp / 1000) | strftime(\"%m\")"
+            - Name: day
+              JQExpression: "(.timestamp / 1000) | strftime(\"%d\")"
+            - Name: hour
+              JQExpression: "(.timestamp / 1000) | strftime(\"%H\")"
+
+  MetricStreamRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: monitoring.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: MetricStreamToFirehose
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: firehose:PutRecord
+                Resource: !GetAtt FirehoseStream.Arn
+
+  MetricStream:
+    Type: AWS::CloudWatch::MetricStream
+    Properties:
+      FirehoseArn: !GetAtt FirehoseStream.Arn
+      RoleArn: !GetAtt MetricStreamRole.Arn
+      OutputFormat: json
+      Name: cw-metric-stream

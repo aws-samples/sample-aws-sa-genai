@@ -1,0 +1,338 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Resources:
+  QuickSightAdminConsole2025:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: QuickSightAdminConsole2025
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - glue.amazonaws.com
+                - cloudformation.amazonaws.com
+                - firehose.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Policies:
+        - PolicyName: QuickSight-AdminConsole-2025
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Action:
+                  - iam:*
+                  - quicksight:*
+                  - glue:*
+                  - s3:*
+                  - sts:AssumeRole
+                  - cloudwatch:*
+                  - logs:*
+                Resource: '*'
+                Effect: Allow
+  etljobadminsuiteassetsaccess:
+    Type: AWS::Glue::Job
+    Properties:
+      Command:
+        Name: pythonshell
+        PythonVersion: '3.9'
+        ScriptLocation: !Sub s3://admin-console-cfn-dataprepare-code/glue/scripts/2025/adminconsoleuserdataaccessinfo.py
+      DefaultArguments:
+        '--AWS_REGION': !Sub ${AWS::Region}
+      GlueVersion: '3.0'
+      ExecutionProperty:
+        MaxConcurrentRuns: 1
+      MaxCapacity: 1
+      MaxRetries: 0
+      Name: etl_job_admin_suite_assets_access
+      Role: !GetAtt QuickSightAdminConsole2025.Arn
+      Timeout: 120
+    DependsOn:
+      - adminconsolenew
+    Metadata:
+      AWS::CloudFormation::Designer:
+        id: c4462e36-ef27-43d6-a0df-01246a77b117
+  etljobadminsuiteassetsmetadata:
+    Type: AWS::Glue::Job
+    Properties:
+      Command:
+        Name: pythonshell
+        PythonVersion: '3.9'
+        ScriptLocation: !Sub s3://admin-console-cfn-dataprepare-code/glue/scripts/2025/adminconsoledatasetdashboardinfo.py
+      DefaultArguments:
+        '--AWS_REGION': !Sub ${AWS::Region}
+      GlueVersion: '3.0'
+      ExecutionProperty:
+        MaxConcurrentRuns: 1
+      MaxCapacity: 1
+      MaxRetries: 0
+      Name: etl_job_admin_suite_assets_metadata
+      Role: !GetAtt QuickSightAdminConsole2025.Arn
+      Timeout: 120
+    DependsOn:
+      - adminconsolenew
+  etljobadminsuitefolderassets:
+    Type: AWS::Glue::Job
+    Properties:
+      Command:
+        Name: pythonshell
+        PythonVersion: '3.9'
+        ScriptLocation: s3://admin-console-cfn-dataprepare-code/glue/scripts/2025/adminconsolefolderinfo.py
+      DefaultArguments:
+        '--AWS_REGION': !Sub ${AWS::Region}
+      GlueVersion: '3.0'
+      ExecutionProperty:
+        MaxConcurrentRuns: 1
+      MaxCapacity: 1
+      MaxRetries: 0
+      Name: etl_job_admin_suite_folder_assets
+      Role: !GetAtt QuickSightAdminConsole2025.Arn
+      Timeout: 120
+    DependsOn:
+      - adminconsolenew
+  etljobadminsuiteqaccess:
+    Type: AWS::Glue::Job
+    Properties:
+      Command:
+        Name: glueetl
+        PythonVersion: '3'
+        ScriptLocation: !Sub s3://admin-console-cfn-dataprepare-code/glue/scripts/2025/adminconsoleqobjectaccessinfo.py
+      DefaultArguments:
+        '--region': !Sub ${AWS::Region}
+        '--aws_account_id': !Sub ${AWS::AccountId}
+        '--output_s3_path': !Sub s3://admin-console-new-${AWS::AccountId}/monitoring/quicksight/q_object_access
+      GlueVersion: '5.0'
+      ExecutionProperty:
+        MaxConcurrentRuns: 1
+      MaxRetries: 0
+      Name: etl_job_admin_suite_q_access
+      Role: !GetAtt QuickSightAdminConsole2025.Arn
+      Timeout: 120
+      WorkerType: G.1X
+      NumberOfWorkers: 2
+    DependsOn:
+      - adminconsolenew
+  etljobadminsuiteqmetadata:
+    Type: AWS::Glue::Job
+    Properties:
+      Command:
+        Name: glueetl
+        PythonVersion: '3'
+        ScriptLocation: !Sub s3://admin-console-cfn-dataprepare-code/glue/scripts/2025/adminconsoleqtopicinfo.py
+      DefaultArguments:
+        '--AWS_REGION': !Sub ${AWS::Region}
+        '--AWS_ACCOUNT_ID': !Sub ${AWS::AccountId}
+        '--S3_OUTPUT_PATH': !Sub s3://admin-console-new-${AWS::AccountId}/monitoring/quicksight/q_topics_info
+      GlueVersion: '5.0'
+      ExecutionProperty:
+        MaxConcurrentRuns: 1
+      MaxRetries: 0
+      Name: etl_job_admin_suite_q_metadata
+      Role: !GetAtt QuickSightAdminConsole2025.Arn
+      Timeout: 120
+      WorkerType: G.1X
+      NumberOfWorkers: 2
+    DependsOn:
+      - adminconsolenew
+  etljobadminsuiteassetsaccessschedule:
+    Type: AWS::Glue::Trigger
+    Properties:
+      Type: SCHEDULED
+      Description: Glue Trigger to run etl_job_admin_suite_assets_access glue job every 3 hours
+      Schedule: cron(0 */3 * * ? *)
+      Actions:
+        - JobName: etl_job_admin_suite_assets_access
+      Name: etl-job-admin-suite-assets-access-every-3-hour
+      StartOnCreation: true
+  etljobadminsuiteassetsmetadataschedule:
+    Type: AWS::Glue::Trigger
+    Properties:
+      Type: SCHEDULED
+      Description: Glue Trigger to run etl_job_admin_suite_assets_metadata glue job every
+        3 hours
+      Schedule: cron(0 */3 * * ? *)
+      Actions:
+        - JobName: etl_job_admin_suite_assets_metadata
+      Name: etl-job-admin-suite-assets-metadata-every-3-hour
+      StartOnCreation: true
+  etljobadminsuitefolderassetsschedule:
+    Type: AWS::Glue::Trigger
+    Properties:
+      Type: SCHEDULED
+      Description: Glue Trigger to run etl_job_admin_suite_folder_assets job every 3 hours
+      Schedule: cron(0 */3 * * ? *)
+      Actions:
+        - JobName: etl_job_admin_suite_folder_assets
+      Name: etl-job-admin-suite-folder-assets-every-3-hour
+      StartOnCreation: true
+  etljobadminsuiteqmetadataschedule:
+    Type: AWS::Glue::Trigger
+    Properties:
+      Type: SCHEDULED
+      Description: Glue Trigger to run etl_job_admin_suite_q_metadata glue job every 3 hours
+      Schedule: cron(0 */3 * * ? *)
+      Actions:
+        - JobName: etl_job_admin_suite_q_metadata
+      Name: etl-job-admin-suite-q-metadata-every-3-hour
+      StartOnCreation: true
+  etljobadminsuiteqaccessschedule:
+    Type: AWS::Glue::Trigger
+    Properties:
+      Type: SCHEDULED
+      Description: Glue Trigger to run etl_job_admin_suite_q_access glue job every 3 hours
+      Schedule: cron(0 */3 * * ? *)
+      Actions:
+        - JobName: etl_job_admin_suite_q_access
+      Name: etl-job-admin-suite-q-access-every-3-hour
+      StartOnCreation: true
+  adminconsolenew:
+    Type: AWS::S3::Bucket
+    Properties:
+      AccessControl: Private
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketName: !Join
+        - ''
+        - - admin-console-new-
+          - !Ref AWS::AccountId
+  S3BucketMetricstreamscwqsdashvisual:
+    UpdateReplacePolicy: Retain
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Delete
+    Properties:
+      PublicAccessBlockConfiguration:
+        RestrictPublicBuckets: true
+        IgnorePublicAcls: true
+        BlockPublicPolicy: true
+        BlockPublicAcls: true
+      BucketName: !Join
+        - ''
+        - - cw-qs-dash-visual-
+          - !Ref AWS::AccountId
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - BucketKeyEnabled: false
+            ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+  S3BucketMetricstreamscwqsds:
+    UpdateReplacePolicy: Retain
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Delete
+    Properties:
+      PublicAccessBlockConfiguration:
+        RestrictPublicBuckets: true
+        IgnorePublicAcls: true
+        BlockPublicPolicy: true
+        BlockPublicAcls: true
+      BucketName: !Join
+        - ''
+        - - cw-qs-ds-
+          - !Ref AWS::AccountId
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - BucketKeyEnabled: false
+            ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+  QuickSuiteCWStreamRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: QuickSuiteCWStreamRole
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: streams.metrics.cloudwatch.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: FirehoseDeliveryPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - firehose:PutRecord
+                  - firehose:PutRecordBatch
+                Resource: '*'
+  FirehoseDeliveryStreamcwqsds:
+    Type: AWS::KinesisFirehose::DeliveryStream
+    Properties:
+      DeliveryStreamName: !Sub MetricStreams-cw-qs-ds-${AWS::AccountId}
+      DeliveryStreamType: DirectPut
+      S3DestinationConfiguration:
+        BucketARN: !Sub arn:aws:s3:::cw-qs-ds-${AWS::AccountId}
+        RoleARN: !GetAtt QuickSightAdminConsole2025.Arn
+    DependsOn:
+      - QuickSightAdminConsole2025
+  FirehoseDeliveryStreamcwqsdashvisual:
+    Type: AWS::KinesisFirehose::DeliveryStream
+    Properties:
+      DeliveryStreamName: !Sub MetricStreams-cw-qs-dash-visual-${AWS::AccountId}
+      DeliveryStreamType: DirectPut
+      S3DestinationConfiguration:
+        BucketARN: !Sub arn:aws:s3:::cw-qs-dash-visual-${AWS::AccountId}
+        RoleARN: !GetAtt QuickSightAdminConsole2025.Arn
+    DependsOn:
+      - QuickSightAdminConsole2025
+  CloudWatchMetricStreamDS:
+    Type: AWS::CloudWatch::MetricStream
+    Properties:
+      Name: cw-qs-ds
+      FirehoseArn: !GetAtt FirehoseDeliveryStreamcwqsds.Arn
+      RoleArn: !GetAtt QuickSuiteCWStreamRole.Arn
+      OutputFormat: json
+      IncludeFilters:
+        - Namespace: AWS/QuickSight
+          MetricNames:
+            - IngestionRowCount
+            - IngestionLatency
+            - IngestionInvocationCount
+            - IngestionErrorCount
+            - SPICECapacityLimitInMB
+            - SPICECapacityConsumedInMB
+  CloudWatchMetricStreamDashVisual:
+    Type: AWS::CloudWatch::MetricStream
+    Properties:
+      Name: cw-qs-dash-visual
+      FirehoseArn: !GetAtt FirehoseDeliveryStreamcwqsdashvisual.Arn
+      RoleArn: !GetAtt QuickSuiteCWStreamRole.Arn
+      OutputFormat: json
+      IncludeFilters:
+        - Namespace: AWS/QuickSight
+          MetricNames:
+            - VisualLoadTime
+            - DashboardViewLoadTime
+            - DashboardViewCount
+            - VisualLoadErrorCount
+Outputs:
+  groupmembership:
+    Description: The s3 location of group_membership.csv for you to utilize in next
+      Athena tables creation stack
+    Value: !Sub s3://admin-console-new-${AWS::AccountId}/monitoring/quicksight/group_membership
+  objectaccess:
+    Description: The s3 location of object_access.csv for you to utilize in next
+      Athena tables creation stack
+    Value: !Sub s3://admin-console-new-${AWS::AccountId}/monitoring/quicksight/object_access
+  folderassets:
+    Description: The s3 location of folder_assets.csv for you to utilize in next
+      Athena tables creation stack
+    Value: !Sub s3://admin-console-new-${AWS::AccountId}/monitoring/quicksight/folder_assets/folder_assets.csv
+  folderlk:
+    Description: The s3 location of folder_lk.csv for you to utilize in next Athena
+      tables creation stack
+    Value: !Sub s3://admin-console-new-${AWS::AccountId}/monitoring/quicksight/folder_lk/folder_lk.csv
+  folderpath:
+    Description: The s3 location of folder_path.csv for you to utilize in next
+      Athena tables creation stack
+    Value: !Sub s3://admin-console-new-${AWS::AccountId}/monitoring/quicksight/folder_path/folder_path.csv
+
+  
