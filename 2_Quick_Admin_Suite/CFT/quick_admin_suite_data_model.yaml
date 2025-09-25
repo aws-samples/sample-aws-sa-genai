@@ -970,7 +970,8 @@ Resources:
           },
           "Grouping": {
             "TableGroupingPolicy": "CombineCompatibleSchemas"
-          }
+          },
+          "CreatePartitionIndex": true
         }
       RecrawlPolicy:
         RecrawlBehavior: CRAWL_EVERYTHING
@@ -995,7 +996,8 @@ Resources:
           },
           "Grouping": {
             "TableGroupingPolicy": "CombineCompatibleSchemas"
-          }
+          },
+          "CreatePartitionIndex": true
         }
       RecrawlPolicy:
         RecrawlBehavior: CRAWL_EVERYTHING
