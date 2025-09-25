@@ -1,9 +1,9 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Resources:
-  QuickSightAdminConsole2025:
+  QuickAdminSuiteRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: QuickSightAdminConsole2025
+      RoleName: QuickAdminSuiteRole
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -12,6 +12,7 @@ Resources:
               Service:
                 - glue.amazonaws.com
                 - cloudformation.amazonaws.com
+                - firehose.amazonaws.com
             Action:
               - sts:AssumeRole
       Policies:
@@ -29,16 +30,13 @@ Resources:
                   - logs:*
                 Resource: '*'
                 Effect: Allow
-    Metadata:
-      AWS::CloudFormation::Designer:
-        id: 137f8de2-0d45-4490-a6a7-04356c185c4a
-  adminconsoleuserdataaccessinfo:
+  admin_suite_qs_access_info:
     Type: AWS::Glue::Job
     Properties:
       Command:
         Name: pythonshell
         PythonVersion: '3.9'
-        ScriptLocation: !Sub s3://admin-console-cfn-dataprepare-code/glue/scripts/2025/adminconsoleuserdataaccessinfo.py
+        ScriptLocation: !Sub s3://admin-console-cfn-dataprepare-code/glue/scripts/2025/admin_suite_qs_access_info.py
       DefaultArguments:
         '--AWS_REGION': !Sub ${AWS::Region}
       GlueVersion: '3.0'
@@ -46,21 +44,21 @@ Resources:
         MaxConcurrentRuns: 1
       MaxCapacity: 1
       MaxRetries: 0
-      Name: adminconsoleuserdataaccessinfo
-      Role: !GetAtt QuickSightAdminConsole2025.Arn
+      Name: admin_suite_qs_access_info
+      Role: !GetAtt QuickAdminSuiteRole.Arn
       Timeout: 120
     DependsOn:
-      - adminconsolenew
+      - admin_suite_qs_md
     Metadata:
       AWS::CloudFormation::Designer:
         id: c4462e36-ef27-43d6-a0df-01246a77b117
-  adminconsoledatasetdashboardinfo:
+  admin_suite_dataset_dashboard_info:
     Type: AWS::Glue::Job
     Properties:
       Command:
         Name: pythonshell
         PythonVersion: '3.9'
-        ScriptLocation: !Sub s3://admin-console-cfn-dataprepare-code/glue/scripts/2025/adminconsoledatasetdashboardinfo.py
+        ScriptLocation: !Sub s3://admin-console-cfn-dataprepare-code/glue/scripts/2025/admin_suite_dataset_dashboard_info.py
       DefaultArguments:
         '--AWS_REGION': !Sub ${AWS::Region}
       GlueVersion: '3.0'
@@ -68,15 +66,15 @@ Resources:
         MaxConcurrentRuns: 1
       MaxCapacity: 1
       MaxRetries: 0
-      Name: adminconsoledatasetdashboardinfo
-      Role: !GetAtt QuickSightAdminConsole2025.Arn
+      Name: admin_suite_dataset_dashboard_info
+      Role: !GetAtt QuickAdminSuiteRole.Arn
       Timeout: 120
     DependsOn:
-      - adminconsolenew
+      - admin_suite_qs_md
     Metadata:
       AWS::CloudFormation::Designer:
         id: c4462e36-ef27-43d6-a0df-01246a77b117
-  folderassetsglue:
+  admin_suite_folder_info:
     Type: AWS::Glue::Job
     Properties:
       Command:
@@ -90,18 +88,18 @@ Resources:
         MaxConcurrentRuns: 1
       MaxCapacity: 1
       MaxRetries: 0
-      Name: folderassetsglue
-      Role: !GetAtt QuickSightAdminConsole2025.Arn
+      Name: admin_suite_folder_info
+      Role: !GetAtt QuickAdminSuiteRole.Arn
       Timeout: 120
     DependsOn:
-      - adminconsolenew
-  adminconsoleqobjectaccessinfo:
+      - admin_suite_qs_md
+  admin_suite_q_access_info:
     Type: AWS::Glue::Job
     Properties:
       Command:
         Name: glueetl
         PythonVersion: '3'
-        ScriptLocation: !Sub s3://admin-console-cfn-dataprepare-code/glue/scripts/2025/adminconsoleqobjectaccessinfo.py
+        ScriptLocation: !Sub s3://admin-console-cfn-dataprepare-code/glue/scripts/2025/admin_suite_q_access_info.py
       DefaultArguments:
         '--region': !Sub ${AWS::Region}
         '--aws_account_id': !Sub ${AWS::AccountId}
@@ -110,20 +108,20 @@ Resources:
       ExecutionProperty:
         MaxConcurrentRuns: 1
       MaxRetries: 0
-      Name: adminconsoleqobjectaccessinfo
-      Role: !GetAtt QuickSightAdminConsole2025.Arn
+      Name: admin_suite_q_access_info
+      Role: !GetAtt QuickAdminSuiteRole.Arn
       Timeout: 120
       WorkerType: G.1X
       NumberOfWorkers: 2
     DependsOn:
-      - adminconsolenew
-  adminconsoleqtopicinfo:
+      - admin_suite_qs_md
+  admin_suite_q_topic__def_info:
     Type: AWS::Glue::Job
     Properties:
       Command:
         Name: glueetl
         PythonVersion: '3'
-        ScriptLocation: !Sub s3://admin-console-cfn-dataprepare-code/glue/scripts/2025/adminconsoleqtopicinfo.py
+        ScriptLocation: !Sub s3://admin-console-cfn-dataprepare-code/glue/scripts/2025/admin_suite_q_topic__def_info.py
       DefaultArguments:
         '--AWS_REGION': !Sub ${AWS::Region}
         '--AWS_ACCOUNT_ID': !Sub ${AWS::AccountId}
@@ -132,64 +130,65 @@ Resources:
       ExecutionProperty:
         MaxConcurrentRuns: 1
       MaxRetries: 0
-      Name: adminconsoleqtopicinfo
-      Role: !GetAtt QuickSightAdminConsole2025.Arn
+      Name: admin_suite_q_topic__def_info
+      Role: !GetAtt QuickAdminSuiteRole.Arn
       Timeout: 120
       WorkerType: G.1X
       NumberOfWorkers: 2
     DependsOn:
-      - adminconsolenew
-  adminconsoleuserdataaccessinfoschedule:
+      - admin_suite_qs_md
+  admin_suite_qs_access_info_schedule:
     Type: AWS::Glue::Trigger
     Properties:
       Type: SCHEDULED
-      Description: Glue Trigger to run adminconsoleuserdataaccessinfo glue job every 3 hours
+      Description: Glue Trigger to run admin_suite_qs_access_info glue job every 3 hours
       Schedule: cron(0 */3 * * ? *)
       Actions:
-        - JobName: adminconsoleuserdataaccessinfo
-      Name: adminconsoleuserdataaccessinfo-every-3-hour
+        - JobName: admin_suite_qs_access_info
+      Name: admin_suite_qs_access_info-every-3-hour
       StartOnCreation: true
-  adminconsoledatasetdashboardinfoschedule:
+  admin_suite_dataset_dashboard_info_schedule:
     Type: AWS::Glue::Trigger
     Properties:
       Type: SCHEDULED
-      Description: Glue Trigger to run adminconsoledatasetdashboardinfo glue job every 3 hours
+      Description: Glue Trigger to run admin_suite_dataset_dashboard_info glue job every
+        3 hours
       Schedule: cron(0 */3 * * ? *)
       Actions:
-        - JobName: adminconsoledatasetdashboardinfo
-      Name: adminconsoledatasetdashboardinfo-every-3-hour
+        - JobName: admin_suite_dataset_dashboard_info
+      Name: admin_suite_dataset_dashboard_info-every-3-hour
       StartOnCreation: true
-  folderassetsglueschedule:
+  admin_suite_folder_info_schedule:
     Type: AWS::Glue::Trigger
     Properties:
       Type: SCHEDULED
-      Description: Glue Trigger to run folderassetsglue job every 3 hours
+      Description: Glue Trigger to run admin_suite_folder_info job every 3 hours
       Schedule: cron(0 */3 * * ? *)
       Actions:
-        - JobName: folderassetsglue
-      Name: folderassetsglue-every-3-hour
+        - JobName: admin_suite_folder_info
+      Name: admin_suite_folder_info-every-3-hour
       StartOnCreation: true
-  adminconsoleqtopicinfoschedule:
+  admin_suite_q_topic__def_info_schedule:
     Type: AWS::Glue::Trigger
     Properties:
       Type: SCHEDULED
-      Description: Glue Trigger to run adminconsoleqtopicinfo glue job every 3 hours
+      Description: Glue Trigger to run admin_suite_q_topic__def_info glue job every 3 hours
       Schedule: cron(0 */3 * * ? *)
       Actions:
-        - JobName: adminconsoleqtopicinfo
-      Name: adminconsoleqtopicinfo-every-3-hour
+        - JobName: admin_suite_q_topic__def_info
+      Name: admin_suite_q_topic__def_info-every-3-hour
       StartOnCreation: true
-  adminconsoleqobjectaccessinfoschedule:
+  admin_suite_q_access_info_schedule:
     Type: AWS::Glue::Trigger
     Properties:
       Type: SCHEDULED
-      Description: Glue Trigger to run adminconsoleqobjectaccessinfo glue job every 3 hours
+      Description: Glue Trigger to run admin_suite_q_access_info glue job every 3 hours
       Schedule: cron(0 */3 * * ? *)
       Actions:
-        - JobName: adminconsoleqobjectaccessinfo
-      Name: adminconsoleqobjectaccessinfo-every-3-hour
+        - JobName: admin_suite_q_access_info
+      Name: admin_suite_q_access_info-every-3-hour
       StartOnCreation: true
-  adminconsolenew:
+  admin_suite_qs_md:
     Type: AWS::S3::Bucket
     Properties:
       AccessControl: Private
@@ -200,32 +199,36 @@ Resources:
         RestrictPublicBuckets: true
       BucketName: !Join
         - ''
-        - - admin-console-new-
+        - - admin_suite_qs_md_
           - !Ref AWS::AccountId
-    Metadata:
-      AWS::CloudFormation::Designer:
-        id: 494a8dba-26e5-4efa-93ea-d49a84c99390
 Outputs:
   groupmembership:
-    Description: The s3 location of group_membership.csv for you to utilize in next Athena tables creation stack
+    Description: The s3 location of group_membership.csv for you to utilize in next
+      Athena tables creation stack
     Value: !Sub s3://admin-console-new-${AWS::AccountId}/monitoring/quicksight/group_membership
   objectaccess:
-    Description: The s3 location of object_access.csv for you to utilize in next Athena tables creation stack
+    Description: The s3 location of object_access.csv for you to utilize in next
+      Athena tables creation stack
     Value: !Sub s3://admin-console-new-${AWS::AccountId}/monitoring/quicksight/object_access
   folderassets:
-    Description: The s3 location of folder_assets.csv for you to utilize in next Athena tables creation stack
+    Description: The s3 location of folder_assets.csv for you to utilize in next
+      Athena tables creation stack
     Value: !Sub s3://admin-console-new-${AWS::AccountId}/monitoring/quicksight/folder_assets/folder_assets.csv
   folderlk:
-    Description: The s3 location of folder_lk.csv for you to utilize in next Athena tables creation stack
+    Description: The s3 location of folder_lk.csv for you to utilize in next Athena
+      tables creation stack
     Value: !Sub s3://admin-console-new-${AWS::AccountId}/monitoring/quicksight/folder_lk/folder_lk.csv
   folderpath:
-    Description: The s3 location of folder_path.csv for you to utilize in next Athena tables creation stack
+    Description: The s3 location of folder_path.csv for you to utilize in next
+      Athena tables creation stack
     Value: !Sub s3://admin-console-new-${AWS::AccountId}/monitoring/quicksight/folder_path/folder_path.csv
   cloudtraillogtablename:
-    Description: The table name of cloudtrail log for you to utilize in next Athena tables creation stack
+    Description: The table name of cloudtrail log for you to utilize in next Athena
+      tables creation stack
     Value: cloudtrail_logs
   cloudtraillog:
-    Description: The s3 location of cloudtrail log for you to utilize in next Athena tables creation stack
+    Description: The s3 location of cloudtrail log for you to utilize in next Athena
+      tables creation stack
     Value: !Sub s3://cloudtrail-awslogs-${AWS::AccountId}-do-not-delete/AWSLogs/${AWS::AccountId}/CloudTrail
 Metadata:
   AWS::CloudFormation::Designer:

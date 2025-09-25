@@ -1,0 +1,38 @@
+  QuickSuiteCWStreamRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: QuickSuiteCWStreamRole
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: streams.metrics.cloudwatch.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: FirehoseDeliveryPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - firehose:PutRecord
+                  - firehose:PutRecordBatch
+                Resource: !GetAtt FirehoseDeliveryStream_cw_qs_ds.Arn
+
+  CloudWatchMetricStream:
+    Type: AWS::CloudWatch::MetricStream
+    Properties:
+      Name: cw-qs-ds
+      FirehoseArn: !GetAtt FirehoseDeliveryStream_cw_qs_ds.Arn
+      RoleArn: !GetAtt QuickSuiteCWStreamRole.Arn
+      OutputFormat: json
+      IncludeFilters:
+        - Namespace: AWS/QuickSight
+          MetricNames:
+            - IngestionRowCount
+            - IngestionLatency
+            - IngestionInvocationCount
+            - IngestionErrorCount
+            - SPICECapacityLimitInMB
+            - SPICECapacityConsumedInMB

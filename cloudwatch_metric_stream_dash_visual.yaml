@@ -1,0 +1,14 @@
+  CloudWatchMetricStreamDashVisual:
+    Type: AWS::CloudWatch::MetricStream
+    Properties:
+      Name: cw-qs-dash-visual
+      FirehoseArn: !GetAtt FirehoseDeliveryStream_cw_qs_dash_visual.Arn
+      RoleArn: !GetAtt QuickSuiteCWStreamRole.Arn
+      OutputFormat: json
+      IncludeFilters:
+        - Namespace: AWS/QuickSight
+          MetricNames:
+            - VisualLoadTime
+            - DashboardViewLoadTime
+            - DashboardViewCount
+            - VisualLoadErrorCount
