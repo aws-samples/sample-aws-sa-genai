@@ -301,6 +301,72 @@ Resources:
           - BucketKeyEnabled: false
             ServerSideEncryptionByDefault:
               SSEAlgorithm: AES256
+  S3BucketMetricstreamscwqsspice:
+    UpdateReplacePolicy: Retain
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Delete
+    Properties:
+      PublicAccessBlockConfiguration:
+        RestrictPublicBuckets: true
+        IgnorePublicAcls: true
+        BlockPublicPolicy: true
+        BlockPublicAcls: true
+      BucketName: !Join
+        - ''
+        - - cw-qs-spice-
+          - !Ref AWS::AccountId
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - BucketKeyEnabled: false
+            ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+  S3BucketMetricstreamscwqsqindex:
+    UpdateReplacePolicy: Retain
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Delete
+    Properties:
+      PublicAccessBlockConfiguration:
+        RestrictPublicBuckets: true
+        IgnorePublicAcls: true
+        BlockPublicPolicy: true
+        BlockPublicAcls: true
+      BucketName: !Join
+        - ''
+        - - cw-qs-qindex-
+          - !Ref AWS::AccountId
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - BucketKeyEnabled: false
+            ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+  S3BucketMetricstreamscwqsqaction:
+    UpdateReplacePolicy: Retain
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Delete
+    Properties:
+      PublicAccessBlockConfiguration:
+        RestrictPublicBuckets: true
+        IgnorePublicAcls: true
+        BlockPublicPolicy: true
+        BlockPublicAcls: true
+      BucketName: !Join
+        - ''
+        - - cw-qs-qaction-
+          - !Ref AWS::AccountId
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - BucketKeyEnabled: false
+            ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
   QuickSuiteCWStreamRole:
     Type: AWS::IAM::Role
     Properties:
@@ -342,6 +408,39 @@ Resources:
         RoleARN: !GetAtt QuickSightAdminConsole2025.Arn
     DependsOn:
       - QuickSightAdminConsole2025
+  FirehoseDeliveryStreamcwqsspice:
+    Type: AWS::KinesisFirehose::DeliveryStream
+    Properties:
+      DeliveryStreamName: !Sub MetricStreams-cw-qs-spice-${AWS::AccountId}
+      DeliveryStreamType: DirectPut
+      S3DestinationConfiguration:
+        BucketARN: !Sub arn:aws:s3:::cw-qs-spice-${AWS::AccountId}
+        RoleARN: !GetAtt QuickSightAdminConsole2025.Arn
+    DependsOn:
+      - QuickSightAdminConsole2025
+      - S3BucketMetricstreamscwqsspice
+  FirehoseDeliveryStreamcwqsqindex:
+    Type: AWS::KinesisFirehose::DeliveryStream
+    Properties:
+      DeliveryStreamName: !Sub MetricStreams-cw-qs-qindex-${AWS::AccountId}
+      DeliveryStreamType: DirectPut
+      S3DestinationConfiguration:
+        BucketARN: !Sub arn:aws:s3:::cw-qs-qindex-${AWS::AccountId}
+        RoleARN: !GetAtt QuickSightAdminConsole2025.Arn
+    DependsOn:
+      - QuickSightAdminConsole2025
+      - S3BucketMetricstreamscwqsqindex
+  FirehoseDeliveryStreamcwqsqaction:
+    Type: AWS::KinesisFirehose::DeliveryStream
+    Properties:
+      DeliveryStreamName: !Sub MetricStreams-cw-qs-qaction-${AWS::AccountId}
+      DeliveryStreamType: DirectPut
+      S3DestinationConfiguration:
+        BucketARN: !Sub arn:aws:s3:::cw-qs-qaction-${AWS::AccountId}
+        RoleARN: !GetAtt QuickSightAdminConsole2025.Arn
+    DependsOn:
+      - QuickSightAdminConsole2025
+      - S3BucketMetricstreamscwqsqaction
   CloudWatchMetricStreamDS:
     Type: AWS::CloudWatch::MetricStream
     Properties:
@@ -356,8 +455,6 @@ Resources:
             - IngestionLatency
             - IngestionInvocationCount
             - IngestionErrorCount
-            - SPICECapacityLimitInMB
-            - SPICECapacityConsumedInMB
   CloudWatchMetricStreamDashVisual:
     Type: AWS::CloudWatch::MetricStream
     Properties:
@@ -372,6 +469,42 @@ Resources:
             - DashboardViewLoadTime
             - DashboardViewCount
             - VisualLoadErrorCount
+  CloudWatchMetricStreamSPICE:
+    Type: AWS::CloudWatch::MetricStream
+    Properties:
+      Name: cw-qs-spice
+      FirehoseArn: !GetAtt FirehoseDeliveryStreamcwqsspice.Arn
+      RoleArn: !GetAtt QuickSuiteCWStreamRole.Arn
+      OutputFormat: json
+      IncludeFilters:
+        - Namespace: AWS/QuickSight
+          MetricNames:
+            - SPICECapacityLimitInMB
+            - SPICECapacityConsumedInMB
+  CloudWatchMetricStreamQIndex:
+    Type: AWS::CloudWatch::MetricStream
+    Properties:
+      Name: cw-qs-qindex
+      FirehoseArn: !GetAtt FirehoseDeliveryStreamcwqsqindex.Arn
+      RoleArn: !GetAtt QuickSuiteCWStreamRole.Arn
+      OutputFormat: json
+      IncludeFilters:
+        - Namespace: AWS/QuickSight
+          MetricNames:
+            - QuickIndexDocumentCount
+            - QuickIndexExtractedTextSize
+  CloudWatchMetricStreamQAction:
+    Type: AWS::CloudWatch::MetricStream
+    Properties:
+      Name: cw-qs-qaction
+      FirehoseArn: !GetAtt FirehoseDeliveryStreamcwqsqaction.Arn
+      RoleArn: !GetAtt QuickSuiteCWStreamRole.Arn
+      OutputFormat: json
+      IncludeFilters:
+        - Namespace: AWS/QuickSight
+          MetricNames:
+            - ActionInvocationError
+            - ActionInvocationCount
 Outputs:
   groupmembership:
     Description: The s3 location of group_membership.csv for you to utilize in next

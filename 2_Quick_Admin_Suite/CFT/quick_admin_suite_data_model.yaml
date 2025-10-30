@@ -935,10 +935,6 @@ Resources:
         , MAX((CASE WHEN (metric_name = 'IngestionLatency') THEN unit END)) IngestionLatency_Unit
         , CAST(MAX((CASE WHEN (metric_name = 'IngestionRowCount') THEN value.sum END)) AS INTEGER) IngestionRowCount
         , MAX((CASE WHEN (metric_name = 'IngestionRowCount') THEN unit END)) IngestionRowCount_Unit
-        , CAST(MAX((CASE WHEN (metric_name = 'SPICECapacityLimitInMB') THEN value.sum END)) AS DOUBLE) SPICECapacityLimitInMB
-        , MAX((CASE WHEN (metric_name = 'SPICECapacityLimitInMB') THEN unit END)) SPICECapacityLimitInMB_Unit
-        , CAST(MAX((CASE WHEN (metric_name = 'SPICECapacityConsumedInMB') THEN value.sum END)) AS DOUBLE) SPICECapacityConsumedInMB
-        , MAX((CASE WHEN (metric_name = 'SPICECapacityConsumedInMB') THEN unit END)) SPICECapacityConsumedInMB_Unit
         FROM cw_qs_ds_${AWS::AccountId}
         GROUP BY timestamp, account_id, region, dimensions
         ORDER BY timestamp ASC, account_id ASC, region ASC
@@ -968,6 +964,26 @@ Resources:
         , MAX((CASE WHEN (metric_name = 'VisualLoadErrorCount') THEN unit END)) VisualLoadErrorCount_Unit
         FROM cw_qs_dash_visual_${AWS::AccountId}
         GROUP BY timestamp, account_id, region, dimensions
+        ORDER BY timestamp ASC, account_id ASC, region ASC
+      WorkGroup: primary
+  CwQsSpicePivotView:
+    Type: 'AWS::Athena::NamedQuery'
+    Properties:
+      Database: admin-console-2025
+      Description: 'Pivot view for CloudWatch QuickSight SPICE metrics'
+      Name: cw_qs_spice_pivot_view
+      QueryString: !Sub |
+        CREATE OR REPLACE VIEW cw_qs_spice_pivot AS 
+        SELECT
+          timestamp
+        , account_id
+        , region
+        , CAST(MAX((CASE WHEN (metric_name = 'SPICECapacityLimitInMB') THEN value.sum END)) AS DOUBLE) SPICECapacityLimitInMB
+        , MAX((CASE WHEN (metric_name = 'SPICECapacityLimitInMB') THEN unit END)) SPICECapacityLimitInMB_Unit
+        , CAST(MAX((CASE WHEN (metric_name = 'SPICECapacityConsumedInMB') THEN value.sum END)) AS DOUBLE) SPICECapacityConsumedInMB
+        , MAX((CASE WHEN (metric_name = 'SPICECapacityConsumedInMB') THEN unit END)) SPICECapacityConsumedInMB_Unit
+        FROM cw_qs_spice_${AWS::AccountId}
+        GROUP BY timestamp, account_id, region
         ORDER BY timestamp ASC, account_id ASC, region ASC
       WorkGroup: primary
   CwQsDsTable:
@@ -1084,6 +1100,177 @@ Resources:
           - Name: partition_3
             Type: string
         TableType: EXTERNAL_TABLE
+  CwQsSpiceTable:
+    Type: AWS::Glue::Table
+    Properties:
+      CatalogId: !Ref AWS::AccountId
+      DatabaseName: !Ref adminconsoledb2025
+      TableInput:
+        Name: !Sub cw_qs_spice_${AWS::AccountId}
+        Description: CloudWatch Metrics Stream data for QuickSight SPICE
+        Parameters:
+          classification: json
+          partition_filtering.enabled: 'true'
+        StorageDescriptor:
+          Columns:
+            - Name: metric_stream_name
+              Type: string
+              Comment: from deserializer
+            - Name: account_id
+              Type: string
+              Comment: from deserializer
+            - Name: region
+              Type: string
+              Comment: from deserializer
+            - Name: namespace
+              Type: string
+              Comment: from deserializer
+            - Name: metric_name
+              Type: string
+              Comment: from deserializer
+            - Name: dimensions
+              Type: struct<AccountId:string>
+              Comment: from deserializer
+            - Name: timestamp
+              Type: bigint
+              Comment: from deserializer
+            - Name: value
+              Type: struct<max:double,min:double,sum:double,count:double>
+              Comment: from deserializer
+            - Name: unit
+              Type: string
+              Comment: from deserializer
+          InputFormat: org.apache.hadoop.mapred.TextInputFormat
+          OutputFormat: org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat
+          SerdeInfo:
+            SerializationLibrary: org.openx.data.jsonserde.JsonSerDe
+            Parameters:
+              paths: account_id,dimensions,metric_name,metric_stream_name,namespace,region,timestamp,unit,value
+          Location: !Sub s3://cw-qs-spice-${AWS::AccountId}/
+        PartitionKeys:
+          - Name: partition_0
+            Type: string
+          - Name: partition_1
+            Type: string
+          - Name: partition_2
+            Type: string
+          - Name: partition_3
+            Type: string
+        TableType: EXTERNAL_TABLE
+  CwQsQIndexTable:
+    Type: AWS::Glue::Table
+    Properties:
+      CatalogId: !Ref AWS::AccountId
+      DatabaseName: !Ref adminconsoledb2025
+      TableInput:
+        Name: !Sub cw_qs_qindex_${AWS::AccountId}
+        Description: CloudWatch Metrics Stream data for QuickSight Q Index
+        Parameters:
+          classification: json
+          partition_filtering.enabled: 'true'
+        StorageDescriptor:
+          Columns:
+            - Name: metric_stream_name
+              Type: string
+              Comment: from deserializer
+            - Name: account_id
+              Type: string
+              Comment: from deserializer
+            - Name: region
+              Type: string
+              Comment: from deserializer
+            - Name: namespace
+              Type: string
+              Comment: from deserializer
+            - Name: metric_name
+              Type: string
+              Comment: from deserializer
+            - Name: dimensions
+              Type: struct<AccountId:string>
+              Comment: from deserializer
+            - Name: timestamp
+              Type: bigint
+              Comment: from deserializer
+            - Name: value
+              Type: struct<max:double,min:double,sum:double,count:double>
+              Comment: from deserializer
+            - Name: unit
+              Type: string
+              Comment: from deserializer
+          InputFormat: org.apache.hadoop.mapred.TextInputFormat
+          OutputFormat: org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat
+          SerdeInfo:
+            SerializationLibrary: org.openx.data.jsonserde.JsonSerDe
+            Parameters:
+              paths: account_id,dimensions,metric_name,metric_stream_name,namespace,region,timestamp,unit,value
+          Location: !Sub s3://cw-qs-qindex-${AWS::AccountId}/
+        PartitionKeys:
+          - Name: partition_0
+            Type: string
+          - Name: partition_1
+            Type: string
+          - Name: partition_2
+            Type: string
+          - Name: partition_3
+            Type: string
+        TableType: EXTERNAL_TABLE
+  CwQsQActionTable:
+    Type: AWS::Glue::Table
+    Properties:
+      CatalogId: !Ref AWS::AccountId
+      DatabaseName: !Ref adminconsoledb2025
+      TableInput:
+        Name: !Sub cw_qs_qaction_${AWS::AccountId}
+        Description: CloudWatch Metrics Stream data for QuickSight Q Action
+        Parameters:
+          classification: json
+          partition_filtering.enabled: 'true'
+        StorageDescriptor:
+          Columns:
+            - Name: metric_stream_name
+              Type: string
+              Comment: from deserializer
+            - Name: account_id
+              Type: string
+              Comment: from deserializer
+            - Name: region
+              Type: string
+              Comment: from deserializer
+            - Name: namespace
+              Type: string
+              Comment: from deserializer
+            - Name: metric_name
+              Type: string
+              Comment: from deserializer
+            - Name: dimensions
+              Type: struct<AccountId:string>
+              Comment: from deserializer
+            - Name: timestamp
+              Type: bigint
+              Comment: from deserializer
+            - Name: value
+              Type: struct<max:double,min:double,sum:double,count:double>
+              Comment: from deserializer
+            - Name: unit
+              Type: string
+              Comment: from deserializer
+          InputFormat: org.apache.hadoop.mapred.TextInputFormat
+          OutputFormat: org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat
+          SerdeInfo:
+            SerializationLibrary: org.openx.data.jsonserde.JsonSerDe
+            Parameters:
+              paths: account_id,dimensions,metric_name,metric_stream_name,namespace,region,timestamp,unit,value
+          Location: !Sub s3://cw-qs-qaction-${AWS::AccountId}/
+        PartitionKeys:
+          - Name: partition_0
+            Type: string
+          - Name: partition_1
+            Type: string
+          - Name: partition_2
+            Type: string
+          - Name: partition_3
+            Type: string
+        TableType: EXTERNAL_TABLE
   CrawlerCwQsDs:
     Type: AWS::Glue::Crawler
     Properties:
@@ -1093,6 +1280,84 @@ Resources:
       Targets:
         S3Targets:
           - Path: !Sub s3://cw-qs-ds-${AWS::AccountId}/
+      SchemaChangePolicy:
+        UpdateBehavior: UPDATE_IN_DATABASE
+        DeleteBehavior: DEPRECATE_IN_DATABASE
+      Configuration: |
+        {
+          "Version": 1.0,
+          "CrawlerOutput": {
+            "Partitions": {"AddOrUpdateBehavior": "InheritFromTable"},
+            "Tables": {"AddOrUpdateBehavior": "MergeNewColumns"}
+          },
+          "Grouping": {
+            "TableGroupingPolicy": "CombineCompatibleSchemas"
+          },
+          "CreatePartitionIndex": true
+        }
+      RecrawlPolicy:
+        RecrawlBehavior: CRAWL_EVERYTHING
+  CrawlerCwQsSpice:
+    Type: AWS::Glue::Crawler
+    Properties:
+      Name: crawler-cw-qs-spice
+      Role: !Sub arn:aws:iam::${AWS::AccountId}:role/QuickSightAdminConsole2025
+      DatabaseName: admin-console-2025
+      Targets:
+        S3Targets:
+          - Path: !Sub s3://cw-qs-spice-${AWS::AccountId}/
+      SchemaChangePolicy:
+        UpdateBehavior: UPDATE_IN_DATABASE
+        DeleteBehavior: DEPRECATE_IN_DATABASE
+      Configuration: |
+        {
+          "Version": 1.0,
+          "CrawlerOutput": {
+            "Partitions": {"AddOrUpdateBehavior": "InheritFromTable"},
+            "Tables": {"AddOrUpdateBehavior": "MergeNewColumns"}
+          },
+          "Grouping": {
+            "TableGroupingPolicy": "CombineCompatibleSchemas"
+          },
+          "CreatePartitionIndex": true
+        }
+      RecrawlPolicy:
+        RecrawlBehavior: CRAWL_EVERYTHING
+  CrawlerCwQsQIndex:
+    Type: AWS::Glue::Crawler
+    Properties:
+      Name: crawler-cw-qs-qindex
+      Role: !Sub arn:aws:iam::${AWS::AccountId}:role/QuickSightAdminConsole2025
+      DatabaseName: admin-console-2025
+      Targets:
+        S3Targets:
+          - Path: !Sub s3://cw-qs-qindex-${AWS::AccountId}/
+      SchemaChangePolicy:
+        UpdateBehavior: UPDATE_IN_DATABASE
+        DeleteBehavior: DEPRECATE_IN_DATABASE
+      Configuration: |
+        {
+          "Version": 1.0,
+          "CrawlerOutput": {
+            "Partitions": {"AddOrUpdateBehavior": "InheritFromTable"},
+            "Tables": {"AddOrUpdateBehavior": "MergeNewColumns"}
+          },
+          "Grouping": {
+            "TableGroupingPolicy": "CombineCompatibleSchemas"
+          },
+          "CreatePartitionIndex": true
+        }
+      RecrawlPolicy:
+        RecrawlBehavior: CRAWL_EVERYTHING
+  CrawlerCwQsQAction:
+    Type: AWS::Glue::Crawler
+    Properties:
+      Name: crawler-cw-qs-qaction
+      Role: !Sub arn:aws:iam::${AWS::AccountId}:role/QuickSightAdminConsole2025
+      DatabaseName: admin-console-2025
+      Targets:
+        S3Targets:
+          - Path: !Sub s3://cw-qs-qaction-${AWS::AccountId}/
       SchemaChangePolicy:
         UpdateBehavior: UPDATE_IN_DATABASE
         DeleteBehavior: DEPRECATE_IN_DATABASE
@@ -1148,6 +1413,81 @@ Resources:
           - DatabaseName: admin-console-2025
             Tables:
               - !Sub cw_qs_ds_${AWS::AccountId}
+      SchemaChangePolicy:
+        UpdateBehavior: UPDATE_IN_DATABASE
+        DeleteBehavior: LOG
+      Schedule:
+        ScheduleExpression: cron(0 * * * ? *)
+      Configuration: |
+        {
+          "Version": 1.0,
+          "CrawlerOutput": {
+            "Partitions": {"AddOrUpdateBehavior": "InheritFromTable"},
+            "Tables": {"AddOrUpdateBehavior": "MergeNewColumns"}
+          }
+        }
+  CrawlerCwQsSpiceAddPart:
+    Type: AWS::Glue::Crawler
+    DependsOn: CwQsSpiceTable
+    Properties:
+      Name: crawler-cw-qs-spice-add-part
+      Role: !Sub arn:aws:iam::${AWS::AccountId}:role/QuickSightAdminConsole2025
+      DatabaseName: admin-console-2025
+      Targets:
+        CatalogTargets:
+          - DatabaseName: admin-console-2025
+            Tables:
+              - !Sub cw_qs_spice_${AWS::AccountId}
+      SchemaChangePolicy:
+        UpdateBehavior: UPDATE_IN_DATABASE
+        DeleteBehavior: LOG
+      Schedule:
+        ScheduleExpression: cron(0 * * * ? *)
+      Configuration: |
+        {
+          "Version": 1.0,
+          "CrawlerOutput": {
+            "Partitions": {"AddOrUpdateBehavior": "InheritFromTable"},
+            "Tables": {"AddOrUpdateBehavior": "MergeNewColumns"}
+          }
+        }
+  CrawlerCwQsQIndexAddPart:
+    Type: AWS::Glue::Crawler
+    DependsOn: CwQsQIndexTable
+    Properties:
+      Name: crawler-cw-qs-qindex-add-part
+      Role: !Sub arn:aws:iam::${AWS::AccountId}:role/QuickSightAdminConsole2025
+      DatabaseName: admin-console-2025
+      Targets:
+        CatalogTargets:
+          - DatabaseName: admin-console-2025
+            Tables:
+              - !Sub cw_qs_qindex_${AWS::AccountId}
+      SchemaChangePolicy:
+        UpdateBehavior: UPDATE_IN_DATABASE
+        DeleteBehavior: LOG
+      Schedule:
+        ScheduleExpression: cron(0 * * * ? *)
+      Configuration: |
+        {
+          "Version": 1.0,
+          "CrawlerOutput": {
+            "Partitions": {"AddOrUpdateBehavior": "InheritFromTable"},
+            "Tables": {"AddOrUpdateBehavior": "MergeNewColumns"}
+          }
+        }
+  CrawlerCwQsQActionAddPart:
+    Type: AWS::Glue::Crawler
+    DependsOn: CwQsQActionTable
+    Properties:
+      Name: crawler-cw-qs-qaction-add-part
+      Role: !Sub arn:aws:iam::${AWS::AccountId}:role/QuickSightAdminConsole2025
+      DatabaseName: admin-console-2025
+      Targets:
+        CatalogTargets:
+          - DatabaseName: admin-console-2025
+            Tables:
+              - !Sub cw_qs_qaction_${AWS::AccountId}
       SchemaChangePolicy:
         UpdateBehavior: UPDATE_IN_DATABASE
         DeleteBehavior: LOG
