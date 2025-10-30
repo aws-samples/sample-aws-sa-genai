@@ -31,12 +31,18 @@ CloudFormation template for AWS Glue database, tables, crawlers, and Athena view
 - **datasource_property**: Dataset to datasource dependency mapping
 - **cw_qs_ds_[AccountId]**: CloudWatch QuickSight dataset metrics
 - **cw_qs_dash_visual_[AccountId]**: CloudWatch dashboard/visual metrics
+- **cw_qs_spice_[AccountId]**: CloudWatch SPICE capacity metrics
+- **cw_qs_qindex_[AccountId]**: CloudWatch Q Index metrics
+- **cw_qs_qaction_[AccountId]**: CloudWatch Q Action metrics
 
 ### Crawlers
 - **cloudtrail_logs_crawler**: Initial CloudTrail schema discovery
 - **cloudtrail_logs_partition_crawler**: CloudTrail partition management
 - **cw_qs_ds_crawler**: CloudWatch dataset metrics crawler
 - **cw_qs_dash_visual_crawler**: CloudWatch dashboard/visual metrics crawler
+- **cw_qs_spice_crawler**: CloudWatch SPICE capacity metrics crawler
+- **cw_qs_qindex_crawler**: CloudWatch Q Index metrics crawler
+- **cw_qs_qaction_crawler**: CloudWatch Q Action metrics crawler
 
 ### Athena Views (Named Queries)
 - **quicksight_crud_events_view**: QuickSight CRUD operations from CloudTrail
@@ -44,6 +50,7 @@ CloudFormation template for AWS Glue database, tables, crawlers, and Athena view
 - **qs_usage_cur_vw**: QuickSight usage and cost analysis from CUR data
 - **cw_qs_ds_pivot_view**: Pivoted CloudWatch dataset metrics
 - **cw_qs_dash_visual_pivot_view**: Pivoted CloudWatch dashboard/visual metrics
+- **cw_qs_spice_pivot_view**: Pivoted CloudWatch SPICE capacity metrics
 
 ## Parameters
 - **CloudtrailLocation**: S3 location of CloudTrail logs
