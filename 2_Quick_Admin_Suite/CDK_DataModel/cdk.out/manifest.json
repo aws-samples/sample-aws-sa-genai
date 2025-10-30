@@ -1,0 +1,184 @@
+{
+  "version": "21.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "QuickAdminSuiteDataModelStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "QuickAdminSuiteDataModelStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "QuickAdminSuiteDataModelStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "QuickAdminSuiteDataModelStack.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/75fa6ea3e703a51338431fc664e05d575935c762703173a34ff96b13b1419238.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "QuickAdminSuiteDataModelStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "QuickAdminSuiteDataModelStack.assets"
+      ],
+      "metadata": {
+        "/QuickAdminSuiteDataModelStack/CloudtrailLocation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CloudtrailLocation"
+          }
+        ],
+        "/QuickAdminSuiteDataModelStack/StartDateParameter": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StartDateParameter"
+          }
+        ],
+        "/QuickAdminSuiteDataModelStack/CURSourceTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CURSourceTable"
+          }
+        ],
+        "/QuickAdminSuiteDataModelStack/adminconsoledb2025": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "adminconsoledb2025"
+          }
+        ],
+        "/QuickAdminSuiteDataModelStack/groupmembership": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "groupmembership"
+          }
+        ],
+        "/QuickAdminSuiteDataModelStack/objectaccess": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "objectaccess"
+          }
+        ],
+        "/QuickAdminSuiteDataModelStack/datasetsproperties": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "datasetsproperties"
+          }
+        ],
+        "/QuickAdminSuiteDataModelStack/DatasourcePropertyTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DatasourcePropertyTable"
+          }
+        ],
+        "/QuickAdminSuiteDataModelStack/CwQsDsTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CwQsDsTable"
+          }
+        ],
+        "/QuickAdminSuiteDataModelStack/CwQsDashVisualTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CwQsDashVisualTable"
+          }
+        ],
+        "/QuickAdminSuiteDataModelStack/CwQsSpiceTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CwQsSpiceTable"
+          }
+        ],
+        "/QuickAdminSuiteDataModelStack/CrawlerCwQsDs": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CrawlerCwQsDs"
+          }
+        ],
+        "/QuickAdminSuiteDataModelStack/CrawlerCwQsSpice": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CrawlerCwQsSpice"
+          }
+        ],
+        "/QuickAdminSuiteDataModelStack/CrawlerCwQsDashVisual": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CrawlerCwQsDashVisual"
+          }
+        ],
+        "/QuickAdminSuiteDataModelStack/CrawlerCwQsDsAddPart": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CrawlerCwQsDsAddPart"
+          }
+        ],
+        "/QuickAdminSuiteDataModelStack/QuickSightCrudEventsView": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QuickSightCrudEventsView"
+          }
+        ],
+        "/QuickAdminSuiteDataModelStack/QuickSightQueryDbEventsView": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QuickSightQueryDbEventsView"
+          }
+        ],
+        "/QuickAdminSuiteDataModelStack/QsUsageCurView": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QsUsageCurView"
+          }
+        ],
+        "/QuickAdminSuiteDataModelStack/CwQsDsPivotView": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CwQsDsPivotView"
+          }
+        ],
+        "/QuickAdminSuiteDataModelStack/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/QuickAdminSuiteDataModelStack/CDKMetadata/Condition": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadataAvailable"
+          }
+        ],
+        "/QuickAdminSuiteDataModelStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/QuickAdminSuiteDataModelStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "QuickAdminSuiteDataModelStack"
+    }
+  }
+}

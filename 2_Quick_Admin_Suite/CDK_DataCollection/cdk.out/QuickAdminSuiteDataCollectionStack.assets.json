@@ -1,0 +1,19 @@
+{
+  "version": "21.0.0",
+  "files": {
+    "9c85a20ddf3901c5c620cdc57b0816270c9bf902ee5d049353ceef72a4ae79e4": {
+      "source": {
+        "path": "QuickAdminSuiteDataCollectionStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "9c85a20ddf3901c5c620cdc57b0816270c9bf902ee5d049353ceef72a4ae79e4.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

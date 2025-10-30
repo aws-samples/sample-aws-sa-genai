@@ -1,0 +1,1325 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.4.2"
+        }
+      },
+      "QuickAdminSuiteDataCollectionStack": {
+        "id": "QuickAdminSuiteDataCollectionStack",
+        "path": "QuickAdminSuiteDataCollectionStack",
+        "children": {
+          "QuickSightAdminConsole2025": {
+            "id": "QuickSightAdminConsole2025",
+            "path": "QuickAdminSuiteDataCollectionStack/QuickSightAdminConsole2025",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "QuickAdminSuiteDataCollectionStack/QuickSightAdminConsole2025/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": [
+                              "cloudformation.amazonaws.com",
+                              "firehose.amazonaws.com",
+                              "glue.amazonaws.com"
+                            ]
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "policies": [
+                      {
+                        "policyName": "QuickSight-AdminConsole-2025",
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": [
+                                "cloudwatch:*",
+                                "glue:*",
+                                "iam:*",
+                                "logs:*",
+                                "quicksight:*",
+                                "s3:*",
+                                "sts:AssumeRole"
+                              ],
+                              "Effect": "Allow",
+                              "Resource": "*"
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    ],
+                    "roleName": "QuickSightAdminConsole2025"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                  "version": "2.44.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_iam.Role",
+              "version": "2.44.0"
+            }
+          },
+          "adminconsolenew": {
+            "id": "adminconsolenew",
+            "path": "QuickAdminSuiteDataCollectionStack/adminconsolenew",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "QuickAdminSuiteDataCollectionStack/adminconsolenew/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                  "aws:cdk:cloudformation:props": {
+                    "bucketName": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "admin-console-new-",
+                          {
+                            "Ref": "AWS::AccountId"
+                          }
+                        ]
+                      ]
+                    },
+                    "publicAccessBlockConfiguration": {
+                      "blockPublicAcls": true,
+                      "blockPublicPolicy": true,
+                      "ignorePublicAcls": true,
+                      "restrictPublicBuckets": true
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
+                  "version": "2.44.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_s3.Bucket",
+              "version": "2.44.0"
+            }
+          },
+          "S3BucketMetricstreamscwqsdashvisual": {
+            "id": "S3BucketMetricstreamscwqsdashvisual",
+            "path": "QuickAdminSuiteDataCollectionStack/S3BucketMetricstreamscwqsdashvisual",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "QuickAdminSuiteDataCollectionStack/S3BucketMetricstreamscwqsdashvisual/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                  "aws:cdk:cloudformation:props": {
+                    "bucketEncryption": {
+                      "serverSideEncryptionConfiguration": [
+                        {
+                          "serverSideEncryptionByDefault": {
+                            "sseAlgorithm": "AES256"
+                          }
+                        }
+                      ]
+                    },
+                    "bucketName": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "cw-qs-dash-visual-",
+                          {
+                            "Ref": "AWS::AccountId"
+                          }
+                        ]
+                      ]
+                    },
+                    "publicAccessBlockConfiguration": {
+                      "blockPublicAcls": true,
+                      "blockPublicPolicy": true,
+                      "ignorePublicAcls": true,
+                      "restrictPublicBuckets": true
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
+                  "version": "2.44.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_s3.Bucket",
+              "version": "2.44.0"
+            }
+          },
+          "S3BucketMetricstreamscwqsds": {
+            "id": "S3BucketMetricstreamscwqsds",
+            "path": "QuickAdminSuiteDataCollectionStack/S3BucketMetricstreamscwqsds",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "QuickAdminSuiteDataCollectionStack/S3BucketMetricstreamscwqsds/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                  "aws:cdk:cloudformation:props": {
+                    "bucketEncryption": {
+                      "serverSideEncryptionConfiguration": [
+                        {
+                          "serverSideEncryptionByDefault": {
+                            "sseAlgorithm": "AES256"
+                          }
+                        }
+                      ]
+                    },
+                    "bucketName": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "cw-qs-ds-",
+                          {
+                            "Ref": "AWS::AccountId"
+                          }
+                        ]
+                      ]
+                    },
+                    "publicAccessBlockConfiguration": {
+                      "blockPublicAcls": true,
+                      "blockPublicPolicy": true,
+                      "ignorePublicAcls": true,
+                      "restrictPublicBuckets": true
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
+                  "version": "2.44.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_s3.Bucket",
+              "version": "2.44.0"
+            }
+          },
+          "S3BucketMetricstreamscwqsspice": {
+            "id": "S3BucketMetricstreamscwqsspice",
+            "path": "QuickAdminSuiteDataCollectionStack/S3BucketMetricstreamscwqsspice",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "QuickAdminSuiteDataCollectionStack/S3BucketMetricstreamscwqsspice/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                  "aws:cdk:cloudformation:props": {
+                    "bucketEncryption": {
+                      "serverSideEncryptionConfiguration": [
+                        {
+                          "serverSideEncryptionByDefault": {
+                            "sseAlgorithm": "AES256"
+                          }
+                        }
+                      ]
+                    },
+                    "bucketName": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "cw-qs-spice-",
+                          {
+                            "Ref": "AWS::AccountId"
+                          }
+                        ]
+                      ]
+                    },
+                    "publicAccessBlockConfiguration": {
+                      "blockPublicAcls": true,
+                      "blockPublicPolicy": true,
+                      "ignorePublicAcls": true,
+                      "restrictPublicBuckets": true
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
+                  "version": "2.44.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_s3.Bucket",
+              "version": "2.44.0"
+            }
+          },
+          "S3BucketMetricstreamscwqsqindex": {
+            "id": "S3BucketMetricstreamscwqsqindex",
+            "path": "QuickAdminSuiteDataCollectionStack/S3BucketMetricstreamscwqsqindex",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "QuickAdminSuiteDataCollectionStack/S3BucketMetricstreamscwqsqindex/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                  "aws:cdk:cloudformation:props": {
+                    "bucketEncryption": {
+                      "serverSideEncryptionConfiguration": [
+                        {
+                          "serverSideEncryptionByDefault": {
+                            "sseAlgorithm": "AES256"
+                          }
+                        }
+                      ]
+                    },
+                    "bucketName": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "cw-qs-qindex-",
+                          {
+                            "Ref": "AWS::AccountId"
+                          }
+                        ]
+                      ]
+                    },
+                    "publicAccessBlockConfiguration": {
+                      "blockPublicAcls": true,
+                      "blockPublicPolicy": true,
+                      "ignorePublicAcls": true,
+                      "restrictPublicBuckets": true
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
+                  "version": "2.44.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_s3.Bucket",
+              "version": "2.44.0"
+            }
+          },
+          "S3BucketMetricstreamscwqsqaction": {
+            "id": "S3BucketMetricstreamscwqsqaction",
+            "path": "QuickAdminSuiteDataCollectionStack/S3BucketMetricstreamscwqsqaction",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "QuickAdminSuiteDataCollectionStack/S3BucketMetricstreamscwqsqaction/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                  "aws:cdk:cloudformation:props": {
+                    "bucketEncryption": {
+                      "serverSideEncryptionConfiguration": [
+                        {
+                          "serverSideEncryptionByDefault": {
+                            "sseAlgorithm": "AES256"
+                          }
+                        }
+                      ]
+                    },
+                    "bucketName": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "cw-qs-qaction-",
+                          {
+                            "Ref": "AWS::AccountId"
+                          }
+                        ]
+                      ]
+                    },
+                    "publicAccessBlockConfiguration": {
+                      "blockPublicAcls": true,
+                      "blockPublicPolicy": true,
+                      "ignorePublicAcls": true,
+                      "restrictPublicBuckets": true
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
+                  "version": "2.44.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_s3.Bucket",
+              "version": "2.44.0"
+            }
+          },
+          "etljobadminsuiteassetsaccess": {
+            "id": "etljobadminsuiteassetsaccess",
+            "path": "QuickAdminSuiteDataCollectionStack/etljobadminsuiteassetsaccess",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::Glue::Job",
+              "aws:cdk:cloudformation:props": {
+                "command": {
+                  "name": "pythonshell",
+                  "pythonVersion": "3.9",
+                  "scriptLocation": "s3://admin-console-cfn-dataprepare-code/glue/scripts/2025/adminconsoleuserdataaccessinfo.py"
+                },
+                "role": {
+                  "Fn::GetAtt": [
+                    "QuickSightAdminConsole202542C54927",
+                    "Arn"
+                  ]
+                },
+                "defaultArguments": {
+                  "--AWS_REGION": {
+                    "Ref": "AWS::Region"
+                  }
+                },
+                "executionProperty": {
+                  "maxConcurrentRuns": 1
+                },
+                "glueVersion": "3.0",
+                "maxCapacity": 1,
+                "maxRetries": 0,
+                "name": "etl_job_admin_suite_assets_access",
+                "timeout": 120
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_glue.CfnJob",
+              "version": "2.44.0"
+            }
+          },
+          "etljobadminsuiteassetsmetadata": {
+            "id": "etljobadminsuiteassetsmetadata",
+            "path": "QuickAdminSuiteDataCollectionStack/etljobadminsuiteassetsmetadata",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::Glue::Job",
+              "aws:cdk:cloudformation:props": {
+                "command": {
+                  "name": "pythonshell",
+                  "pythonVersion": "3.9",
+                  "scriptLocation": "s3://admin-console-cfn-dataprepare-code/glue/scripts/2025/adminconsoledatasetdashboardinfo.py"
+                },
+                "role": {
+                  "Fn::GetAtt": [
+                    "QuickSightAdminConsole202542C54927",
+                    "Arn"
+                  ]
+                },
+                "defaultArguments": {
+                  "--AWS_REGION": {
+                    "Ref": "AWS::Region"
+                  }
+                },
+                "executionProperty": {
+                  "maxConcurrentRuns": 1
+                },
+                "glueVersion": "3.0",
+                "maxCapacity": 1,
+                "maxRetries": 0,
+                "name": "etl_job_admin_suite_assets_metadata",
+                "timeout": 120
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_glue.CfnJob",
+              "version": "2.44.0"
+            }
+          },
+          "etljobadminsuitefolderassets": {
+            "id": "etljobadminsuitefolderassets",
+            "path": "QuickAdminSuiteDataCollectionStack/etljobadminsuitefolderassets",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::Glue::Job",
+              "aws:cdk:cloudformation:props": {
+                "command": {
+                  "name": "pythonshell",
+                  "pythonVersion": "3.9",
+                  "scriptLocation": "s3://admin-console-cfn-dataprepare-code/glue/scripts/2025/adminconsolefolderinfo.py"
+                },
+                "role": {
+                  "Fn::GetAtt": [
+                    "QuickSightAdminConsole202542C54927",
+                    "Arn"
+                  ]
+                },
+                "defaultArguments": {
+                  "--AWS_REGION": {
+                    "Ref": "AWS::Region"
+                  }
+                },
+                "executionProperty": {
+                  "maxConcurrentRuns": 1
+                },
+                "glueVersion": "3.0",
+                "maxCapacity": 1,
+                "maxRetries": 0,
+                "name": "etl_job_admin_suite_folder_assets",
+                "timeout": 120
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_glue.CfnJob",
+              "version": "2.44.0"
+            }
+          },
+          "etljobadminsuiteqaccess": {
+            "id": "etljobadminsuiteqaccess",
+            "path": "QuickAdminSuiteDataCollectionStack/etljobadminsuiteqaccess",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::Glue::Job",
+              "aws:cdk:cloudformation:props": {
+                "command": {
+                  "name": "glueetl",
+                  "pythonVersion": "3",
+                  "scriptLocation": "s3://admin-console-cfn-dataprepare-code/glue/scripts/2025/adminconsoleqobjectaccessinfo.py"
+                },
+                "role": {
+                  "Fn::GetAtt": [
+                    "QuickSightAdminConsole202542C54927",
+                    "Arn"
+                  ]
+                },
+                "defaultArguments": {
+                  "--region": {
+                    "Ref": "AWS::Region"
+                  },
+                  "--aws_account_id": {
+                    "Ref": "AWS::AccountId"
+                  },
+                  "--output_s3_path": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "s3://admin-console-new-",
+                        {
+                          "Ref": "AWS::AccountId"
+                        },
+                        "/monitoring/quicksight/q_object_access"
+                      ]
+                    ]
+                  }
+                },
+                "executionProperty": {
+                  "maxConcurrentRuns": 1
+                },
+                "glueVersion": "5.0",
+                "maxRetries": 0,
+                "name": "etl_job_admin_suite_q_access",
+                "numberOfWorkers": 2,
+                "timeout": 120,
+                "workerType": "G.1X"
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_glue.CfnJob",
+              "version": "2.44.0"
+            }
+          },
+          "etljobadminsuiteqmetadata": {
+            "id": "etljobadminsuiteqmetadata",
+            "path": "QuickAdminSuiteDataCollectionStack/etljobadminsuiteqmetadata",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::Glue::Job",
+              "aws:cdk:cloudformation:props": {
+                "command": {
+                  "name": "glueetl",
+                  "pythonVersion": "3",
+                  "scriptLocation": "s3://admin-console-cfn-dataprepare-code/glue/scripts/2025/adminconsoleqtopicinfo.py"
+                },
+                "role": {
+                  "Fn::GetAtt": [
+                    "QuickSightAdminConsole202542C54927",
+                    "Arn"
+                  ]
+                },
+                "defaultArguments": {
+                  "--AWS_REGION": {
+                    "Ref": "AWS::Region"
+                  },
+                  "--AWS_ACCOUNT_ID": {
+                    "Ref": "AWS::AccountId"
+                  },
+                  "--S3_OUTPUT_PATH": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "s3://admin-console-new-",
+                        {
+                          "Ref": "AWS::AccountId"
+                        },
+                        "/monitoring/quicksight/q_topics_info"
+                      ]
+                    ]
+                  }
+                },
+                "executionProperty": {
+                  "maxConcurrentRuns": 1
+                },
+                "glueVersion": "5.0",
+                "maxRetries": 0,
+                "name": "etl_job_admin_suite_q_metadata",
+                "numberOfWorkers": 2,
+                "timeout": 120,
+                "workerType": "G.1X"
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_glue.CfnJob",
+              "version": "2.44.0"
+            }
+          },
+          "etljobadminsuitedsproperties": {
+            "id": "etljobadminsuitedsproperties",
+            "path": "QuickAdminSuiteDataCollectionStack/etljobadminsuitedsproperties",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::Glue::Job",
+              "aws:cdk:cloudformation:props": {
+                "command": {
+                  "name": "pythonshell",
+                  "pythonVersion": "3.9",
+                  "scriptLocation": "s3://admin-console-cfn-dataprepare-code/glue/scripts/2025/admin_suite_ds_property.py"
+                },
+                "role": {
+                  "Fn::GetAtt": [
+                    "QuickSightAdminConsole202542C54927",
+                    "Arn"
+                  ]
+                },
+                "defaultArguments": {
+                  "--AWS_REGION": {
+                    "Ref": "AWS::Region"
+                  }
+                },
+                "executionProperty": {
+                  "maxConcurrentRuns": 1
+                },
+                "glueVersion": "3.0",
+                "maxCapacity": 1,
+                "maxRetries": 0,
+                "name": "etl_job_admin_suite_ds_properties",
+                "timeout": 120
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_glue.CfnJob",
+              "version": "2.44.0"
+            }
+          },
+          "etljobadminsuitedatasourceproperties": {
+            "id": "etljobadminsuitedatasourceproperties",
+            "path": "QuickAdminSuiteDataCollectionStack/etljobadminsuitedatasourceproperties",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::Glue::Job",
+              "aws:cdk:cloudformation:props": {
+                "command": {
+                  "name": "pythonshell",
+                  "pythonVersion": "3.9",
+                  "scriptLocation": "s3://admin-console-cfn-dataprepare-code/glue/scripts/2025/admin_suite_datasource_property.py"
+                },
+                "role": {
+                  "Fn::GetAtt": [
+                    "QuickSightAdminConsole202542C54927",
+                    "Arn"
+                  ]
+                },
+                "defaultArguments": {
+                  "--AWS_REGION": {
+                    "Ref": "AWS::Region"
+                  },
+                  "--QUICKSIGHT_IDENTITY_REGION": {
+                    "Ref": "AWS::Region"
+                  }
+                },
+                "executionProperty": {
+                  "maxConcurrentRuns": 1
+                },
+                "glueVersion": "3.0",
+                "maxCapacity": 1,
+                "maxRetries": 0,
+                "name": "etl_job_admin_suite_datasource_properties",
+                "timeout": 120
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_glue.CfnJob",
+              "version": "2.44.0"
+            }
+          },
+          "etljobadminsuiteassetsaccessschedule": {
+            "id": "etljobadminsuiteassetsaccessschedule",
+            "path": "QuickAdminSuiteDataCollectionStack/etljobadminsuiteassetsaccessschedule",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::Glue::Trigger",
+              "aws:cdk:cloudformation:props": {
+                "actions": [
+                  {
+                    "jobName": "etl_job_admin_suite_assets_access"
+                  }
+                ],
+                "type": "SCHEDULED",
+                "description": "Glue Trigger to run etl_job_admin_suite_assets_access glue job every 3 hours",
+                "name": "etl-job-admin-suite-assets-access-every-3-hour",
+                "schedule": "cron(0 */3 * * ? *)",
+                "startOnCreation": true
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_glue.CfnTrigger",
+              "version": "2.44.0"
+            }
+          },
+          "etljobadminsuiteassetsmetadataschedule": {
+            "id": "etljobadminsuiteassetsmetadataschedule",
+            "path": "QuickAdminSuiteDataCollectionStack/etljobadminsuiteassetsmetadataschedule",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::Glue::Trigger",
+              "aws:cdk:cloudformation:props": {
+                "actions": [
+                  {
+                    "jobName": "etl_job_admin_suite_assets_metadata"
+                  }
+                ],
+                "type": "SCHEDULED",
+                "description": "Glue Trigger to run etl_job_admin_suite_assets_metadata glue job every 3 hours",
+                "name": "etl-job-admin-suite-assets-metadata-every-3-hour",
+                "schedule": "cron(0 */3 * * ? *)",
+                "startOnCreation": true
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_glue.CfnTrigger",
+              "version": "2.44.0"
+            }
+          },
+          "etljobadminsuitefolderassetsschedule": {
+            "id": "etljobadminsuitefolderassetsschedule",
+            "path": "QuickAdminSuiteDataCollectionStack/etljobadminsuitefolderassetsschedule",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::Glue::Trigger",
+              "aws:cdk:cloudformation:props": {
+                "actions": [
+                  {
+                    "jobName": "etl_job_admin_suite_folder_assets"
+                  }
+                ],
+                "type": "SCHEDULED",
+                "description": "Glue Trigger to run etl_job_admin_suite_folder_assets job every 3 hours",
+                "name": "etl-job-admin-suite-folder-assets-every-3-hour",
+                "schedule": "cron(0 */3 * * ? *)",
+                "startOnCreation": true
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_glue.CfnTrigger",
+              "version": "2.44.0"
+            }
+          },
+          "etljobadminsuiteqmetadataschedule": {
+            "id": "etljobadminsuiteqmetadataschedule",
+            "path": "QuickAdminSuiteDataCollectionStack/etljobadminsuiteqmetadataschedule",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::Glue::Trigger",
+              "aws:cdk:cloudformation:props": {
+                "actions": [
+                  {
+                    "jobName": "etl_job_admin_suite_q_metadata"
+                  }
+                ],
+                "type": "SCHEDULED",
+                "description": "Glue Trigger to run etl_job_admin_suite_q_metadata glue job every 3 hours",
+                "name": "etl-job-admin-suite-q-metadata-every-3-hour",
+                "schedule": "cron(0 */3 * * ? *)",
+                "startOnCreation": true
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_glue.CfnTrigger",
+              "version": "2.44.0"
+            }
+          },
+          "etljobadminsuiteqaccessschedule": {
+            "id": "etljobadminsuiteqaccessschedule",
+            "path": "QuickAdminSuiteDataCollectionStack/etljobadminsuiteqaccessschedule",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::Glue::Trigger",
+              "aws:cdk:cloudformation:props": {
+                "actions": [
+                  {
+                    "jobName": "etl_job_admin_suite_q_access"
+                  }
+                ],
+                "type": "SCHEDULED",
+                "description": "Glue Trigger to run etl_job_admin_suite_q_access glue job every 3 hours",
+                "name": "etl-job-admin-suite-q-access-every-3-hour",
+                "schedule": "cron(0 */3 * * ? *)",
+                "startOnCreation": true
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_glue.CfnTrigger",
+              "version": "2.44.0"
+            }
+          },
+          "etljobadminsuitedspropertieschedule": {
+            "id": "etljobadminsuitedspropertieschedule",
+            "path": "QuickAdminSuiteDataCollectionStack/etljobadminsuitedspropertieschedule",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::Glue::Trigger",
+              "aws:cdk:cloudformation:props": {
+                "actions": [
+                  {
+                    "jobName": "etl_job_admin_suite_ds_properties"
+                  }
+                ],
+                "type": "SCHEDULED",
+                "description": "Glue Trigger to run etl_job_admin_suite_ds_properties glue job every 3 hours",
+                "name": "etl-job-admin-suite-ds-properties-every-3-hour",
+                "schedule": "cron(0 */3 * * ? *)",
+                "startOnCreation": true
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_glue.CfnTrigger",
+              "version": "2.44.0"
+            }
+          },
+          "etljobadminsuitedatasourcepropertieschedule": {
+            "id": "etljobadminsuitedatasourcepropertieschedule",
+            "path": "QuickAdminSuiteDataCollectionStack/etljobadminsuitedatasourcepropertieschedule",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::Glue::Trigger",
+              "aws:cdk:cloudformation:props": {
+                "actions": [
+                  {
+                    "jobName": "etl_job_admin_suite_datasource_properties"
+                  }
+                ],
+                "type": "SCHEDULED",
+                "description": "Glue Trigger to run etl_job_admin_suite_datasource_properties glue job every 3 hours",
+                "name": "etl-job-admin-suite-datasource-properties-every-3-hour",
+                "schedule": "cron(0 */3 * * ? *)",
+                "startOnCreation": true
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_glue.CfnTrigger",
+              "version": "2.44.0"
+            }
+          },
+          "QuickSuiteCWStreamRole": {
+            "id": "QuickSuiteCWStreamRole",
+            "path": "QuickAdminSuiteDataCollectionStack/QuickSuiteCWStreamRole",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "QuickAdminSuiteDataCollectionStack/QuickSuiteCWStreamRole/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "streams.metrics.cloudwatch.amazonaws.com"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "policies": [
+                      {
+                        "policyName": "FirehoseDeliveryPolicy",
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": [
+                                "firehose:PutRecord",
+                                "firehose:PutRecordBatch"
+                              ],
+                              "Effect": "Allow",
+                              "Resource": "*"
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    ],
+                    "roleName": "QuickSuiteCWStreamRole"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                  "version": "2.44.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_iam.Role",
+              "version": "2.44.0"
+            }
+          },
+          "FirehoseDeliveryStreamcwqsds": {
+            "id": "FirehoseDeliveryStreamcwqsds",
+            "path": "QuickAdminSuiteDataCollectionStack/FirehoseDeliveryStreamcwqsds",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::KinesisFirehose::DeliveryStream",
+              "aws:cdk:cloudformation:props": {
+                "deliveryStreamName": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "MetricStreams-cw-qs-ds-",
+                      {
+                        "Ref": "AWS::AccountId"
+                      }
+                    ]
+                  ]
+                },
+                "deliveryStreamType": "DirectPut",
+                "s3DestinationConfiguration": {
+                  "bucketArn": {
+                    "Fn::GetAtt": [
+                      "S3BucketMetricstreamscwqsds363018BE",
+                      "Arn"
+                    ]
+                  },
+                  "roleArn": {
+                    "Fn::GetAtt": [
+                      "QuickSightAdminConsole202542C54927",
+                      "Arn"
+                    ]
+                  }
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_kinesisfirehose.CfnDeliveryStream",
+              "version": "2.44.0"
+            }
+          },
+          "FirehoseDeliveryStreamcwqsdashvisual": {
+            "id": "FirehoseDeliveryStreamcwqsdashvisual",
+            "path": "QuickAdminSuiteDataCollectionStack/FirehoseDeliveryStreamcwqsdashvisual",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::KinesisFirehose::DeliveryStream",
+              "aws:cdk:cloudformation:props": {
+                "deliveryStreamName": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "MetricStreams-cw-qs-dash-visual-",
+                      {
+                        "Ref": "AWS::AccountId"
+                      }
+                    ]
+                  ]
+                },
+                "deliveryStreamType": "DirectPut",
+                "s3DestinationConfiguration": {
+                  "bucketArn": {
+                    "Fn::GetAtt": [
+                      "S3BucketMetricstreamscwqsdashvisualC85C55CB",
+                      "Arn"
+                    ]
+                  },
+                  "roleArn": {
+                    "Fn::GetAtt": [
+                      "QuickSightAdminConsole202542C54927",
+                      "Arn"
+                    ]
+                  }
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_kinesisfirehose.CfnDeliveryStream",
+              "version": "2.44.0"
+            }
+          },
+          "FirehoseDeliveryStreamcwqsspice": {
+            "id": "FirehoseDeliveryStreamcwqsspice",
+            "path": "QuickAdminSuiteDataCollectionStack/FirehoseDeliveryStreamcwqsspice",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::KinesisFirehose::DeliveryStream",
+              "aws:cdk:cloudformation:props": {
+                "deliveryStreamName": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "MetricStreams-cw-qs-spice-",
+                      {
+                        "Ref": "AWS::AccountId"
+                      }
+                    ]
+                  ]
+                },
+                "deliveryStreamType": "DirectPut",
+                "s3DestinationConfiguration": {
+                  "bucketArn": {
+                    "Fn::GetAtt": [
+                      "S3BucketMetricstreamscwqsspice305DC093",
+                      "Arn"
+                    ]
+                  },
+                  "roleArn": {
+                    "Fn::GetAtt": [
+                      "QuickSightAdminConsole202542C54927",
+                      "Arn"
+                    ]
+                  }
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_kinesisfirehose.CfnDeliveryStream",
+              "version": "2.44.0"
+            }
+          },
+          "FirehoseDeliveryStreamcwqsqindex": {
+            "id": "FirehoseDeliveryStreamcwqsqindex",
+            "path": "QuickAdminSuiteDataCollectionStack/FirehoseDeliveryStreamcwqsqindex",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::KinesisFirehose::DeliveryStream",
+              "aws:cdk:cloudformation:props": {
+                "deliveryStreamName": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "MetricStreams-cw-qs-qindex-",
+                      {
+                        "Ref": "AWS::AccountId"
+                      }
+                    ]
+                  ]
+                },
+                "deliveryStreamType": "DirectPut",
+                "s3DestinationConfiguration": {
+                  "bucketArn": {
+                    "Fn::GetAtt": [
+                      "S3BucketMetricstreamscwqsqindex149859EB",
+                      "Arn"
+                    ]
+                  },
+                  "roleArn": {
+                    "Fn::GetAtt": [
+                      "QuickSightAdminConsole202542C54927",
+                      "Arn"
+                    ]
+                  }
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_kinesisfirehose.CfnDeliveryStream",
+              "version": "2.44.0"
+            }
+          },
+          "FirehoseDeliveryStreamcwqsqaction": {
+            "id": "FirehoseDeliveryStreamcwqsqaction",
+            "path": "QuickAdminSuiteDataCollectionStack/FirehoseDeliveryStreamcwqsqaction",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::KinesisFirehose::DeliveryStream",
+              "aws:cdk:cloudformation:props": {
+                "deliveryStreamName": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "MetricStreams-cw-qs-qaction-",
+                      {
+                        "Ref": "AWS::AccountId"
+                      }
+                    ]
+                  ]
+                },
+                "deliveryStreamType": "DirectPut",
+                "s3DestinationConfiguration": {
+                  "bucketArn": {
+                    "Fn::GetAtt": [
+                      "S3BucketMetricstreamscwqsqaction0599BD94",
+                      "Arn"
+                    ]
+                  },
+                  "roleArn": {
+                    "Fn::GetAtt": [
+                      "QuickSightAdminConsole202542C54927",
+                      "Arn"
+                    ]
+                  }
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_kinesisfirehose.CfnDeliveryStream",
+              "version": "2.44.0"
+            }
+          },
+          "CloudWatchMetricStreamDS": {
+            "id": "CloudWatchMetricStreamDS",
+            "path": "QuickAdminSuiteDataCollectionStack/CloudWatchMetricStreamDS",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::CloudWatch::MetricStream",
+              "aws:cdk:cloudformation:props": {
+                "firehoseArn": {
+                  "Fn::GetAtt": [
+                    "FirehoseDeliveryStreamcwqsds",
+                    "Arn"
+                  ]
+                },
+                "outputFormat": "json",
+                "roleArn": {
+                  "Fn::GetAtt": [
+                    "QuickSuiteCWStreamRoleBDD2CF10",
+                    "Arn"
+                  ]
+                },
+                "includeFilters": [
+                  {
+                    "namespace": "AWS/QuickSight"
+                  }
+                ],
+                "name": "cw-qs-ds"
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_cloudwatch.CfnMetricStream",
+              "version": "2.44.0"
+            }
+          },
+          "CloudWatchMetricStreamDashVisual": {
+            "id": "CloudWatchMetricStreamDashVisual",
+            "path": "QuickAdminSuiteDataCollectionStack/CloudWatchMetricStreamDashVisual",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::CloudWatch::MetricStream",
+              "aws:cdk:cloudformation:props": {
+                "firehoseArn": {
+                  "Fn::GetAtt": [
+                    "FirehoseDeliveryStreamcwqsdashvisual",
+                    "Arn"
+                  ]
+                },
+                "outputFormat": "json",
+                "roleArn": {
+                  "Fn::GetAtt": [
+                    "QuickSuiteCWStreamRoleBDD2CF10",
+                    "Arn"
+                  ]
+                },
+                "includeFilters": [
+                  {
+                    "namespace": "AWS/QuickSight"
+                  }
+                ],
+                "name": "cw-qs-dash-visual"
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_cloudwatch.CfnMetricStream",
+              "version": "2.44.0"
+            }
+          },
+          "CloudWatchMetricStreamSPICE": {
+            "id": "CloudWatchMetricStreamSPICE",
+            "path": "QuickAdminSuiteDataCollectionStack/CloudWatchMetricStreamSPICE",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::CloudWatch::MetricStream",
+              "aws:cdk:cloudformation:props": {
+                "firehoseArn": {
+                  "Fn::GetAtt": [
+                    "FirehoseDeliveryStreamcwqsspice",
+                    "Arn"
+                  ]
+                },
+                "outputFormat": "json",
+                "roleArn": {
+                  "Fn::GetAtt": [
+                    "QuickSuiteCWStreamRoleBDD2CF10",
+                    "Arn"
+                  ]
+                },
+                "includeFilters": [
+                  {
+                    "namespace": "AWS/QuickSight"
+                  }
+                ],
+                "name": "cw-qs-spice"
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_cloudwatch.CfnMetricStream",
+              "version": "2.44.0"
+            }
+          },
+          "CloudWatchMetricStreamQIndex": {
+            "id": "CloudWatchMetricStreamQIndex",
+            "path": "QuickAdminSuiteDataCollectionStack/CloudWatchMetricStreamQIndex",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::CloudWatch::MetricStream",
+              "aws:cdk:cloudformation:props": {
+                "firehoseArn": {
+                  "Fn::GetAtt": [
+                    "FirehoseDeliveryStreamcwqsqindex",
+                    "Arn"
+                  ]
+                },
+                "outputFormat": "json",
+                "roleArn": {
+                  "Fn::GetAtt": [
+                    "QuickSuiteCWStreamRoleBDD2CF10",
+                    "Arn"
+                  ]
+                },
+                "includeFilters": [
+                  {
+                    "namespace": "AWS/QuickSight"
+                  }
+                ],
+                "name": "cw-qs-qindex"
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_cloudwatch.CfnMetricStream",
+              "version": "2.44.0"
+            }
+          },
+          "CloudWatchMetricStreamQAction": {
+            "id": "CloudWatchMetricStreamQAction",
+            "path": "QuickAdminSuiteDataCollectionStack/CloudWatchMetricStreamQAction",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::CloudWatch::MetricStream",
+              "aws:cdk:cloudformation:props": {
+                "firehoseArn": {
+                  "Fn::GetAtt": [
+                    "FirehoseDeliveryStreamcwqsqaction",
+                    "Arn"
+                  ]
+                },
+                "outputFormat": "json",
+                "roleArn": {
+                  "Fn::GetAtt": [
+                    "QuickSuiteCWStreamRoleBDD2CF10",
+                    "Arn"
+                  ]
+                },
+                "includeFilters": [
+                  {
+                    "namespace": "AWS/QuickSight"
+                  }
+                ],
+                "name": "cw-qs-qaction"
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_cloudwatch.CfnMetricStream",
+              "version": "2.44.0"
+            }
+          },
+          "groupmembership": {
+            "id": "groupmembership",
+            "path": "QuickAdminSuiteDataCollectionStack/groupmembership",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.44.0"
+            }
+          },
+          "objectaccess": {
+            "id": "objectaccess",
+            "path": "QuickAdminSuiteDataCollectionStack/objectaccess",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.44.0"
+            }
+          },
+          "folderassets": {
+            "id": "folderassets",
+            "path": "QuickAdminSuiteDataCollectionStack/folderassets",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.44.0"
+            }
+          },
+          "folderlk": {
+            "id": "folderlk",
+            "path": "QuickAdminSuiteDataCollectionStack/folderlk",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.44.0"
+            }
+          },
+          "folderpath": {
+            "id": "folderpath",
+            "path": "QuickAdminSuiteDataCollectionStack/folderpath",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.44.0"
+            }
+          },
+          "datasetsproperties": {
+            "id": "datasetsproperties",
+            "path": "QuickAdminSuiteDataCollectionStack/datasetsproperties",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.44.0"
+            }
+          },
+          "datasourceproperty": {
+            "id": "datasourceproperty",
+            "path": "QuickAdminSuiteDataCollectionStack/datasourceproperty",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.44.0"
+            }
+          },
+          "CDKMetadata": {
+            "id": "CDKMetadata",
+            "path": "QuickAdminSuiteDataCollectionStack/CDKMetadata",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "QuickAdminSuiteDataCollectionStack/CDKMetadata/Default",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "2.44.0"
+                }
+              },
+              "Condition": {
+                "id": "Condition",
+                "path": "QuickAdminSuiteDataCollectionStack/CDKMetadata/Condition",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnCondition",
+                  "version": "2.44.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "2.44.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "2.44.0"
+    }
+  }
+}

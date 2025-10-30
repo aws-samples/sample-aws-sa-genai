@@ -1,0 +1,304 @@
+{
+  "version": "21.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "QuickAdminSuiteDataCollectionStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "QuickAdminSuiteDataCollectionStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "QuickAdminSuiteDataCollectionStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "QuickAdminSuiteDataCollectionStack.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9c85a20ddf3901c5c620cdc57b0816270c9bf902ee5d049353ceef72a4ae79e4.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "QuickAdminSuiteDataCollectionStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "QuickAdminSuiteDataCollectionStack.assets"
+      ],
+      "metadata": {
+        "/QuickAdminSuiteDataCollectionStack/QuickSightAdminConsole2025/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QuickSightAdminConsole202542C54927"
+          }
+        ],
+        "/QuickAdminSuiteDataCollectionStack/adminconsolenew/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "adminconsolenew499EAA1B"
+          }
+        ],
+        "/QuickAdminSuiteDataCollectionStack/S3BucketMetricstreamscwqsdashvisual/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "S3BucketMetricstreamscwqsdashvisualC85C55CB"
+          }
+        ],
+        "/QuickAdminSuiteDataCollectionStack/S3BucketMetricstreamscwqsds/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "S3BucketMetricstreamscwqsds363018BE"
+          }
+        ],
+        "/QuickAdminSuiteDataCollectionStack/S3BucketMetricstreamscwqsspice/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "S3BucketMetricstreamscwqsspice305DC093"
+          }
+        ],
+        "/QuickAdminSuiteDataCollectionStack/S3BucketMetricstreamscwqsqindex/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "S3BucketMetricstreamscwqsqindex149859EB"
+          }
+        ],
+        "/QuickAdminSuiteDataCollectionStack/S3BucketMetricstreamscwqsqaction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "S3BucketMetricstreamscwqsqaction0599BD94"
+          }
+        ],
+        "/QuickAdminSuiteDataCollectionStack/etljobadminsuiteassetsaccess": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "etljobadminsuiteassetsaccess"
+          }
+        ],
+        "/QuickAdminSuiteDataCollectionStack/etljobadminsuiteassetsmetadata": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "etljobadminsuiteassetsmetadata"
+          }
+        ],
+        "/QuickAdminSuiteDataCollectionStack/etljobadminsuitefolderassets": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "etljobadminsuitefolderassets"
+          }
+        ],
+        "/QuickAdminSuiteDataCollectionStack/etljobadminsuiteqaccess": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "etljobadminsuiteqaccess"
+          }
+        ],
+        "/QuickAdminSuiteDataCollectionStack/etljobadminsuiteqmetadata": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "etljobadminsuiteqmetadata"
+          }
+        ],
+        "/QuickAdminSuiteDataCollectionStack/etljobadminsuitedsproperties": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "etljobadminsuitedsproperties"
+          }
+        ],
+        "/QuickAdminSuiteDataCollectionStack/etljobadminsuitedatasourceproperties": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "etljobadminsuitedatasourceproperties"
+          }
+        ],
+        "/QuickAdminSuiteDataCollectionStack/etljobadminsuiteassetsaccessschedule": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "etljobadminsuiteassetsaccessschedule"
+          }
+        ],
+        "/QuickAdminSuiteDataCollectionStack/etljobadminsuiteassetsmetadataschedule": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "etljobadminsuiteassetsmetadataschedule"
+          }
+        ],
+        "/QuickAdminSuiteDataCollectionStack/etljobadminsuitefolderassetsschedule": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "etljobadminsuitefolderassetsschedule"
+          }
+        ],
+        "/QuickAdminSuiteDataCollectionStack/etljobadminsuiteqmetadataschedule": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "etljobadminsuiteqmetadataschedule"
+          }
+        ],
+        "/QuickAdminSuiteDataCollectionStack/etljobadminsuiteqaccessschedule": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "etljobadminsuiteqaccessschedule"
+          }
+        ],
+        "/QuickAdminSuiteDataCollectionStack/etljobadminsuitedspropertieschedule": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "etljobadminsuitedspropertieschedule"
+          }
+        ],
+        "/QuickAdminSuiteDataCollectionStack/etljobadminsuitedatasourcepropertieschedule": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "etljobadminsuitedatasourcepropertieschedule"
+          }
+        ],
+        "/QuickAdminSuiteDataCollectionStack/QuickSuiteCWStreamRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QuickSuiteCWStreamRoleBDD2CF10"
+          }
+        ],
+        "/QuickAdminSuiteDataCollectionStack/FirehoseDeliveryStreamcwqsds": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FirehoseDeliveryStreamcwqsds"
+          }
+        ],
+        "/QuickAdminSuiteDataCollectionStack/FirehoseDeliveryStreamcwqsdashvisual": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FirehoseDeliveryStreamcwqsdashvisual"
+          }
+        ],
+        "/QuickAdminSuiteDataCollectionStack/FirehoseDeliveryStreamcwqsspice": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FirehoseDeliveryStreamcwqsspice"
+          }
+        ],
+        "/QuickAdminSuiteDataCollectionStack/FirehoseDeliveryStreamcwqsqindex": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FirehoseDeliveryStreamcwqsqindex"
+          }
+        ],
+        "/QuickAdminSuiteDataCollectionStack/FirehoseDeliveryStreamcwqsqaction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FirehoseDeliveryStreamcwqsqaction"
+          }
+        ],
+        "/QuickAdminSuiteDataCollectionStack/CloudWatchMetricStreamDS": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CloudWatchMetricStreamDS"
+          }
+        ],
+        "/QuickAdminSuiteDataCollectionStack/CloudWatchMetricStreamDashVisual": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CloudWatchMetricStreamDashVisual"
+          }
+        ],
+        "/QuickAdminSuiteDataCollectionStack/CloudWatchMetricStreamSPICE": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CloudWatchMetricStreamSPICE"
+          }
+        ],
+        "/QuickAdminSuiteDataCollectionStack/CloudWatchMetricStreamQIndex": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CloudWatchMetricStreamQIndex"
+          }
+        ],
+        "/QuickAdminSuiteDataCollectionStack/CloudWatchMetricStreamQAction": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CloudWatchMetricStreamQAction"
+          }
+        ],
+        "/QuickAdminSuiteDataCollectionStack/groupmembership": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "groupmembership"
+          }
+        ],
+        "/QuickAdminSuiteDataCollectionStack/objectaccess": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "objectaccess"
+          }
+        ],
+        "/QuickAdminSuiteDataCollectionStack/folderassets": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "folderassets"
+          }
+        ],
+        "/QuickAdminSuiteDataCollectionStack/folderlk": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "folderlk"
+          }
+        ],
+        "/QuickAdminSuiteDataCollectionStack/folderpath": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "folderpath"
+          }
+        ],
+        "/QuickAdminSuiteDataCollectionStack/datasetsproperties": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "datasetsproperties"
+          }
+        ],
+        "/QuickAdminSuiteDataCollectionStack/datasourceproperty": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "datasourceproperty"
+          }
+        ],
+        "/QuickAdminSuiteDataCollectionStack/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/QuickAdminSuiteDataCollectionStack/CDKMetadata/Condition": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadataAvailable"
+          }
+        ],
+        "/QuickAdminSuiteDataCollectionStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/QuickAdminSuiteDataCollectionStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "QuickAdminSuiteDataCollectionStack"
+    }
+  }
+}

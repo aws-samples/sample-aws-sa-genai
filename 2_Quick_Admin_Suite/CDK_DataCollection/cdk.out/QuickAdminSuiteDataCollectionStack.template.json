@@ -1,0 +1,1354 @@
+{
+ "Resources": {
+  "QuickSightAdminConsole202542C54927": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": [
+         "cloudformation.amazonaws.com",
+         "firehose.amazonaws.com",
+         "glue.amazonaws.com"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Policies": [
+     {
+      "PolicyDocument": {
+       "Statement": [
+        {
+         "Action": [
+          "cloudwatch:*",
+          "glue:*",
+          "iam:*",
+          "logs:*",
+          "quicksight:*",
+          "s3:*",
+          "sts:AssumeRole"
+         ],
+         "Effect": "Allow",
+         "Resource": "*"
+        }
+       ],
+       "Version": "2012-10-17"
+      },
+      "PolicyName": "QuickSight-AdminConsole-2025"
+     }
+    ],
+    "RoleName": "QuickSightAdminConsole2025"
+   },
+   "Metadata": {
+    "aws:cdk:path": "QuickAdminSuiteDataCollectionStack/QuickSightAdminConsole2025/Resource"
+   }
+  },
+  "adminconsolenew499EAA1B": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "BucketName": {
+     "Fn::Join": [
+      "",
+      [
+       "admin-console-new-",
+       {
+        "Ref": "AWS::AccountId"
+       }
+      ]
+     ]
+    },
+    "PublicAccessBlockConfiguration": {
+     "BlockPublicAcls": true,
+     "BlockPublicPolicy": true,
+     "IgnorePublicAcls": true,
+     "RestrictPublicBuckets": true
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "QuickAdminSuiteDataCollectionStack/adminconsolenew/Resource"
+   }
+  },
+  "S3BucketMetricstreamscwqsdashvisualC85C55CB": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "BucketEncryption": {
+     "ServerSideEncryptionConfiguration": [
+      {
+       "ServerSideEncryptionByDefault": {
+        "SSEAlgorithm": "AES256"
+       }
+      }
+     ]
+    },
+    "BucketName": {
+     "Fn::Join": [
+      "",
+      [
+       "cw-qs-dash-visual-",
+       {
+        "Ref": "AWS::AccountId"
+       }
+      ]
+     ]
+    },
+    "PublicAccessBlockConfiguration": {
+     "BlockPublicAcls": true,
+     "BlockPublicPolicy": true,
+     "IgnorePublicAcls": true,
+     "RestrictPublicBuckets": true
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "QuickAdminSuiteDataCollectionStack/S3BucketMetricstreamscwqsdashvisual/Resource"
+   }
+  },
+  "S3BucketMetricstreamscwqsds363018BE": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "BucketEncryption": {
+     "ServerSideEncryptionConfiguration": [
+      {
+       "ServerSideEncryptionByDefault": {
+        "SSEAlgorithm": "AES256"
+       }
+      }
+     ]
+    },
+    "BucketName": {
+     "Fn::Join": [
+      "",
+      [
+       "cw-qs-ds-",
+       {
+        "Ref": "AWS::AccountId"
+       }
+      ]
+     ]
+    },
+    "PublicAccessBlockConfiguration": {
+     "BlockPublicAcls": true,
+     "BlockPublicPolicy": true,
+     "IgnorePublicAcls": true,
+     "RestrictPublicBuckets": true
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "QuickAdminSuiteDataCollectionStack/S3BucketMetricstreamscwqsds/Resource"
+   }
+  },
+  "S3BucketMetricstreamscwqsspice305DC093": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "BucketEncryption": {
+     "ServerSideEncryptionConfiguration": [
+      {
+       "ServerSideEncryptionByDefault": {
+        "SSEAlgorithm": "AES256"
+       }
+      }
+     ]
+    },
+    "BucketName": {
+     "Fn::Join": [
+      "",
+      [
+       "cw-qs-spice-",
+       {
+        "Ref": "AWS::AccountId"
+       }
+      ]
+     ]
+    },
+    "PublicAccessBlockConfiguration": {
+     "BlockPublicAcls": true,
+     "BlockPublicPolicy": true,
+     "IgnorePublicAcls": true,
+     "RestrictPublicBuckets": true
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "QuickAdminSuiteDataCollectionStack/S3BucketMetricstreamscwqsspice/Resource"
+   }
+  },
+  "S3BucketMetricstreamscwqsqindex149859EB": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "BucketEncryption": {
+     "ServerSideEncryptionConfiguration": [
+      {
+       "ServerSideEncryptionByDefault": {
+        "SSEAlgorithm": "AES256"
+       }
+      }
+     ]
+    },
+    "BucketName": {
+     "Fn::Join": [
+      "",
+      [
+       "cw-qs-qindex-",
+       {
+        "Ref": "AWS::AccountId"
+       }
+      ]
+     ]
+    },
+    "PublicAccessBlockConfiguration": {
+     "BlockPublicAcls": true,
+     "BlockPublicPolicy": true,
+     "IgnorePublicAcls": true,
+     "RestrictPublicBuckets": true
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "QuickAdminSuiteDataCollectionStack/S3BucketMetricstreamscwqsqindex/Resource"
+   }
+  },
+  "S3BucketMetricstreamscwqsqaction0599BD94": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "BucketEncryption": {
+     "ServerSideEncryptionConfiguration": [
+      {
+       "ServerSideEncryptionByDefault": {
+        "SSEAlgorithm": "AES256"
+       }
+      }
+     ]
+    },
+    "BucketName": {
+     "Fn::Join": [
+      "",
+      [
+       "cw-qs-qaction-",
+       {
+        "Ref": "AWS::AccountId"
+       }
+      ]
+     ]
+    },
+    "PublicAccessBlockConfiguration": {
+     "BlockPublicAcls": true,
+     "BlockPublicPolicy": true,
+     "IgnorePublicAcls": true,
+     "RestrictPublicBuckets": true
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "QuickAdminSuiteDataCollectionStack/S3BucketMetricstreamscwqsqaction/Resource"
+   }
+  },
+  "etljobadminsuiteassetsaccess": {
+   "Type": "AWS::Glue::Job",
+   "Properties": {
+    "Command": {
+     "Name": "pythonshell",
+     "PythonVersion": "3.9",
+     "ScriptLocation": "s3://admin-console-cfn-dataprepare-code/glue/scripts/2025/adminconsoleuserdataaccessinfo.py"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "QuickSightAdminConsole202542C54927",
+      "Arn"
+     ]
+    },
+    "DefaultArguments": {
+     "--AWS_REGION": {
+      "Ref": "AWS::Region"
+     }
+    },
+    "ExecutionProperty": {
+     "MaxConcurrentRuns": 1
+    },
+    "GlueVersion": "3.0",
+    "MaxCapacity": 1,
+    "MaxRetries": 0,
+    "Name": "etl_job_admin_suite_assets_access",
+    "Timeout": 120
+   },
+   "DependsOn": [
+    "adminconsolenew499EAA1B"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "QuickAdminSuiteDataCollectionStack/etljobadminsuiteassetsaccess"
+   }
+  },
+  "etljobadminsuiteassetsmetadata": {
+   "Type": "AWS::Glue::Job",
+   "Properties": {
+    "Command": {
+     "Name": "pythonshell",
+     "PythonVersion": "3.9",
+     "ScriptLocation": "s3://admin-console-cfn-dataprepare-code/glue/scripts/2025/adminconsoledatasetdashboardinfo.py"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "QuickSightAdminConsole202542C54927",
+      "Arn"
+     ]
+    },
+    "DefaultArguments": {
+     "--AWS_REGION": {
+      "Ref": "AWS::Region"
+     }
+    },
+    "ExecutionProperty": {
+     "MaxConcurrentRuns": 1
+    },
+    "GlueVersion": "3.0",
+    "MaxCapacity": 1,
+    "MaxRetries": 0,
+    "Name": "etl_job_admin_suite_assets_metadata",
+    "Timeout": 120
+   },
+   "DependsOn": [
+    "adminconsolenew499EAA1B"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "QuickAdminSuiteDataCollectionStack/etljobadminsuiteassetsmetadata"
+   }
+  },
+  "etljobadminsuitefolderassets": {
+   "Type": "AWS::Glue::Job",
+   "Properties": {
+    "Command": {
+     "Name": "pythonshell",
+     "PythonVersion": "3.9",
+     "ScriptLocation": "s3://admin-console-cfn-dataprepare-code/glue/scripts/2025/adminconsolefolderinfo.py"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "QuickSightAdminConsole202542C54927",
+      "Arn"
+     ]
+    },
+    "DefaultArguments": {
+     "--AWS_REGION": {
+      "Ref": "AWS::Region"
+     }
+    },
+    "ExecutionProperty": {
+     "MaxConcurrentRuns": 1
+    },
+    "GlueVersion": "3.0",
+    "MaxCapacity": 1,
+    "MaxRetries": 0,
+    "Name": "etl_job_admin_suite_folder_assets",
+    "Timeout": 120
+   },
+   "DependsOn": [
+    "adminconsolenew499EAA1B"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "QuickAdminSuiteDataCollectionStack/etljobadminsuitefolderassets"
+   }
+  },
+  "etljobadminsuiteqaccess": {
+   "Type": "AWS::Glue::Job",
+   "Properties": {
+    "Command": {
+     "Name": "glueetl",
+     "PythonVersion": "3",
+     "ScriptLocation": "s3://admin-console-cfn-dataprepare-code/glue/scripts/2025/adminconsoleqobjectaccessinfo.py"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "QuickSightAdminConsole202542C54927",
+      "Arn"
+     ]
+    },
+    "DefaultArguments": {
+     "--region": {
+      "Ref": "AWS::Region"
+     },
+     "--aws_account_id": {
+      "Ref": "AWS::AccountId"
+     },
+     "--output_s3_path": {
+      "Fn::Join": [
+       "",
+       [
+        "s3://admin-console-new-",
+        {
+         "Ref": "AWS::AccountId"
+        },
+        "/monitoring/quicksight/q_object_access"
+       ]
+      ]
+     }
+    },
+    "ExecutionProperty": {
+     "MaxConcurrentRuns": 1
+    },
+    "GlueVersion": "5.0",
+    "MaxRetries": 0,
+    "Name": "etl_job_admin_suite_q_access",
+    "NumberOfWorkers": 2,
+    "Timeout": 120,
+    "WorkerType": "G.1X"
+   },
+   "DependsOn": [
+    "adminconsolenew499EAA1B"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "QuickAdminSuiteDataCollectionStack/etljobadminsuiteqaccess"
+   }
+  },
+  "etljobadminsuiteqmetadata": {
+   "Type": "AWS::Glue::Job",
+   "Properties": {
+    "Command": {
+     "Name": "glueetl",
+     "PythonVersion": "3",
+     "ScriptLocation": "s3://admin-console-cfn-dataprepare-code/glue/scripts/2025/adminconsoleqtopicinfo.py"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "QuickSightAdminConsole202542C54927",
+      "Arn"
+     ]
+    },
+    "DefaultArguments": {
+     "--AWS_REGION": {
+      "Ref": "AWS::Region"
+     },
+     "--AWS_ACCOUNT_ID": {
+      "Ref": "AWS::AccountId"
+     },
+     "--S3_OUTPUT_PATH": {
+      "Fn::Join": [
+       "",
+       [
+        "s3://admin-console-new-",
+        {
+         "Ref": "AWS::AccountId"
+        },
+        "/monitoring/quicksight/q_topics_info"
+       ]
+      ]
+     }
+    },
+    "ExecutionProperty": {
+     "MaxConcurrentRuns": 1
+    },
+    "GlueVersion": "5.0",
+    "MaxRetries": 0,
+    "Name": "etl_job_admin_suite_q_metadata",
+    "NumberOfWorkers": 2,
+    "Timeout": 120,
+    "WorkerType": "G.1X"
+   },
+   "DependsOn": [
+    "adminconsolenew499EAA1B"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "QuickAdminSuiteDataCollectionStack/etljobadminsuiteqmetadata"
+   }
+  },
+  "etljobadminsuitedsproperties": {
+   "Type": "AWS::Glue::Job",
+   "Properties": {
+    "Command": {
+     "Name": "pythonshell",
+     "PythonVersion": "3.9",
+     "ScriptLocation": "s3://admin-console-cfn-dataprepare-code/glue/scripts/2025/admin_suite_ds_property.py"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "QuickSightAdminConsole202542C54927",
+      "Arn"
+     ]
+    },
+    "DefaultArguments": {
+     "--AWS_REGION": {
+      "Ref": "AWS::Region"
+     }
+    },
+    "ExecutionProperty": {
+     "MaxConcurrentRuns": 1
+    },
+    "GlueVersion": "3.0",
+    "MaxCapacity": 1,
+    "MaxRetries": 0,
+    "Name": "etl_job_admin_suite_ds_properties",
+    "Timeout": 120
+   },
+   "DependsOn": [
+    "adminconsolenew499EAA1B"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "QuickAdminSuiteDataCollectionStack/etljobadminsuitedsproperties"
+   }
+  },
+  "etljobadminsuitedatasourceproperties": {
+   "Type": "AWS::Glue::Job",
+   "Properties": {
+    "Command": {
+     "Name": "pythonshell",
+     "PythonVersion": "3.9",
+     "ScriptLocation": "s3://admin-console-cfn-dataprepare-code/glue/scripts/2025/admin_suite_datasource_property.py"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "QuickSightAdminConsole202542C54927",
+      "Arn"
+     ]
+    },
+    "DefaultArguments": {
+     "--AWS_REGION": {
+      "Ref": "AWS::Region"
+     },
+     "--QUICKSIGHT_IDENTITY_REGION": {
+      "Ref": "AWS::Region"
+     }
+    },
+    "ExecutionProperty": {
+     "MaxConcurrentRuns": 1
+    },
+    "GlueVersion": "3.0",
+    "MaxCapacity": 1,
+    "MaxRetries": 0,
+    "Name": "etl_job_admin_suite_datasource_properties",
+    "Timeout": 120
+   },
+   "DependsOn": [
+    "adminconsolenew499EAA1B"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "QuickAdminSuiteDataCollectionStack/etljobadminsuitedatasourceproperties"
+   }
+  },
+  "etljobadminsuiteassetsaccessschedule": {
+   "Type": "AWS::Glue::Trigger",
+   "Properties": {
+    "Actions": [
+     {
+      "JobName": "etl_job_admin_suite_assets_access"
+     }
+    ],
+    "Type": "SCHEDULED",
+    "Description": "Glue Trigger to run etl_job_admin_suite_assets_access glue job every 3 hours",
+    "Name": "etl-job-admin-suite-assets-access-every-3-hour",
+    "Schedule": "cron(0 */3 * * ? *)",
+    "StartOnCreation": true
+   },
+   "Metadata": {
+    "aws:cdk:path": "QuickAdminSuiteDataCollectionStack/etljobadminsuiteassetsaccessschedule"
+   }
+  },
+  "etljobadminsuiteassetsmetadataschedule": {
+   "Type": "AWS::Glue::Trigger",
+   "Properties": {
+    "Actions": [
+     {
+      "JobName": "etl_job_admin_suite_assets_metadata"
+     }
+    ],
+    "Type": "SCHEDULED",
+    "Description": "Glue Trigger to run etl_job_admin_suite_assets_metadata glue job every 3 hours",
+    "Name": "etl-job-admin-suite-assets-metadata-every-3-hour",
+    "Schedule": "cron(0 */3 * * ? *)",
+    "StartOnCreation": true
+   },
+   "Metadata": {
+    "aws:cdk:path": "QuickAdminSuiteDataCollectionStack/etljobadminsuiteassetsmetadataschedule"
+   }
+  },
+  "etljobadminsuitefolderassetsschedule": {
+   "Type": "AWS::Glue::Trigger",
+   "Properties": {
+    "Actions": [
+     {
+      "JobName": "etl_job_admin_suite_folder_assets"
+     }
+    ],
+    "Type": "SCHEDULED",
+    "Description": "Glue Trigger to run etl_job_admin_suite_folder_assets job every 3 hours",
+    "Name": "etl-job-admin-suite-folder-assets-every-3-hour",
+    "Schedule": "cron(0 */3 * * ? *)",
+    "StartOnCreation": true
+   },
+   "Metadata": {
+    "aws:cdk:path": "QuickAdminSuiteDataCollectionStack/etljobadminsuitefolderassetsschedule"
+   }
+  },
+  "etljobadminsuiteqmetadataschedule": {
+   "Type": "AWS::Glue::Trigger",
+   "Properties": {
+    "Actions": [
+     {
+      "JobName": "etl_job_admin_suite_q_metadata"
+     }
+    ],
+    "Type": "SCHEDULED",
+    "Description": "Glue Trigger to run etl_job_admin_suite_q_metadata glue job every 3 hours",
+    "Name": "etl-job-admin-suite-q-metadata-every-3-hour",
+    "Schedule": "cron(0 */3 * * ? *)",
+    "StartOnCreation": true
+   },
+   "Metadata": {
+    "aws:cdk:path": "QuickAdminSuiteDataCollectionStack/etljobadminsuiteqmetadataschedule"
+   }
+  },
+  "etljobadminsuiteqaccessschedule": {
+   "Type": "AWS::Glue::Trigger",
+   "Properties": {
+    "Actions": [
+     {
+      "JobName": "etl_job_admin_suite_q_access"
+     }
+    ],
+    "Type": "SCHEDULED",
+    "Description": "Glue Trigger to run etl_job_admin_suite_q_access glue job every 3 hours",
+    "Name": "etl-job-admin-suite-q-access-every-3-hour",
+    "Schedule": "cron(0 */3 * * ? *)",
+    "StartOnCreation": true
+   },
+   "Metadata": {
+    "aws:cdk:path": "QuickAdminSuiteDataCollectionStack/etljobadminsuiteqaccessschedule"
+   }
+  },
+  "etljobadminsuitedspropertieschedule": {
+   "Type": "AWS::Glue::Trigger",
+   "Properties": {
+    "Actions": [
+     {
+      "JobName": "etl_job_admin_suite_ds_properties"
+     }
+    ],
+    "Type": "SCHEDULED",
+    "Description": "Glue Trigger to run etl_job_admin_suite_ds_properties glue job every 3 hours",
+    "Name": "etl-job-admin-suite-ds-properties-every-3-hour",
+    "Schedule": "cron(0 */3 * * ? *)",
+    "StartOnCreation": true
+   },
+   "Metadata": {
+    "aws:cdk:path": "QuickAdminSuiteDataCollectionStack/etljobadminsuitedspropertieschedule"
+   }
+  },
+  "etljobadminsuitedatasourcepropertieschedule": {
+   "Type": "AWS::Glue::Trigger",
+   "Properties": {
+    "Actions": [
+     {
+      "JobName": "etl_job_admin_suite_datasource_properties"
+     }
+    ],
+    "Type": "SCHEDULED",
+    "Description": "Glue Trigger to run etl_job_admin_suite_datasource_properties glue job every 3 hours",
+    "Name": "etl-job-admin-suite-datasource-properties-every-3-hour",
+    "Schedule": "cron(0 */3 * * ? *)",
+    "StartOnCreation": true
+   },
+   "Metadata": {
+    "aws:cdk:path": "QuickAdminSuiteDataCollectionStack/etljobadminsuitedatasourcepropertieschedule"
+   }
+  },
+  "QuickSuiteCWStreamRoleBDD2CF10": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "streams.metrics.cloudwatch.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Policies": [
+     {
+      "PolicyDocument": {
+       "Statement": [
+        {
+         "Action": [
+          "firehose:PutRecord",
+          "firehose:PutRecordBatch"
+         ],
+         "Effect": "Allow",
+         "Resource": "*"
+        }
+       ],
+       "Version": "2012-10-17"
+      },
+      "PolicyName": "FirehoseDeliveryPolicy"
+     }
+    ],
+    "RoleName": "QuickSuiteCWStreamRole"
+   },
+   "Metadata": {
+    "aws:cdk:path": "QuickAdminSuiteDataCollectionStack/QuickSuiteCWStreamRole/Resource"
+   }
+  },
+  "FirehoseDeliveryStreamcwqsds": {
+   "Type": "AWS::KinesisFirehose::DeliveryStream",
+   "Properties": {
+    "DeliveryStreamName": {
+     "Fn::Join": [
+      "",
+      [
+       "MetricStreams-cw-qs-ds-",
+       {
+        "Ref": "AWS::AccountId"
+       }
+      ]
+     ]
+    },
+    "DeliveryStreamType": "DirectPut",
+    "S3DestinationConfiguration": {
+     "BucketARN": {
+      "Fn::GetAtt": [
+       "S3BucketMetricstreamscwqsds363018BE",
+       "Arn"
+      ]
+     },
+     "RoleARN": {
+      "Fn::GetAtt": [
+       "QuickSightAdminConsole202542C54927",
+       "Arn"
+      ]
+     }
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "QuickAdminSuiteDataCollectionStack/FirehoseDeliveryStreamcwqsds"
+   }
+  },
+  "FirehoseDeliveryStreamcwqsdashvisual": {
+   "Type": "AWS::KinesisFirehose::DeliveryStream",
+   "Properties": {
+    "DeliveryStreamName": {
+     "Fn::Join": [
+      "",
+      [
+       "MetricStreams-cw-qs-dash-visual-",
+       {
+        "Ref": "AWS::AccountId"
+       }
+      ]
+     ]
+    },
+    "DeliveryStreamType": "DirectPut",
+    "S3DestinationConfiguration": {
+     "BucketARN": {
+      "Fn::GetAtt": [
+       "S3BucketMetricstreamscwqsdashvisualC85C55CB",
+       "Arn"
+      ]
+     },
+     "RoleARN": {
+      "Fn::GetAtt": [
+       "QuickSightAdminConsole202542C54927",
+       "Arn"
+      ]
+     }
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "QuickAdminSuiteDataCollectionStack/FirehoseDeliveryStreamcwqsdashvisual"
+   }
+  },
+  "FirehoseDeliveryStreamcwqsspice": {
+   "Type": "AWS::KinesisFirehose::DeliveryStream",
+   "Properties": {
+    "DeliveryStreamName": {
+     "Fn::Join": [
+      "",
+      [
+       "MetricStreams-cw-qs-spice-",
+       {
+        "Ref": "AWS::AccountId"
+       }
+      ]
+     ]
+    },
+    "DeliveryStreamType": "DirectPut",
+    "S3DestinationConfiguration": {
+     "BucketARN": {
+      "Fn::GetAtt": [
+       "S3BucketMetricstreamscwqsspice305DC093",
+       "Arn"
+      ]
+     },
+     "RoleARN": {
+      "Fn::GetAtt": [
+       "QuickSightAdminConsole202542C54927",
+       "Arn"
+      ]
+     }
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "QuickAdminSuiteDataCollectionStack/FirehoseDeliveryStreamcwqsspice"
+   }
+  },
+  "FirehoseDeliveryStreamcwqsqindex": {
+   "Type": "AWS::KinesisFirehose::DeliveryStream",
+   "Properties": {
+    "DeliveryStreamName": {
+     "Fn::Join": [
+      "",
+      [
+       "MetricStreams-cw-qs-qindex-",
+       {
+        "Ref": "AWS::AccountId"
+       }
+      ]
+     ]
+    },
+    "DeliveryStreamType": "DirectPut",
+    "S3DestinationConfiguration": {
+     "BucketARN": {
+      "Fn::GetAtt": [
+       "S3BucketMetricstreamscwqsqindex149859EB",
+       "Arn"
+      ]
+     },
+     "RoleARN": {
+      "Fn::GetAtt": [
+       "QuickSightAdminConsole202542C54927",
+       "Arn"
+      ]
+     }
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "QuickAdminSuiteDataCollectionStack/FirehoseDeliveryStreamcwqsqindex"
+   }
+  },
+  "FirehoseDeliveryStreamcwqsqaction": {
+   "Type": "AWS::KinesisFirehose::DeliveryStream",
+   "Properties": {
+    "DeliveryStreamName": {
+     "Fn::Join": [
+      "",
+      [
+       "MetricStreams-cw-qs-qaction-",
+       {
+        "Ref": "AWS::AccountId"
+       }
+      ]
+     ]
+    },
+    "DeliveryStreamType": "DirectPut",
+    "S3DestinationConfiguration": {
+     "BucketARN": {
+      "Fn::GetAtt": [
+       "S3BucketMetricstreamscwqsqaction0599BD94",
+       "Arn"
+      ]
+     },
+     "RoleARN": {
+      "Fn::GetAtt": [
+       "QuickSightAdminConsole202542C54927",
+       "Arn"
+      ]
+     }
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "QuickAdminSuiteDataCollectionStack/FirehoseDeliveryStreamcwqsqaction"
+   }
+  },
+  "CloudWatchMetricStreamDS": {
+   "Type": "AWS::CloudWatch::MetricStream",
+   "Properties": {
+    "FirehoseArn": {
+     "Fn::GetAtt": [
+      "FirehoseDeliveryStreamcwqsds",
+      "Arn"
+     ]
+    },
+    "OutputFormat": "json",
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "QuickSuiteCWStreamRoleBDD2CF10",
+      "Arn"
+     ]
+    },
+    "IncludeFilters": [
+     {
+      "Namespace": "AWS/QuickSight"
+     }
+    ],
+    "Name": "cw-qs-ds"
+   },
+   "Metadata": {
+    "aws:cdk:path": "QuickAdminSuiteDataCollectionStack/CloudWatchMetricStreamDS"
+   }
+  },
+  "CloudWatchMetricStreamDashVisual": {
+   "Type": "AWS::CloudWatch::MetricStream",
+   "Properties": {
+    "FirehoseArn": {
+     "Fn::GetAtt": [
+      "FirehoseDeliveryStreamcwqsdashvisual",
+      "Arn"
+     ]
+    },
+    "OutputFormat": "json",
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "QuickSuiteCWStreamRoleBDD2CF10",
+      "Arn"
+     ]
+    },
+    "IncludeFilters": [
+     {
+      "Namespace": "AWS/QuickSight"
+     }
+    ],
+    "Name": "cw-qs-dash-visual"
+   },
+   "Metadata": {
+    "aws:cdk:path": "QuickAdminSuiteDataCollectionStack/CloudWatchMetricStreamDashVisual"
+   }
+  },
+  "CloudWatchMetricStreamSPICE": {
+   "Type": "AWS::CloudWatch::MetricStream",
+   "Properties": {
+    "FirehoseArn": {
+     "Fn::GetAtt": [
+      "FirehoseDeliveryStreamcwqsspice",
+      "Arn"
+     ]
+    },
+    "OutputFormat": "json",
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "QuickSuiteCWStreamRoleBDD2CF10",
+      "Arn"
+     ]
+    },
+    "IncludeFilters": [
+     {
+      "Namespace": "AWS/QuickSight"
+     }
+    ],
+    "Name": "cw-qs-spice"
+   },
+   "Metadata": {
+    "aws:cdk:path": "QuickAdminSuiteDataCollectionStack/CloudWatchMetricStreamSPICE"
+   }
+  },
+  "CloudWatchMetricStreamQIndex": {
+   "Type": "AWS::CloudWatch::MetricStream",
+   "Properties": {
+    "FirehoseArn": {
+     "Fn::GetAtt": [
+      "FirehoseDeliveryStreamcwqsqindex",
+      "Arn"
+     ]
+    },
+    "OutputFormat": "json",
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "QuickSuiteCWStreamRoleBDD2CF10",
+      "Arn"
+     ]
+    },
+    "IncludeFilters": [
+     {
+      "Namespace": "AWS/QuickSight"
+     }
+    ],
+    "Name": "cw-qs-qindex"
+   },
+   "Metadata": {
+    "aws:cdk:path": "QuickAdminSuiteDataCollectionStack/CloudWatchMetricStreamQIndex"
+   }
+  },
+  "CloudWatchMetricStreamQAction": {
+   "Type": "AWS::CloudWatch::MetricStream",
+   "Properties": {
+    "FirehoseArn": {
+     "Fn::GetAtt": [
+      "FirehoseDeliveryStreamcwqsqaction",
+      "Arn"
+     ]
+    },
+    "OutputFormat": "json",
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "QuickSuiteCWStreamRoleBDD2CF10",
+      "Arn"
+     ]
+    },
+    "IncludeFilters": [
+     {
+      "Namespace": "AWS/QuickSight"
+     }
+    ],
+    "Name": "cw-qs-qaction"
+   },
+   "Metadata": {
+    "aws:cdk:path": "QuickAdminSuiteDataCollectionStack/CloudWatchMetricStreamQAction"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/yWOQQ6CMBBFz+K+jIKcQF2ZGA26N7WMMFJa004lpundpbL6k/eS+b+CuobNSk6+UO1QaHpAvLJUg5jRPZIcITZWo9g/Tc4k/BbiLqgBObPlSqLTASHO4Ggfmd8cdR26JAYy6Mk/yWFvPcLsDqjpg+57ZYdyFErb0E6SVZ/lCdmRWlTKn86B3+Hf1aC3wan/lr01LTFZk8Tly7016y2UFZTl6uWJChcM04jQLPkDAw+SQ+YAAAA="
+   },
+   "Metadata": {
+    "aws:cdk:path": "QuickAdminSuiteDataCollectionStack/CDKMetadata/Default"
+   },
+   "Condition": "CDKMetadataAvailable"
+  }
+ },
+ "Outputs": {
+  "groupmembership": {
+   "Description": "The s3 location of group_membership.csv for you to utilize in next Athena tables creation stack",
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "s3://admin-console-new-",
+      {
+       "Ref": "AWS::AccountId"
+      },
+      "/monitoring/quicksight/group_membership"
+     ]
+    ]
+   }
+  },
+  "objectaccess": {
+   "Description": "The s3 location of object_access.csv for you to utilize in next Athena tables creation stack",
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "s3://admin-console-new-",
+      {
+       "Ref": "AWS::AccountId"
+      },
+      "/monitoring/quicksight/object_access"
+     ]
+    ]
+   }
+  },
+  "folderassets": {
+   "Description": "The s3 location of folder_assets.csv for you to utilize in next Athena tables creation stack",
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "s3://admin-console-new-",
+      {
+       "Ref": "AWS::AccountId"
+      },
+      "/monitoring/quicksight/folder_assets/folder_assets.csv"
+     ]
+    ]
+   }
+  },
+  "folderlk": {
+   "Description": "The s3 location of folder_lk.csv for you to utilize in next Athena tables creation stack",
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "s3://admin-console-new-",
+      {
+       "Ref": "AWS::AccountId"
+      },
+      "/monitoring/quicksight/folder_lk/folder_lk.csv"
+     ]
+    ]
+   }
+  },
+  "folderpath": {
+   "Description": "The s3 location of folder_path.csv for you to utilize in next Athena tables creation stack",
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "s3://admin-console-new-",
+      {
+       "Ref": "AWS::AccountId"
+      },
+      "/monitoring/quicksight/folder_path/folder_path.csv"
+     ]
+    ]
+   }
+  },
+  "datasetsproperties": {
+   "Description": "The s3 location of datasets_properties.csv for you to utilize in next Athena tables creation stack",
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "s3://admin-console-new-",
+      {
+       "Ref": "AWS::AccountId"
+      },
+      "/monitoring/quicksight/datasets_properties/datasets_properties.csv"
+     ]
+    ]
+   }
+  },
+  "datasourceproperty": {
+   "Description": "The s3 location of datasource_property.csv for you to utilize in next Athena tables creation stack",
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "s3://admin-console-new-",
+      {
+       "Ref": "AWS::AccountId"
+      },
+      "/monitoring/quicksight/datasource_property/datasource_property.csv"
+     ]
+    ]
+   }
+  }
+ },
+ "Conditions": {
+  "CDKMetadataAvailable": {
+   "Fn::Or": [
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "af-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-northeast-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-northeast-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ca-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "cn-north-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "cn-northwest-1"
+       ]
+      }
+     ]
+    },
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-north-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-3"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "me-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "sa-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-east-2"
+       ]
+      }
+     ]
+    },
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-west-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-west-2"
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
