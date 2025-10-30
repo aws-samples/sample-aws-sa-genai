@@ -30,9 +30,9 @@ def default_botocore_config() -> botocore.config.Config:
 #start-Initial set up for the glue and qs client of boto3#
 sts_client = boto3.client("sts", config=default_botocore_config())
 account_id = sts_client.get_caller_identity()["Account"]
-aws_region = 'us-east-1'
 args = getResolvedOptions(sys.argv, ['AWS_REGION'])
 print('region', args['AWS_REGION'])
+aws_region = args['AWS_REGION']
 glue_aws_region = args['AWS_REGION']
 qs_client = boto3.client('quicksight', config=default_botocore_config())
 qs_local_client = boto3.client('quicksight', region_name=glue_aws_region, config=default_botocore_config())
@@ -334,15 +334,6 @@ def describe_dashboard_permissions(
         DashboardId=dashboardid
     )
     return res
-
-def describe_theme_permissions(account_id, aid, aws_region):
-    qs_client = boto3.client('quicksight', region_name=aws_region, config=default_botocore_config())
-    res = qs_client.describe_theme_permissions(
-        AwsAccountId=account_id,
-        ThemeId=aid
-    )
-    return res
-
 
 def describe_analysis_permissions(account_id, aid, aws_region):
     qs_client = boto3.client('quicksight', region_name=aws_region, config=default_botocore_config())

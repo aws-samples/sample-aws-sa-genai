@@ -2,11 +2,13 @@
 
 ## Data Collection
 ETL jobs that collect QuickSight metadata and store in S3 for analysis:
-- **admin_suite_qs_access_info**: Collects user and group access information
-- **admin_suite_dataset_dashboard_info**: Gathers dataset and dashboard metadata
+- **admin_suite_user_info_access_manage**: Collects user and group access information
+- **admin_suite_data_dictionary**: Gathers dataset and dashboard metadata
 - **admin_suite_folder_info**: Extracts folder structure and permissions
 - **admin_suite_q_topic_info**: Collects QuickSight Q topics information
 - **admin_suite_q_access_info**: Gathers Q object access permissions
+- **admin_suite_ds_property**: Collects dataset properties and metadata
+- **admin_suite_datasource_property**: Maps datasets to their underlying data sources for dependency tracking
 
 ## Data Model
 CloudFormation template for AWS Glue database, tables, crawlers, and Athena views supporting QuickSight administration and monitoring.
@@ -25,6 +27,8 @@ CloudFormation template for AWS Glue database, tables, crawlers, and Athena view
 - **cloudtrail_logs_pp**: Partitioned CloudTrail logs
 - **qtopicsinfo**: QuickSight Q topics metadata
 - **qobjectaccessinfo**: Q object access permissions
+- **datasets_properties**: Dataset properties and metadata
+- **datasource_property**: Dataset to datasource dependency mapping
 - **cw_qs_ds_[AccountId]**: CloudWatch QuickSight dataset metrics
 - **cw_qs_dash_visual_[AccountId]**: CloudWatch dashboard/visual metrics
 

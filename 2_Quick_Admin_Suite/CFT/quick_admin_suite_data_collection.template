@@ -134,6 +134,45 @@ Resources:
       NumberOfWorkers: 2
     DependsOn:
       - adminconsolenew
+  etljobadminsuitedsproperties:
+    Type: AWS::Glue::Job
+    Properties:
+      Command:
+        Name: pythonshell
+        PythonVersion: '3.9'
+        ScriptLocation: !Sub s3://admin-console-cfn-dataprepare-code/glue/scripts/2025/admin_suite_ds_property.py
+      DefaultArguments:
+        '--AWS_REGION': !Sub ${AWS::Region}
+      GlueVersion: '3.0'
+      ExecutionProperty:
+        MaxConcurrentRuns: 1
+      MaxCapacity: 1
+      MaxRetries: 0
+      Name: etl_job_admin_suite_ds_properties
+      Role: !GetAtt QuickSightAdminConsole2025.Arn
+      Timeout: 120
+    DependsOn:
+      - adminconsolenew
+  etljobadminsuitedatasourceproperties:
+    Type: AWS::Glue::Job
+    Properties:
+      Command:
+        Name: pythonshell
+        PythonVersion: '3.9'
+        ScriptLocation: !Sub s3://admin-console-cfn-dataprepare-code/glue/scripts/2025/admin_suite_datasource_property.py
+      DefaultArguments:
+        '--AWS_REGION': !Sub ${AWS::Region}
+        '--QUICKSIGHT_IDENTITY_REGION': !Sub ${AWS::Region}
+      GlueVersion: '3.0'
+      ExecutionProperty:
+        MaxConcurrentRuns: 1
+      MaxCapacity: 1
+      MaxRetries: 0
+      Name: etl_job_admin_suite_datasource_properties
+      Role: !GetAtt QuickSightAdminConsole2025.Arn
+      Timeout: 120
+    DependsOn:
+      - adminconsolenew
   etljobadminsuiteassetsaccessschedule:
     Type: AWS::Glue::Trigger
     Properties:
@@ -184,6 +223,26 @@ Resources:
       Actions:
         - JobName: etl_job_admin_suite_q_access
       Name: etl-job-admin-suite-q-access-every-3-hour
+      StartOnCreation: true
+  etljobadminsuitedspropertieschedule:
+    Type: AWS::Glue::Trigger
+    Properties:
+      Type: SCHEDULED
+      Description: Glue Trigger to run etl_job_admin_suite_ds_properties glue job every 3 hours
+      Schedule: cron(0 */3 * * ? *)
+      Actions:
+        - JobName: etl_job_admin_suite_ds_properties
+      Name: etl-job-admin-suite-ds-properties-every-3-hour
+      StartOnCreation: true
+  etljobadminsuitedatasourcepropertieschedule:
+    Type: AWS::Glue::Trigger
+    Properties:
+      Type: SCHEDULED
+      Description: Glue Trigger to run etl_job_admin_suite_datasource_properties glue job every 3 hours
+      Schedule: cron(0 */3 * * ? *)
+      Actions:
+        - JobName: etl_job_admin_suite_datasource_properties
+      Name: etl-job-admin-suite-datasource-properties-every-3-hour
       StartOnCreation: true
   adminconsolenew:
     Type: AWS::S3::Bucket
@@ -334,5 +393,13 @@ Outputs:
     Description: The s3 location of folder_path.csv for you to utilize in next
       Athena tables creation stack
     Value: !Sub s3://admin-console-new-${AWS::AccountId}/monitoring/quicksight/folder_path/folder_path.csv
+  datasetsproperties:
+    Description: The s3 location of datasets_properties.csv for you to utilize in next
+      Athena tables creation stack
+    Value: !Sub s3://admin-console-new-${AWS::AccountId}/monitoring/quicksight/datasets_properties/datasets_properties.csv
+  datasourceproperty:
+    Description: The s3 location of datasource_property.csv for you to utilize in next
+      Athena tables creation stack
+    Value: !Sub s3://admin-console-new-${AWS::AccountId}/monitoring/quicksight/datasource_property/datasource_property.csv
 
   
