@@ -1,6 +1,6 @@
 # QuickSight Admin Suite Data Model - CDK Version
 
-This CDK application creates the data model infrastructure for the QuickSight Admin Suite, including Glue tables, Athena views, and crawlers for data analysis.
+This CDK application creates the data model infrastructure for the QuickSight Admin Suite, including Glue database, tables, and crawlers for data storage and discovery.
 
 ## Prerequisites
 
@@ -30,14 +30,17 @@ cdk bootstrap
 
 2. Deploy the stack:
 ```bash
-cdk deploy --parameters CloudtrailLocation=s3://your-cloudtrail-bucket/AWSLogs/123456789123/CloudTrail/ --parameters StartDateParameter=2024/01/01 --parameters CURSourceTable=billing.cur
+cdk deploy --parameters CloudtrailLocation=s3://your-cloudtrail-bucket/AWSLogs/123456789123/CloudTrail/ --parameters StartDateParameter=2024/01/01
 ```
 
 ## Parameters
 
 - **CloudtrailLocation**: S3 location of your CloudTrail logs
 - **StartDateParameter**: Start date for CloudTrail data in YYYY/MM/DD format
-- **CURSourceTable**: CUR database and table name (format: database.table_name)
+
+## Deployment Order
+
+Deploy after the Data Collection CDK stack to ensure S3 buckets exist.
 
 ## Resources Created
 
@@ -47,19 +50,27 @@ cdk deploy --parameters CloudtrailLocation=s3://your-cloudtrail-bucket/AWSLogs/1
 ### Glue Tables
 - `group_membership`: User and group information
 - `object_access`: Object access permissions
+- `folder_assets`: Folder asset relationships
+- `folder_lk`: Folder permissions lookup
+- `folder_path`: Folder hierarchy paths
+- `cloudtrail_logs_pp`: Partitioned CloudTrail logs
+- `data_dict`: Data dictionary
+- `datasets_info`: Dataset information
+- `q_topic_info`: QuickSight Q topics
+- `q_object_access`: Q object access permissions
 - `datasets_properties`: Dataset properties and metrics
 - `datasource_property`: Dataset to datasource mapping
-- CloudWatch metrics tables for QuickSight monitoring
+- `cw_qs_ds_{account-id}`: CloudWatch dataset metrics
+- `cw_qs_dash_visual_{account-id}`: CloudWatch dashboard/visual metrics
+- `cw_qs_spice_{account-id}`: CloudWatch SPICE metrics
 
-### Athena Views
-- `quicksight_crud_events_view`: CRUD operations from CloudTrail
-- `quicksight_querydb_events_view`: Query database events
-- `qs_usage_cur_vw`: Cost and usage analysis
-- `cw_qs_ds_pivot_view`: CloudWatch dataset metrics pivot
+
 
 ### Glue Crawlers
-- Various crawlers for CloudWatch metrics data
-- Scheduled crawlers for partition management
+- `crawler-cw-qs-ds`: CloudWatch dataset metrics crawler
+- `crawler-cw-qs-spice`: CloudWatch SPICE metrics crawler
+- `crawler-cw-qs-dash-visual`: CloudWatch dashboard/visual metrics crawler
+- Scheduled partition management crawlers
 
 ## Cleanup
 

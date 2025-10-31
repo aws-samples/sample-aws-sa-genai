@@ -35,12 +35,33 @@ cdk deploy
 
 ## Resources Created
 
-- **IAM Role**: QuickSightAdminConsole2025 with necessary permissions
-- **S3 Buckets**: Main admin console bucket and CloudWatch metrics buckets
-- **Glue Jobs**: 7 ETL jobs for QuickSight data collection
-- **Glue Triggers**: Scheduled triggers running every 3 hours
-- **CloudWatch Metric Streams**: 5 streams for different QuickSight metrics
-- **Kinesis Firehose**: Delivery streams for metric data to S3
+### IAM Roles
+- `QuickSightAdminConsole2025`: Main service role for Glue jobs
+- `QuickSuiteCWStreamRole`: Role for CloudWatch metric streams
+
+### S3 Buckets
+- `admin-console-new-{account-id}`: Main data storage bucket
+- `cw-qs-ds-{account-id}`: CloudWatch dataset metrics
+- `cw-qs-dash-visual-{account-id}`: Dashboard/visual metrics
+- `cw-qs-spice-{account-id}`: SPICE metrics
+- `cw-qs-qindex-{account-id}`: Q Index metrics
+- `cw-qs-qaction-{account-id}`: Q Action metrics
+
+### Glue Jobs
+- `etl_job_admin_suite_assets_access`: User and access data
+- `etl_job_admin_suite_assets_metadata`: Dataset and dashboard metadata
+- `etl_job_admin_suite_folder_assets`: Folder information
+- `etl_job_admin_suite_q_access`: Q object access
+- `etl_job_admin_suite_q_metadata`: Q topics metadata
+- `etl_job_admin_suite_ds_properties`: Dataset properties
+- `etl_job_admin_suite_datasource_properties`: Datasource properties
+
+### Scheduled Triggers
+- All Glue jobs scheduled to run every 3 hours
+
+### CloudWatch Infrastructure
+- 5 CloudWatch metric streams for different QuickSight metrics
+- Kinesis Firehose delivery streams for metric data to S3
 
 ## Cleanup
 

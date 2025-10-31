@@ -844,6 +844,291 @@ Resources:
           StoredAsSubDirectories: false
         TableType: EXTERNAL_TABLE
 
+  CwQsDsTable:
+    Type: AWS::Glue::Table
+    Properties:
+      CatalogId: !Ref AWS::AccountId
+      DatabaseName: !Ref adminconsoledb2025
+      TableInput:
+        Name: !Sub cw_qs_ds_${AWS::AccountId}
+        Description: CloudWatch Metrics Stream data for QuickSight
+        Parameters:
+          classification: json
+          partition_filtering.enabled: 'true'
+        StorageDescriptor:
+          Columns:
+            - Name: metric_stream_name
+              Type: string
+              Comment: from deserializer
+            - Name: account_id
+              Type: string
+              Comment: from deserializer
+            - Name: region
+              Type: string
+              Comment: from deserializer
+            - Name: namespace
+              Type: string
+              Comment: from deserializer
+            - Name: metric_name
+              Type: string
+              Comment: from deserializer
+            - Name: dimensions
+              Type: struct<DatasetId:string>
+              Comment: from deserializer
+            - Name: timestamp
+              Type: bigint
+              Comment: from deserializer
+            - Name: value
+              Type: struct<max:double,min:double,sum:double,count:double>
+              Comment: from deserializer
+            - Name: unit
+              Type: string
+              Comment: from deserializer
+          InputFormat: org.apache.hadoop.mapred.TextInputFormat
+          OutputFormat: org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat
+          SerdeInfo:
+            SerializationLibrary: org.openx.data.jsonserde.JsonSerDe
+            Parameters:
+              paths: account_id,dimensions,metric_name,metric_stream_name,namespace,region,timestamp,unit,value
+          Location: !Sub s3://cw-qs-ds-${AWS::AccountId}/
+        PartitionKeys:
+          - Name: partition_0
+            Type: string
+          - Name: partition_1
+            Type: string
+          - Name: partition_2
+            Type: string
+          - Name: partition_3
+            Type: string
+        TableType: EXTERNAL_TABLE
+  CwQsDashVisualTable:
+    Type: AWS::Glue::Table
+    Properties:
+      CatalogId: !Ref AWS::AccountId
+      DatabaseName: !Ref adminconsoledb2025
+      TableInput:
+        Name: !Sub cw_qs_dash_visual_${AWS::AccountId}
+        Description: CloudWatch Metrics Stream data for QuickSight Dashboard Visual
+        Parameters:
+          classification: json
+          partition_filtering.enabled: 'true'
+        StorageDescriptor:
+          Columns:
+            - Name: metric_stream_name
+              Type: string
+              Comment: from deserializer
+            - Name: account_id
+              Type: string
+              Comment: from deserializer
+            - Name: region
+              Type: string
+              Comment: from deserializer
+            - Name: namespace
+              Type: string
+              Comment: from deserializer
+            - Name: metric_name
+              Type: string
+              Comment: from deserializer
+            - Name: dimensions
+              Type: struct<DashboardId:string,SheetId:string,VisualId:string>
+              Comment: from deserializer
+            - Name: timestamp
+              Type: bigint
+              Comment: from deserializer
+            - Name: value
+              Type: struct<max:double,min:double,sum:double,count:double>
+              Comment: from deserializer
+            - Name: unit
+              Type: string
+              Comment: from deserializer
+          InputFormat: org.apache.hadoop.mapred.TextInputFormat
+          OutputFormat: org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat
+          SerdeInfo:
+            SerializationLibrary: org.openx.data.jsonserde.JsonSerDe
+            Parameters:
+              paths: account_id,dimensions,metric_name,metric_stream_name,namespace,region,timestamp,unit,value
+          Location: !Sub s3://cw-qs-dash-visual-${AWS::AccountId}/
+        PartitionKeys:
+          - Name: partition_0
+            Type: string
+          - Name: partition_1
+            Type: string
+          - Name: partition_2
+            Type: string
+          - Name: partition_3
+            Type: string
+        TableType: EXTERNAL_TABLE
+  CwQsSpiceTable:
+    Type: AWS::Glue::Table
+    Properties:
+      CatalogId: !Ref AWS::AccountId
+      DatabaseName: !Ref adminconsoledb2025
+      TableInput:
+        Name: !Sub cw_qs_spice_${AWS::AccountId}
+        Description: CloudWatch Metrics Stream data for QuickSight SPICE
+        Parameters:
+          classification: json
+          partition_filtering.enabled: 'true'
+        StorageDescriptor:
+          Columns:
+            - Name: metric_stream_name
+              Type: string
+              Comment: from deserializer
+            - Name: account_id
+              Type: string
+              Comment: from deserializer
+            - Name: region
+              Type: string
+              Comment: from deserializer
+            - Name: namespace
+              Type: string
+              Comment: from deserializer
+            - Name: metric_name
+              Type: string
+              Comment: from deserializer
+            - Name: dimensions
+              Type: struct<AccountId:string>
+              Comment: from deserializer
+            - Name: timestamp
+              Type: bigint
+              Comment: from deserializer
+            - Name: value
+              Type: struct<max:double,min:double,sum:double,count:double>
+              Comment: from deserializer
+            - Name: unit
+              Type: string
+              Comment: from deserializer
+          InputFormat: org.apache.hadoop.mapred.TextInputFormat
+          OutputFormat: org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat
+          SerdeInfo:
+            SerializationLibrary: org.openx.data.jsonserde.JsonSerDe
+            Parameters:
+              paths: account_id,dimensions,metric_name,metric_stream_name,namespace,region,timestamp,unit,value
+          Location: !Sub s3://cw-qs-spice-${AWS::AccountId}/
+        PartitionKeys:
+          - Name: partition_0
+            Type: string
+          - Name: partition_1
+            Type: string
+          - Name: partition_2
+            Type: string
+          - Name: partition_3
+            Type: string
+        TableType: EXTERNAL_TABLE
+  CwQsQIndexTable:
+    Type: AWS::Glue::Table
+    Properties:
+      CatalogId: !Ref AWS::AccountId
+      DatabaseName: !Ref adminconsoledb2025
+      TableInput:
+        Name: !Sub cw_qs_qindex_${AWS::AccountId}
+        Description: CloudWatch Metrics Stream data for QuickSight Q Index
+        Parameters:
+          classification: json
+          partition_filtering.enabled: 'true'
+        StorageDescriptor:
+          Columns:
+            - Name: metric_stream_name
+              Type: string
+              Comment: from deserializer
+            - Name: account_id
+              Type: string
+              Comment: from deserializer
+            - Name: region
+              Type: string
+              Comment: from deserializer
+            - Name: namespace
+              Type: string
+              Comment: from deserializer
+            - Name: metric_name
+              Type: string
+              Comment: from deserializer
+            - Name: dimensions
+              Type: struct<AccountId:string>
+              Comment: from deserializer
+            - Name: timestamp
+              Type: bigint
+              Comment: from deserializer
+            - Name: value
+              Type: struct<max:double,min:double,sum:double,count:double>
+              Comment: from deserializer
+            - Name: unit
+              Type: string
+              Comment: from deserializer
+          InputFormat: org.apache.hadoop.mapred.TextInputFormat
+          OutputFormat: org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat
+          SerdeInfo:
+            SerializationLibrary: org.openx.data.jsonserde.JsonSerDe
+            Parameters:
+              paths: account_id,dimensions,metric_name,metric_stream_name,namespace,region,timestamp,unit,value
+          Location: !Sub s3://cw-qs-qindex-${AWS::AccountId}/
+        PartitionKeys:
+          - Name: partition_0
+            Type: string
+          - Name: partition_1
+            Type: string
+          - Name: partition_2
+            Type: string
+          - Name: partition_3
+            Type: string
+        TableType: EXTERNAL_TABLE
+  CwQsQActionTable:
+    Type: AWS::Glue::Table
+    Properties:
+      CatalogId: !Ref AWS::AccountId
+      DatabaseName: !Ref adminconsoledb2025
+      TableInput:
+        Name: !Sub cw_qs_qaction_${AWS::AccountId}
+        Description: CloudWatch Metrics Stream data for QuickSight Q Action
+        Parameters:
+          classification: json
+          partition_filtering.enabled: 'true'
+        StorageDescriptor:
+          Columns:
+            - Name: metric_stream_name
+              Type: string
+              Comment: from deserializer
+            - Name: account_id
+              Type: string
+              Comment: from deserializer
+            - Name: region
+              Type: string
+              Comment: from deserializer
+            - Name: namespace
+              Type: string
+              Comment: from deserializer
+            - Name: metric_name
+              Type: string
+              Comment: from deserializer
+            - Name: dimensions
+              Type: struct<AccountId:string>
+              Comment: from deserializer
+            - Name: timestamp
+              Type: bigint
+              Comment: from deserializer
+            - Name: value
+              Type: struct<max:double,min:double,sum:double,count:double>
+              Comment: from deserializer
+            - Name: unit
+              Type: string
+              Comment: from deserializer
+          InputFormat: org.apache.hadoop.mapred.TextInputFormat
+          OutputFormat: org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat
+          SerdeInfo:
+            SerializationLibrary: org.openx.data.jsonserde.JsonSerDe
+            Parameters:
+              paths: account_id,dimensions,metric_name,metric_stream_name,namespace,region,timestamp,unit,value
+          Location: !Sub s3://cw-qs-qaction-${AWS::AccountId}/
+        PartitionKeys:
+          - Name: partition_0
+            Type: string
+          - Name: partition_1
+            Type: string
+          - Name: partition_2
+            Type: string
+          - Name: partition_3
+            Type: string
+        TableType: EXTERNAL_TABLE
   CrawlerCwQsDs:
     Type: AWS::Glue::Crawler
     Properties:

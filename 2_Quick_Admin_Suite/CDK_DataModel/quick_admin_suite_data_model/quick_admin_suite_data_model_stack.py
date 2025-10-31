@@ -7,7 +7,6 @@ from aws_cdk import (
 from constructs import Construct
 from .cloudwatch_tables import create_cloudwatch_tables
 from .crawlers import create_crawlers
-from .athena_views import create_athena_views
 
 class QuickAdminSuiteDataModelStack(Stack):
 
@@ -29,14 +28,7 @@ class QuickAdminSuiteDataModelStack(Stack):
             description="Input the start date for the data in the Cloudtrail bucket in YYYY/MM/DD format. For example, if the earliest data in the bucket is from 1st August 2021, use 2021/08/01"
         )
 
-        cur_source_table = CfnParameter(
-            self, "CURSourceTable",
-            type="String",
-            description="Provide CUR database and table name with format database.table_name as it exists in your account (e.g., billing.cur)",
-            allowed_pattern="^[a-zA-Z0-9_-]+\\.[a-zA-Z0-9_-]+$",
-            constraint_description="Must be in format database.table_name",
-            min_length=3
-        )
+
 
         # Glue Database
         admin_console_db = glue.CfnDatabase(
@@ -180,6 +172,12 @@ class QuickAdminSuiteDataModelStack(Stack):
             )
         )
 
+        # Create CloudWatch tables
+        cw_tables = create_cloudwatch_tables(self, admin_console_db)
+        
+        # Create crawlers
+        crawlers = create_crawlers(self)
+
         # Datasource Property Table
         datasource_property_table = glue.CfnTable(
             self, "DatasourcePropertyTable",
@@ -213,11 +211,3 @@ class QuickAdminSuiteDataModelStack(Stack):
             )
         )
 
-        # Create CloudWatch tables
-        cw_tables = create_cloudwatch_tables(self, admin_console_db)
-        
-        # Create crawlers
-        crawlers = create_crawlers(self)
-        
-        # Create Athena views
-        athena_views = create_athena_views(self, cur_source_table)
