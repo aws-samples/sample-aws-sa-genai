@@ -9,7 +9,7 @@ def create_cloudwatch_tables(stack, admin_console_db):
         catalog_id=stack.account,
         database_name=admin_console_db.ref,
         table_input=glue.CfnTable.TableInputProperty(
-            name=f"cw_qs_ds_{stack.account}",
+            name="cw_qs_ds",
             description="CloudWatch Metrics Stream data for QuickSight",
             parameters={
                 "classification": "json",
@@ -35,7 +35,7 @@ def create_cloudwatch_tables(stack, admin_console_db):
                         "paths": "account_id,dimensions,metric_name,metric_stream_name,namespace,region,timestamp,unit,value"
                     }
                 ),
-                location=f"s3://cw-qs-ds-{stack.account}/"
+                location=f"s3://admin-suite-{stack.account}/cloudwatch/cw-qs-ds/"
             ),
             partition_keys=[
                 glue.CfnTable.ColumnProperty(name="partition_0", type="string"),
@@ -53,7 +53,7 @@ def create_cloudwatch_tables(stack, admin_console_db):
         catalog_id=stack.account,
         database_name=admin_console_db.ref,
         table_input=glue.CfnTable.TableInputProperty(
-            name=f"cw_qs_dash_visual_{stack.account}",
+            name="cw_qs_dash_visual",
             description="CloudWatch Metrics Stream data for QuickSight Dashboard Visual",
             parameters={
                 "classification": "json",
@@ -79,7 +79,7 @@ def create_cloudwatch_tables(stack, admin_console_db):
                         "paths": "account_id,dimensions,metric_name,metric_stream_name,namespace,region,timestamp,unit,value"
                     }
                 ),
-                location=f"s3://cw-qs-dash-visual-{stack.account}/"
+                location=f"s3://admin-suite-{stack.account}/cloudwatch/cw-qs-dash-visual/"
             ),
             partition_keys=[
                 glue.CfnTable.ColumnProperty(name="partition_0", type="string"),
@@ -97,7 +97,7 @@ def create_cloudwatch_tables(stack, admin_console_db):
         catalog_id=stack.account,
         database_name=admin_console_db.ref,
         table_input=glue.CfnTable.TableInputProperty(
-            name=f"cw_qs_spice_{stack.account}",
+            name="cw_qs_spice",
             description="CloudWatch Metrics Stream data for QuickSight SPICE",
             parameters={
                 "classification": "json",
@@ -123,7 +123,7 @@ def create_cloudwatch_tables(stack, admin_console_db):
                         "paths": "account_id,dimensions,metric_name,metric_stream_name,namespace,region,timestamp,unit,value"
                     }
                 ),
-                location=f"s3://cw-qs-spice-{stack.account}/"
+                location=f"s3://admin-suite-{stack.account}/cloudwatch/cw-qs-spice/"
             ),
             partition_keys=[
                 glue.CfnTable.ColumnProperty(name="partition_0", type="string"),
@@ -135,4 +135,92 @@ def create_cloudwatch_tables(stack, admin_console_db):
         )
     )
 
-    return cw_qs_ds_table, cw_qs_dash_visual_table, cw_qs_spice_table
+    # CloudWatch QuickSight QIndex Table
+    cw_qs_qindex_table = glue.CfnTable(
+        stack, "CwQsQIndexTable",
+        catalog_id=stack.account,
+        database_name=admin_console_db.ref,
+        table_input=glue.CfnTable.TableInputProperty(
+            name="cw_qs_qindex",
+            description="CloudWatch Metrics Stream data for QuickSight Q Index",
+            parameters={
+                "classification": "json",
+                "partition_filtering.enabled": "true"
+            },
+            storage_descriptor=glue.CfnTable.StorageDescriptorProperty(
+                columns=[
+                    glue.CfnTable.ColumnProperty(name="metric_stream_name", type="string", comment="from deserializer"),
+                    glue.CfnTable.ColumnProperty(name="account_id", type="string", comment="from deserializer"),
+                    glue.CfnTable.ColumnProperty(name="region", type="string", comment="from deserializer"),
+                    glue.CfnTable.ColumnProperty(name="namespace", type="string", comment="from deserializer"),
+                    glue.CfnTable.ColumnProperty(name="metric_name", type="string", comment="from deserializer"),
+                    glue.CfnTable.ColumnProperty(name="dimensions", type="struct<QuickInstanceId:string>", comment="from deserializer"),
+                    glue.CfnTable.ColumnProperty(name="timestamp", type="bigint", comment="from deserializer"),
+                    glue.CfnTable.ColumnProperty(name="value", type="struct<max:double,min:double,sum:double,count:double>", comment="from deserializer"),
+                    glue.CfnTable.ColumnProperty(name="unit", type="string", comment="from deserializer")
+                ],
+                input_format="org.apache.hadoop.mapred.TextInputFormat",
+                output_format="org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat",
+                serde_info=glue.CfnTable.SerdeInfoProperty(
+                    serialization_library="org.openx.data.jsonserde.JsonSerDe",
+                    parameters={
+                        "paths": "account_id,dimensions,metric_name,metric_stream_name,namespace,region,timestamp,unit,value"
+                    }
+                ),
+                location=f"s3://admin-suite-{stack.account}/cloudwatch/cw-qs-qindex/"
+            ),
+            partition_keys=[
+                glue.CfnTable.ColumnProperty(name="partition_0", type="string"),
+                glue.CfnTable.ColumnProperty(name="partition_1", type="string"),
+                glue.CfnTable.ColumnProperty(name="partition_2", type="string"),
+                glue.CfnTable.ColumnProperty(name="partition_3", type="string")
+            ],
+            table_type="EXTERNAL_TABLE"
+        )
+    )
+
+    # CloudWatch QuickSight QAction Table
+    cw_qs_qaction_table = glue.CfnTable(
+        stack, "CwQsQActionTable",
+        catalog_id=stack.account,
+        database_name=admin_console_db.ref,
+        table_input=glue.CfnTable.TableInputProperty(
+            name="cw_qs_qaction",
+            description="CloudWatch Metrics Stream data for QuickSight Q Action",
+            parameters={
+                "classification": "json",
+                "partition_filtering.enabled": "true"
+            },
+            storage_descriptor=glue.CfnTable.StorageDescriptorProperty(
+                columns=[
+                    glue.CfnTable.ColumnProperty(name="metric_stream_name", type="string", comment="from deserializer"),
+                    glue.CfnTable.ColumnProperty(name="account_id", type="string", comment="from deserializer"),
+                    glue.CfnTable.ColumnProperty(name="region", type="string", comment="from deserializer"),
+                    glue.CfnTable.ColumnProperty(name="namespace", type="string", comment="from deserializer"),
+                    glue.CfnTable.ColumnProperty(name="metric_name", type="string", comment="from deserializer"),
+                    glue.CfnTable.ColumnProperty(name="dimensions", type="struct<AccountId:string>", comment="from deserializer"),
+                    glue.CfnTable.ColumnProperty(name="timestamp", type="bigint", comment="from deserializer"),
+                    glue.CfnTable.ColumnProperty(name="value", type="struct<max:double,min:double,sum:double,count:double>", comment="from deserializer"),
+                    glue.CfnTable.ColumnProperty(name="unit", type="string", comment="from deserializer")
+                ],
+                input_format="org.apache.hadoop.mapred.TextInputFormat",
+                output_format="org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat",
+                serde_info=glue.CfnTable.SerdeInfoProperty(
+                    serialization_library="org.openx.data.jsonserde.JsonSerDe",
+                    parameters={
+                        "paths": "account_id,dimensions,metric_name,metric_stream_name,namespace,region,timestamp,unit,value"
+                    }
+                ),
+                location=f"s3://admin-suite-{stack.account}/cloudwatch/cw-qs-qaction/"
+            ),
+            partition_keys=[
+                glue.CfnTable.ColumnProperty(name="partition_0", type="string"),
+                glue.CfnTable.ColumnProperty(name="partition_1", type="string"),
+                glue.CfnTable.ColumnProperty(name="partition_2", type="string"),
+                glue.CfnTable.ColumnProperty(name="partition_3", type="string")
+            ],
+            table_type="EXTERNAL_TABLE"
+        )
+    )
+
+    return cw_qs_ds_table, cw_qs_dash_visual_table, cw_qs_spice_table, cw_qs_qindex_table, cw_qs_qaction_table

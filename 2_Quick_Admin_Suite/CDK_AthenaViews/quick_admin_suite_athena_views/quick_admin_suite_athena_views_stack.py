@@ -108,7 +108,7 @@ SELECT
 , MAX((CASE WHEN (metric_name = 'IngestionLatency') THEN unit END)) IngestionLatency_Unit
 , CAST(MAX((CASE WHEN (metric_name = 'IngestionRowCount') THEN value.sum END)) AS INTEGER) IngestionRowCount
 , MAX((CASE WHEN (metric_name = 'IngestionRowCount') THEN unit END)) IngestionRowCount_Unit
-FROM cw_qs_ds_{self.account}
+FROM cw_qs_ds
 GROUP BY timestamp, account_id, region, dimensions
 ORDER BY timestamp ASC, account_id ASC, region ASC""",
             work_group="primary"
@@ -136,7 +136,7 @@ SELECT
 , MAX((CASE WHEN (metric_name = 'VisualLoadTime') THEN unit END)) VisualLoadTime_Unit
 , CAST(MAX((CASE WHEN (metric_name = 'VisualLoadErrorCount') THEN value.sum END)) AS INTEGER) VisualLoadErrorCount
 , MAX((CASE WHEN (metric_name = 'VisualLoadErrorCount') THEN unit END)) VisualLoadErrorCount_Unit
-FROM cw_qs_dash_visual_{self.account}
+FROM cw_qs_dash_visual
 GROUP BY timestamp, account_id, region, dimensions
 ORDER BY timestamp ASC, account_id ASC, region ASC""",
             work_group="primary"
@@ -157,7 +157,7 @@ SELECT
 , MAX((CASE WHEN (metric_name = 'SPICECapacityLimitInMB') THEN unit END)) SPICECapacityLimitInMB_Unit
 , CAST(MAX((CASE WHEN (metric_name = 'SPICECapacityConsumedInMB') THEN value.sum END)) AS DOUBLE) SPICECapacityConsumedInMB
 , MAX((CASE WHEN (metric_name = 'SPICECapacityConsumedInMB') THEN unit END)) SPICECapacityConsumedInMB_Unit
-FROM cw_qs_spice_{self.account}
+FROM cw_qs_spice
 GROUP BY timestamp, account_id, region
 ORDER BY timestamp ASC, account_id ASC, region ASC""",
             work_group="primary"
@@ -179,7 +179,7 @@ SELECT
 , MAX((CASE WHEN (metric_name = 'QuickIndexDocumentCount') THEN unit END)) QuickIndexDocumentCount_Unit
 , CAST(MAX((CASE WHEN (metric_name = 'QuickIndexExtractedTextSize') THEN value.sum END)) AS DOUBLE) QuickIndexExtractedTextSize
 , MAX((CASE WHEN (metric_name = 'QuickIndexExtractedTextSize') THEN unit END)) QuickIndexExtractedTextSize_Unit
-FROM cw_qs_qindex_{self.account}
+FROM cw_qs_qindex
 GROUP BY timestamp, account_id, region, dimensions
 ORDER BY timestamp ASC, account_id ASC, region ASC""",
             work_group="primary"
@@ -211,7 +211,28 @@ FROM (
     ON dsp.dataset_id = dsi.dataset_id AND dsp.region = dsi.aws_region
 ) AS t
 GROUP BY 
-    1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25
+    1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21
 ORDER BY t.region ASC, t.dataset_id ASC""",
+            work_group="primary"
+        )
+
+        # CloudWatch QAction Pivot View (missing from original)
+        cw_qs_qaction_pivot_view = athena.CfnNamedQuery(
+            self, "CwQsQActionPivotView",
+            database="admin-console-2025",
+            description="Pivot view for CloudWatch QuickSight Q Action metrics",
+            name="cw_qs_qaction_pivot_view",
+            query_string="""CREATE OR REPLACE VIEW cw_qs_qaction_pivot AS 
+SELECT
+  timestamp
+, account_id
+, region
+, CAST(MAX((CASE WHEN (metric_name = 'ActionInvocationError') THEN value.sum END)) AS INTEGER) ActionInvocationError
+, MAX((CASE WHEN (metric_name = 'ActionInvocationError') THEN unit END)) ActionInvocationError_Unit
+, CAST(MAX((CASE WHEN (metric_name = 'ActionInvocationCount') THEN value.sum END)) AS INTEGER) ActionInvocationCount
+, MAX((CASE WHEN (metric_name = 'ActionInvocationCount') THEN unit END)) ActionInvocationCount_Unit
+FROM cw_qs_qaction
+GROUP BY timestamp, account_id, region
+ORDER BY timestamp ASC, account_id ASC, region ASC""",
             work_group="primary"
         )
