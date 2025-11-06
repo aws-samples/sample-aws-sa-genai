@@ -15,10 +15,10 @@ from awsglue.utils import getResolvedOptions
 import botocore
 
 # Get AWS region and QuickSight Identity Region from Glue job parameters
-args = getResolvedOptions(sys.argv, ['AWS_REGION', 'QUICKSIGHT_IDENTITY_REGION'])
+args = getResolvedOptions(sys.argv, ['AWS_REGION', 'S3_OUTPUT_PATH'])
 aws_region = args['AWS_REGION']
-# aws_region = 'us-east-1'
-quicksight_identity_region = args['QUICKSIGHT_IDENTITY_REGION']
+s3_output_path = args['S3_OUTPUT_PATH']
+#quicksight_identity_region = args['QUICKSIGHT_IDENTITY_REGION']
 
 # Initialize AWS clients
 client = boto3.client('sns')
@@ -31,45 +31,20 @@ aws_account_id = client2.get_caller_identity()['Account']
 
 # Set up S3 bucket information
 s3 = boto3.resource('s3')
-bucketname = 'qs-spice-ingestion-data-' + aws_account_id + '-' +  aws_region
-
+bucketname = s3_output_path.replace('s3://', '').split('/')[0]
 bucket = s3.Bucket(bucketname)
 
 # Define S3 key for the dataset info file
-KEY = 'monitoring/quicksight/qs-datasets-info/qs-spice-info'
+s3_prefix = '/'.join(s3_output_path.replace('s3://', '').split('/')[1:])
+key = f'{s3_prefix}/datasets_properties.csv'
+
 # Create a temporary directory and set up the local file name
-TMP_DIR = tempfile.mkdtemp()
-LOCAL_ROOT_PATH = os.path.join(TMP_DIR, 'qs-datasets-info')
-CSV_HEADERS = ['Region','DataSetID', 'Name', 'LastUpdatedTime', 'ImportMode', 
-               'ConsumedSPICECapacityinBytes', 'RowsIngested', 'RowsDropped', 
-               'RefreshTriggeredTime', 'RefreshTimeinSeconds', 'RequestSource', 
-               'RequestType', 'IngestionStatus', 'ErrorInfoType', 'ErrorInfoMessage', 
-               'PrincipalType', 'Principal', 'AdditionalInfo', 'Actions','IsFile']                     
-
-
-def append_to_csv(file_path: str, data: list):
-    with open(file_path, 'a') as file:
-        writer = csv.writer(file)
-        writer.writerow(data)
-    file.close()
-
-
-def append_to_partition(root: str, data: list, partition: str):
-    if not os.path.exists(root):
-        os.makedirs(root)
-    part_folder = os.path.join(root, partition)
-    if not os.path.exists(part_folder):
-        os.makedirs(part_folder)
-    local_file_path = os.path.join(part_folder, f'part-{partition}.csv')
-    # Write CSV headers if file does not exist
-    if not os.path.isfile(local_file_path):
-        append_to_csv(local_file_path, CSV_HEADERS)
-    append_to_csv(local_file_path, data)
-    print(f'Append to {local_file_path}')
-
+tmpdir = tempfile.mkdtemp()
+local_file_name = 'qs-datasets-info.csv'
+path = os.path.join(tmpdir, local_file_name)
 
 # Initialize list to store dataset access information
-# access = []
+access = []
 count = 0
 next_token = None
 
@@ -141,21 +116,21 @@ while True:
                 additional_info = principal[-2]
                 if len(principal)==4:
                   principal = principal[2]+'/'+principal[3]
-                  append_to_partition(LOCAL_ROOT_PATH, [region,DataSetId,Name , LastUpdatedTime, ImportMode,ConsumedSpiceCapacityInBytes, RowsIngested, 
+                  access.append([region,DataSetId,Name , LastUpdatedTime, ImportMode,ConsumedSpiceCapacityInBytes, RowsIngested, 
                   RowsDropped, RefreshTriggeredTime, RefreshTimeinSeconds, RequestSource,
                   RequestType,IngestionStatus,'NoErrorInfoType', 'NoErrorInfoMessage',
-                  ptype, principal, additional_info, actions,Type], RefreshTriggeredTime.strftime('%Y-%m-%d'))
+                  ptype, principal, additional_info, actions,Type])
                 elif len(principal)==3:
                     principal = principal[2]
-                    append_to_partition(LOCAL_ROOT_PATH, [region,DataSetId,Name , LastUpdatedTime, ImportMode,ConsumedSpiceCapacityInBytes, RowsIngested, 
+                    access.append([region,DataSetId,Name , LastUpdatedTime, ImportMode,ConsumedSpiceCapacityInBytes, RowsIngested, 
                     RowsDropped, RefreshTriggeredTime, RefreshTimeinSeconds, RequestSource,
                     RequestType,IngestionStatus,'NoErrorInfoType', 'NoErrorInfoMessage',
-                    ptype, principal, additional_info, actions,Type], RefreshTriggeredTime.strftime('%Y-%m-%d'))
+                    ptype, principal, additional_info, actions,Type])
            elif permissions == []:
-                 append_to_partition(LOCAL_ROOT_PATH, [region,DataSetId,Name , LastUpdatedTime, ImportMode,ConsumedSpiceCapacityInBytes, RowsIngested, 
+                 access.append([region,DataSetId,Name , LastUpdatedTime, ImportMode,ConsumedSpiceCapacityInBytes, RowsIngested, 
                   RowsDropped, RefreshTriggeredTime, RefreshTimeinSeconds, RequestSource,
                   RequestType,IngestionStatus,'NoErrorInfoType', 'NoErrorInfoMessage',
-                  '', 'Orphaned', '', '',Type], RefreshTriggeredTime.strftime('%Y-%m-%d'))
+                  '', 'Orphaned', '', '',Type])
 
          # Process failed ingestions
          elif IngestionStatus == 'FAILED':
@@ -177,41 +152,41 @@ while True:
                 if len(principal)==4:
                   principal = principal[2]+'/'+principal[3]
                   if len(ErrorInfoMessage) <= 100:
-                       append_to_partition(LOCAL_ROOT_PATH, [region,DataSetId, Name , LastUpdatedTime, ImportMode,ConsumedSpiceCapacityInBytes, '', 
+                       access.append([region,DataSetId, Name , LastUpdatedTime, ImportMode,ConsumedSpiceCapacityInBytes, '', 
                        '', RefreshTriggeredTime, '', RequestSource,
                         RequestType,IngestionStatus,ErrorInfoType,ErrorInfoMessage[0:50]+'-'+ "Please refer dataset refresh summary for complete error",
-                        ptype, principal, additional_info, actions,Type], RefreshTriggeredTime.strftime('%Y-%m-%d'))
+                        ptype, principal, additional_info, actions,Type])
                   elif len(ErrorInfoMessage) >= 100:
-                        append_to_partition(LOCAL_ROOT_PATH, [region,DataSetId, Name , LastUpdatedTime, ImportMode,ConsumedSpiceCapacityInBytes, '', '', RefreshTriggeredTime, '', RequestSource,
-                              RequestType,IngestionStatus,ErrorInfoType, "Please refer dataset refresh summary for complete error",ptype, principal, additional_info, actions,Type], RefreshTriggeredTime.strftime('%Y-%m-%d'))
+                        access.append([region,DataSetId, Name , LastUpdatedTime, ImportMode,ConsumedSpiceCapacityInBytes, '', '', RefreshTriggeredTime, '', RequestSource,
+                              RequestType,IngestionStatus,ErrorInfoType, "Please refer dataset refresh summary for complete error",ptype, principal, additional_info, actions,Type])
                 elif len(principal)==3:
                      principal = principal[2]
                      if len(ErrorInfoMessage) <= 100:
-                       append_to_partition(LOCAL_ROOT_PATH, [region,DataSetId, Name , LastUpdatedTime, ImportMode,ConsumedSpiceCapacityInBytes, '', 
+                       access.append([region,DataSetId, Name , LastUpdatedTime, ImportMode,ConsumedSpiceCapacityInBytes, '', 
                        '', RefreshTriggeredTime, '', RequestSource,
                         RequestType,IngestionStatus,ErrorInfoType,
                         ErrorInfoMessage[0:50]+'-'+ "Please refer dataset refresh summary for complete error",
-                        ptype, principal, additional_info, actions,Type], RefreshTriggeredTime.strftime('%Y-%m-%d'))
+                        ptype, principal, additional_info, actions,Type])
                      elif len(ErrorInfoMessage) >= 100:
-                        append_to_partition(LOCAL_ROOT_PATH, [region,DataSetId, Name , LastUpdatedTime, ImportMode,ConsumedSpiceCapacityInBytes, '', '', RefreshTriggeredTime, '', RequestSource,
+                        access.append([region,DataSetId, Name , LastUpdatedTime, ImportMode,ConsumedSpiceCapacityInBytes, '', '', RefreshTriggeredTime, '', RequestSource,
                               RequestType,IngestionStatus,ErrorInfoType, "Please refer dataset refresh summary for complete error",
-                              ptype, principal, additional_info, actions,Type], RefreshTriggeredTime.strftime('%Y-%m-%d'))
+                              ptype, principal, additional_info, actions,Type])
            elif permissions == []:
                if len(ErrorInfoMessage) <= 100:
-                      append_to_partition(LOCAL_ROOT_PATH, [region,DataSetId, Name , LastUpdatedTime, ImportMode,ConsumedSpiceCapacityInBytes, '', 
+                      access.append([region,DataSetId, Name , LastUpdatedTime, ImportMode,ConsumedSpiceCapacityInBytes, '', 
                         '', RefreshTriggeredTime, '', RequestSource,
                          RequestType,IngestionStatus,ErrorInfoType,
                          ErrorInfoMessage[0:50]+'-'+ "Please refer dataset refresh summary for complete error",
-                         '', 'Orphaned', '', '',Type], RefreshTriggeredTime.strftime('%Y-%m-%d'))
+                         '', 'Orphaned', '', '',Type])
                elif len(ErrorInfoMessage) >= 100:
-                      append_to_partition(LOCAL_ROOT_PATH, [region,DataSetId, Name , LastUpdatedTime, ImportMode,ConsumedSpiceCapacityInBytes, '', 
+                      access.append([region,DataSetId, Name , LastUpdatedTime, ImportMode,ConsumedSpiceCapacityInBytes, '', 
                            '', RefreshTriggeredTime, '', RequestSource,
                             RequestType,IngestionStatus,ErrorInfoType, 
                             "Please refer dataset refresh summary for complete error",
-                            '', 'Orphaned', '', '',Type], RefreshTriggeredTime.strftime('%Y-%m-%d'))
+                            '', 'Orphaned', '', '',Type])
                  
          # Process other ingestion statuses (INITIALIZED, QUEUED, RUNNING, CANCELLED)
-         elif IngestionStatus  == 'INITIALIZED'|'QUEUED'|'RUNNING'|'CANCELLED':
+         elif IngestionStatus in ['INITIALIZED', 'QUEUED', 'RUNNING', 'CANCELLED']:
           if permissions != []:
               for principal in permissions:
                 actions = '|'.join(principal['Actions'])
@@ -221,32 +196,64 @@ while True:
                 additional_info = principal[-2]
                 if len(principal)==4:
                   principal = principal[2]+'/'+principal[3]
-                  append_to_partition(LOCAL_ROOT_PATH, [region,DataSetId,Name , LastUpdatedTime, ImportMode,ConsumedSpiceCapacityInBytes, '', 
+                  access.append([region,DataSetId,Name , LastUpdatedTime, ImportMode,ConsumedSpiceCapacityInBytes, '', 
                    '', RefreshTriggeredTime, '', RequestSource,
                     RequestType,IngestionStatus,'NoErrorInfoType', 'NoErrorInfoMessage',
-                    ptype, principal, additional_info, actions,Type], RefreshTriggeredTime.strftime('%Y-%m-%d'))
+                    ptype, principal, additional_info, actions,Type])
                 elif len(principal)==3:
                      principal = principal[2]
-                     append_to_partition(LOCAL_ROOT_PATH, [region,DataSetId,Name , LastUpdatedTime, ImportMode,ConsumedSpiceCapacityInBytes, '', 
+                     access.append([region,DataSetId,Name , LastUpdatedTime, ImportMode,ConsumedSpiceCapacityInBytes, '', 
                      '', RefreshTriggeredTime, '', RequestSource,
                       RequestType,IngestionStatus,'NoErrorInfoType', 'NoErrorInfoMessage',
-                      ptype, principal, additional_info, actions,Type], RefreshTriggeredTime.strftime('%Y-%m-%d'))
+                      ptype, principal, additional_info, actions,Type])
           elif permissions == []:
-                 append_to_partition(LOCAL_ROOT_PATH, [region,DataSetId,Name , LastUpdatedTime, ImportMode,ConsumedSpiceCapacityInBytes, '', 
+                 access.append([region,DataSetId,Name , LastUpdatedTime, ImportMode,ConsumedSpiceCapacityInBytes, '', 
                       '', RefreshTriggeredTime, '', RequestSource,
                       RequestType,IngestionStatus,'NoErrorInfoType', 'NoErrorInfoMessage',
-                      '', 'Orphaned', '', '',Type], RefreshTriggeredTime.strftime('%Y-%m-%d'))
+                      '', 'Orphaned', '', '',Type])
          
+       # Process DIRECT_QUERY datasets
+       elif ImportMode == 'DIRECT_QUERY':
+        if permissions != []:
+         for principal in permissions:
+                actions = '|'.join(principal['Actions'])
+                principal = principal['Principal'].split("/")
+                ptype = principal[0].split(":")
+                ptype = ptype[-1]
+                additional_info = principal[-2]
+                if len(principal)==4:
+                  principal = principal[2]+'/'+principal[3]
+                  access.append([region,DataSetId,Name , LastUpdatedTime,ImportMode,'0',
+                  '','','','',
+                  '','', '', 'NoErrorInfoType', 'NoErrorInfoMessage',
+                  ptype, principal, additional_info, actions,''])
+                elif len(principal)==3:
+                     principal = principal[2]
+                     access.append([region,DataSetId,Name , LastUpdatedTime,ImportMode,'0','',
+                     '','','','',
+                     '','','','NoErrorInfoType', 'NoErrorInfoMessage',
+                      ptype, principal, additional_info, actions,''])
+        elif permissions == []:
+                 access.append([region,DataSetId,Name , LastUpdatedTime,ImportMode,'0','',
+                     '','','','',
+                     '','','','NoErrorInfoType', 'NoErrorInfoMessage',
+                     '', 'Orphaned', '', '',''])
+                     
    # Check for more datasets to process (pagination)
    next_token = response0.get('NextToken', None)
    if next_token is None:
     break
 
+# Define column titles for the CSV file
+column_titles = ['Region','DataSetID', 'Name', 'LastUpdatedTime', 'ImportMode', 'ConsumedSPICECapacityinBytes', 'RowsIngested', 'RowsDropped', 'RefreshTriggeredTime', 'RefreshTimeinSeconds', 'RequestSource', 'RequestType', 'IngestionStatus', 'ErrorInfoType', 'ErrorInfoMessage', 'PrincipalType', 'Principal', 'AdditionalInfo', 'Actions','IsFile']                     
+
+# Write the dataset information to a CSV file
+with open(path, 'w', newline='') as outfile:
+ writer = csv.writer(outfile, delimiter=',')
+ writer.writerow(column_titles)
+ for line in access:
+  writer.writerow(line)
+outfile.close()
+
 # Upload the CSV file to S3
-for part_dir in os.listdir(LOCAL_ROOT_PATH):
-    for file in os.listdir(os.path.join(LOCAL_ROOT_PATH, part_dir)):
-        path = os.path.join(LOCAL_ROOT_PATH, part_dir, file)
-        key = f'{KEY}/{part_dir}/{file}'
-        bucket.upload_file(path, key)   
-
-
+bucket.upload_file(path, key)

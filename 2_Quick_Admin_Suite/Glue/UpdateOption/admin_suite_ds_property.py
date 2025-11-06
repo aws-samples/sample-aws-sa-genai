@@ -15,8 +15,9 @@ from awsglue.utils import getResolvedOptions
 import botocore
 
 # Get AWS region and QuickSight Identity Region from Glue job parameters
-args = getResolvedOptions(sys.argv, ['AWS_REGION'])
+args = getResolvedOptions(sys.argv, ['AWS_REGION', 'S3_OUTPUT_PATH'])
 aws_region = args['AWS_REGION']
+s3_output_path = args['S3_OUTPUT_PATH']
 #quicksight_identity_region = args['QUICKSIGHT_IDENTITY_REGION']
 
 # Initialize AWS clients
@@ -30,11 +31,12 @@ aws_account_id = client2.get_caller_identity()['Account']
 
 # Set up S3 bucket information
 s3 = boto3.resource('s3')
-bucketname = 'admin-console-new-' + aws_account_id
+bucketname = s3_output_path.replace('s3://', '').split('/')[0]
 bucket = s3.Bucket(bucketname)
 
 # Define S3 key for the dataset info file
-key = 'monitoring/quicksight/datasets_properties/datasets_properties.csv'
+s3_prefix = '/'.join(s3_output_path.replace('s3://', '').split('/')[1:])
+key = f'{s3_prefix}/datasets_properties.csv'
 
 # Create a temporary directory and set up the local file name
 tmpdir = tempfile.mkdtemp()

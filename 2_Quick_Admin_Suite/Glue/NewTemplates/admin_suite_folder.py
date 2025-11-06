@@ -8,7 +8,15 @@ import tempfile
 from typing import Any, Callable, Dict, List, Optional, Union
 import sys
 from awsglue.utils import getResolvedOptions
+from awsglue.context import GlueContext
+from pyspark.context import SparkContext
+from awsglue.job import Job
 import botocore
+
+# Initialize Spark context and Glue context
+sc = SparkContext()
+glueContext = GlueContext(sc)
+job = Job(glueContext)
 
 def default_botocore_config() -> botocore.config.Config:
     """Botocore configuration."""
@@ -27,10 +35,12 @@ def default_botocore_config() -> botocore.config.Config:
 
 sts_client = boto3.client("sts", config=default_botocore_config())
 account_id = sts_client.get_caller_identity()["Account"]
-aws_region = 'us-east-1'
-args = getResolvedOptions(sys.argv, ['AWS_REGION'])
+args = getResolvedOptions(sys.argv, ['JOB_NAME', 'AWS_REGION', 'S3_OUTPUT_PATH'])
+job.init(args['JOB_NAME'], args)
 print('region', args['AWS_REGION'])
+aws_region = args['AWS_REGION']
 glue_aws_region = args['AWS_REGION']
+s3_output_path = args['S3_OUTPUT_PATH']
 qs_client = boto3.client('quicksight', config=default_botocore_config())
 qs_local_client = boto3.client('quicksight', region_name=glue_aws_region, config=default_botocore_config())
 
@@ -274,20 +284,21 @@ if __name__ == "__main__":
 
     # call s3 bucket
     s3 = boto3.resource('s3')
-    bucketname = 'admin-console-new-' + account_id
+    bucketname = s3_output_path.replace('s3://', '').split('/')[0]
     bucket = s3.Bucket(bucketname)
 
     tmpdir = tempfile.mkdtemp()
+    s3_prefix = '/'.join(s3_output_path.replace('s3://', '').split('/')[1:])
 
-    key_relation = 'monitoring/quicksight/folder_assets/folder_assets.csv'
+    key_relation = f'{s3_prefix}/folder_assets/folder_assets.csv'
     local_file_name = 'folder_assets.csv'
     path_relation = os.path.join(tmpdir, local_file_name)
 
-    key_lk = 'monitoring/quicksight/folder_lk/folder_lk.csv'
+    key_lk = f'{s3_prefix}/folder_lk/folder_lk.csv'
     local_file_name = 'folder_lk.csv'
     path_lk = os.path.join(tmpdir, local_file_name)
 
-    key_path = 'monitoring/quicksight/folder_path/folder_path.csv'
+    key_path = f'{s3_prefix}/folder_path/folder_path.csv'
     local_file_name = 'folder_path.csv'
     path_path = os.path.join(tmpdir, local_file_name)
 
@@ -362,3 +373,6 @@ if __name__ == "__main__":
     outfile.close()
     # upload file from tmp to s3 key
     bucket.upload_file(path_path, key_path)
+
+    # Commit the Glue job
+    job.commit()

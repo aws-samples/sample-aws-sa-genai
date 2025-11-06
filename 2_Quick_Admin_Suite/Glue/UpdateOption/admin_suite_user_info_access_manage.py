@@ -30,10 +30,11 @@ def default_botocore_config() -> botocore.config.Config:
 #start-Initial set up for the glue and qs client of boto3#
 sts_client = boto3.client("sts", config=default_botocore_config())
 account_id = sts_client.get_caller_identity()["Account"]
-args = getResolvedOptions(sys.argv, ['AWS_REGION'])
+args = getResolvedOptions(sys.argv, ['AWS_REGION', 'S3_OUTPUT_PATH'])
 print('region', args['AWS_REGION'])
 aws_region = args['AWS_REGION']
 glue_aws_region = args['AWS_REGION']
+s3_output_path = args['S3_OUTPUT_PATH']
 qs_client = boto3.client('quicksight', config=default_botocore_config())
 qs_local_client = boto3.client('quicksight', region_name=glue_aws_region, config=default_botocore_config())
 
@@ -377,11 +378,12 @@ if __name__ == "__main__":
 
     # call s3 bucket
     s3 = boto3.resource('s3')
-    bucketname = 'admin-console-new-' + account_id
+    bucketname = s3_output_path.replace('s3://', '').split('/')[0]
     bucket = s3.Bucket(bucketname)
 
-    key = 'monitoring/quicksight/group_membership/group_membership.csv'
-    key2 = 'monitoring/quicksight/object_access/object_access.csv'
+    s3_prefix = '/'.join(s3_output_path.replace('s3://', '').split('/')[1:])
+    key = f'{s3_prefix}/group_membership/group_membership.csv'
+    key2 = f'{s3_prefix}/object_access/object_access.csv'
     tmpdir = tempfile.mkdtemp()
     local_file_name = 'group_membership.csv'
     local_file_name2 = 'object_access.csv'

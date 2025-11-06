@@ -11,6 +11,10 @@ Parameters:
     Description: Input the start date for the data in the Cloudtrail bucket in
       YYYY/MM/DD format. For example, if the earliest data in the bucket is from
       1st August 2021, use 2021/08/01
+  ScriptBucketName:
+    Type: String
+    Default: admin-console-cfn-dataprepare-code
+    Description: S3 bucket name containing Glue job scripts
 
 Resources:
   adminconsoledb2025:
@@ -64,9 +68,9 @@ Resources:
           InputFormat: org.apache.hadoop.mapred.TextInputFormat
           Location: !Join
             - ''
-            - - s3://admin-console-new-
+            - - s3://admin-suite-
               - !Ref AWS::AccountId
-              - /monitoring/quicksight/group_membership
+              - /monitoring/quicksight/assets_access/group_membership
           OutputFormat: org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat
           SerdeInfo:
             Parameters:
@@ -126,9 +130,9 @@ Resources:
           InputFormat: org.apache.hadoop.mapred.TextInputFormat
           Location: !Join
             - ''
-            - - s3://admin-console-new-
+            - - s3://admin-suite-
               - !Ref AWS::AccountId
-              - /monitoring/quicksight/object_access
+              - /monitoring/quicksight/assets_access/object_access
           OutputFormat: org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat
           SerdeInfo:
             Parameters:
@@ -166,9 +170,9 @@ Resources:
           InputFormat: org.apache.hadoop.mapred.TextInputFormat
           Location: !Join
             - ''
-            - - s3://admin-console-new-
+            - - s3://admin-suite-
               - !Ref AWS::AccountId
-              - /monitoring/quicksight/folder_assets
+              - /monitoring/quicksight/folder_assets/folder_assets
           OutputFormat: org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat
           SerdeInfo:
             Parameters:
@@ -227,9 +231,9 @@ Resources:
           InputFormat: org.apache.hadoop.mapred.TextInputFormat
           Location: !Join
             - ''
-            - - s3://admin-console-new-
+            - - s3://admin-suite-
               - !Ref AWS::AccountId
-              - /monitoring/quicksight/folder_lk
+              - /monitoring/quicksight/folder_assets/folder_lk
           OutputFormat: org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat
           SerdeInfo:
             Parameters:
@@ -270,9 +274,9 @@ Resources:
           InputFormat: org.apache.hadoop.mapred.TextInputFormat
           Location: !Join
             - ''
-            - - s3://admin-console-new-
+            - - s3://admin-suite-
               - !Ref AWS::AccountId
-              - /monitoring/quicksight/folder_path
+              - /monitoring/quicksight/folder_assets/folder_path
           OutputFormat: org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat
           SerdeInfo:
             Parameters:
@@ -391,114 +395,6 @@ Resources:
               - /${region}
               - /${timestamp}
         TableType: EXTERNAL_TABLE
-    Type: AWS::Glue::Table
-    Properties:
-      CatalogId: !Ref AWS::AccountId
-      DatabaseName: !Ref adminconsoledb2025
-      TableInput:
-        Description: cloudtrail logs
-        Name: cloudtrail_logs_pp
-        StorageDescriptor:
-          Columns:
-            - Comment: eventversion
-              Name: eventversion
-              Type: string
-            - Comment: useridentity
-              Name: useridentity
-              Type: struct<type:string,principalid:string,arn:string,accountid:string,invokedby:string,accesskeyid:string,username:string,sessioncontext:struct<attributes:struct<mfaauthenticated:string,creationdate:string>,sessionissuer:struct<type:string,principalid:string,arn:string,accountid:string,username:string>>>
-            - Comment: eventtime
-              Name: eventtime
-              Type: string
-            - Comment: eventsource
-              Name: eventsource
-              Type: string
-            - Comment: eventname
-              Name: eventname
-              Type: string
-            - Comment: awsregion
-              Name: awsregion
-              Type: string
-            - Comment: sourceipaddress
-              Name: sourceipaddress
-              Type: string
-            - Comment: useragent
-              Name: useragent
-              Type: string
-            - Comment: errorcode
-              Name: errorcode
-              Type: string
-            - Comment: errormessage
-              Name: errormessage
-              Type: string
-            - Comment: requestparameters
-              Name: requestparameters
-              Type: string
-            - Comment: responseelements
-              Name: responseelements
-              Type: string
-            - Comment: additionaleventdata
-              Name: additionaleventdata
-              Type: string
-            - Comment: requestid
-              Name: requestid
-              Type: string
-            - Comment: eventid
-              Name: eventid
-              Type: string
-            - Comment: resources
-              Name: resources
-              Type: array<struct<arn:string,accountid:string,type:string>>
-            - Comment: eventtype
-              Name: eventtype
-              Type: string
-            - Comment: apiversion
-              Name: apiversion
-              Type: string
-            - Comment: readonly
-              Name: readonly
-              Type: string
-            - Comment: recipientaccountid
-              Name: recipientaccountid
-              Type: string
-            - Comment: serviceeventdetails
-              Name: serviceeventdetails
-              Type: string
-            - Comment: sharedeventid
-              Name: sharedeventid
-              Type: string
-            - Comment: vpcendpointid
-              Name: vpcendpointid
-              Type: string
-          InputFormat: com.amazon.emr.cloudtrail.CloudTrailInputFormat
-          Location: !Join
-            - ''
-            - - !Ref CloudtrailLocation
-              - !Ref AWS::Region
-          OutputFormat: org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat
-          SerdeInfo:
-            SerializationLibrary: com.amazon.emr.hive.serde.CloudTrailSerde
-          StoredAsSubDirectories: false
-        PartitionKeys:
-          - Name: timestamp
-            Comment: timestamp
-            Type: string
-        Parameters:
-          classification: cloudtrail
-          projection.enabled: true
-          projection.timestamp.type: date
-          projection.timestamp.format: yyyy/MM/dd
-          projection.timestamp.range: !Join
-            - ','
-            - - !Ref StartDateParameter
-              - NOW
-          projection.timestamp.interval: '1'
-          projection.timestamp.interval.unit: DAYS
-          storage.location.template: !Join
-            - ''
-            - - !Ref CloudtrailLocation
-              - !Ref AWS::Region
-              - /${timestamp}
-        TableType: EXTERNAL_TABLE
   datadict:
     Type: AWS::Glue::Table
     Properties:
@@ -530,9 +426,9 @@ Resources:
           InputFormat: org.apache.hadoop.mapred.TextInputFormat
           Location: !Join
             - ''
-            - - s3://admin-console-new-
+            - - s3://admin-suite-
               - !Ref AWS::AccountId
-              - /monitoring/quicksight/data_dictionary
+              - /monitoring/quicksight/dataset/data_dictionary
           OutputFormat: org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat
           SerdeInfo:
             Parameters:
@@ -595,9 +491,9 @@ Resources:
           InputFormat: org.apache.hadoop.mapred.TextInputFormat
           Location: !Join
             - ''
-            - - s3://admin-console-new-
+            - - s3://admin-suite-
               - !Ref AWS::AccountId
-              - /monitoring/quicksight/datsets_info
+              - /monitoring/quicksight/dataset/datasets_info
           OutputFormat: org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat
           SerdeInfo:
             Parameters:
@@ -640,9 +536,9 @@ Resources:
           InputFormat: org.apache.hadoop.mapred.TextInputFormat
           Location: !Join
             - ''
-            - - s3://admin-console-new-
+            - - s3://admin-suite-
               - !Ref AWS::AccountId
-              - /monitoring/quicksight/q_topics_info
+              - /monitoring/quicksight/q_md/q_topics_info
           OutputFormat: org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat
           SerdeInfo:
             Parameters:
@@ -698,9 +594,9 @@ Resources:
           InputFormat: org.apache.hadoop.mapred.TextInputFormat
           Location: !Join
             - ''
-            - - s3://admin-console-new-
+            - - s3://admin-suite-
               - !Ref AWS::AccountId
-              - /monitoring/quicksight/q_object_access
+              - /monitoring/quicksight/q_md/q_object_access
           OutputFormat: org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat
           SerdeInfo:
             Parameters:
@@ -766,18 +662,6 @@ Resources:
             - Comment: error info message
               Name: error_info_message
               Type: string
-            - Comment: principal type
-              Name: principal_type
-              Type: string
-            - Comment: principal name
-              Name: principal
-              Type: string
-            - Comment: additional info
-              Name: additional_info
-              Type: string
-            - Comment: actions
-              Name: actions
-              Type: string
             - Comment: is file indicator
               Name: is_file
               Type: string
@@ -785,9 +669,9 @@ Resources:
           InputFormat: org.apache.hadoop.mapred.TextInputFormat
           Location: !Join
             - ''
-            - - s3://admin-console-new-
+            - - s3://admin-suite-
               - !Ref AWS::AccountId
-              - /monitoring/quicksight/datasets_properties
+              - /monitoring/quicksight/dataset/datasets_properties
           OutputFormat: org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat
           SerdeInfo:
             Parameters:
@@ -799,10 +683,13 @@ Resources:
     Type: AWS::Glue::Table
     Properties:
       CatalogId: !Ref AWS::AccountId
-      DatabaseName: admin-console-2025
+      DatabaseName: !Ref adminconsoledb2025
       TableInput:
         Name: datasource_property
         Description: QuickSight dataset to datasource dependency mapping
+        Parameters:
+          classification: csv
+          skip.header.line.count: 1
         StorageDescriptor:
           Columns:
             - Comment: AWS region
@@ -833,7 +720,7 @@ Resources:
           InputFormat: org.apache.hadoop.mapred.TextInputFormat
           Location: !Join
             - ''
-            - - s3://admin-console-new-
+            - - s3://admin-suite-
               - !Ref AWS::AccountId
               - /monitoring/quicksight/datasource_property
           OutputFormat: org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat
@@ -848,11 +735,11 @@ Resources:
     Type: AWS::Glue::Crawler
     Properties:
       Name: crawler-cw-qs-ds
-      Role: !Sub arn:aws:iam::${AWS::AccountId}:role/QuickSightAdminConsole2025
-      DatabaseName: admin-console-2025
+      Role: !Sub arn:aws:iam::${AWS::AccountId}:role/QuickSuiteAdmin-${AWS::AccountId}
+      DatabaseName: !Ref adminconsoledb2025
       Targets:
         S3Targets:
-          - Path: !Sub s3://cw-qs-ds-${AWS::AccountId}/
+          - Path: !Sub s3://admin-suite-${AWS::AccountId}/cloudwatch/cw-qs-ds/
       SchemaChangePolicy:
         UpdateBehavior: UPDATE_IN_DATABASE
         DeleteBehavior: DEPRECATE_IN_DATABASE
@@ -870,15 +757,17 @@ Resources:
         }
       RecrawlPolicy:
         RecrawlBehavior: CRAWL_EVERYTHING
+      Schedule:
+        ScheduleExpression: cron(0 4 * * ? *)
   CrawlerCwQsSpice:
     Type: AWS::Glue::Crawler
     Properties:
       Name: crawler-cw-qs-spice
-      Role: !Sub arn:aws:iam::${AWS::AccountId}:role/QuickSightAdminConsole2025
-      DatabaseName: admin-console-2025
+      Role: !Sub arn:aws:iam::${AWS::AccountId}:role/QuickSuiteAdmin-${AWS::AccountId}
+      DatabaseName: !Ref adminconsoledb2025
       Targets:
         S3Targets:
-          - Path: !Sub s3://cw-qs-spice-${AWS::AccountId}/
+          - Path: !Sub s3://admin-suite-${AWS::AccountId}/cloudwatch/cw-qs-spice/
       SchemaChangePolicy:
         UpdateBehavior: UPDATE_IN_DATABASE
         DeleteBehavior: DEPRECATE_IN_DATABASE
@@ -896,15 +785,17 @@ Resources:
         }
       RecrawlPolicy:
         RecrawlBehavior: CRAWL_EVERYTHING
+      Schedule:
+        ScheduleExpression: cron(15 4 * * ? *)
   CrawlerCwQsQIndex:
     Type: AWS::Glue::Crawler
     Properties:
       Name: crawler-cw-qs-qindex
-      Role: !Sub arn:aws:iam::${AWS::AccountId}:role/QuickSightAdminConsole2025
-      DatabaseName: admin-console-2025
+      Role: !Sub arn:aws:iam::${AWS::AccountId}:role/QuickSuiteAdmin-${AWS::AccountId}
+      DatabaseName: !Ref adminconsoledb2025
       Targets:
         S3Targets:
-          - Path: !Sub s3://cw-qs-qindex-${AWS::AccountId}/
+          - Path: !Sub s3://admin-suite-${AWS::AccountId}/cloudwatch/cw-qs-qindex/
       SchemaChangePolicy:
         UpdateBehavior: UPDATE_IN_DATABASE
         DeleteBehavior: DEPRECATE_IN_DATABASE
@@ -922,15 +813,17 @@ Resources:
         }
       RecrawlPolicy:
         RecrawlBehavior: CRAWL_EVERYTHING
+      Schedule:
+        ScheduleExpression: cron(30 4 * * ? *)
   CrawlerCwQsQAction:
     Type: AWS::Glue::Crawler
     Properties:
       Name: crawler-cw-qs-qaction
-      Role: !Sub arn:aws:iam::${AWS::AccountId}:role/QuickSightAdminConsole2025
-      DatabaseName: admin-console-2025
+      Role: !Sub arn:aws:iam::${AWS::AccountId}:role/QuickSuiteAdmin-${AWS::AccountId}
+      DatabaseName: !Ref adminconsoledb2025
       Targets:
         S3Targets:
-          - Path: !Sub s3://cw-qs-qaction-${AWS::AccountId}/
+          - Path: !Sub s3://admin-suite-${AWS::AccountId}/cloudwatch/cw-qs-qaction/
       SchemaChangePolicy:
         UpdateBehavior: UPDATE_IN_DATABASE
         DeleteBehavior: DEPRECATE_IN_DATABASE
@@ -948,15 +841,17 @@ Resources:
         }
       RecrawlPolicy:
         RecrawlBehavior: CRAWL_EVERYTHING
+      Schedule:
+        ScheduleExpression: cron(45 4 * * ? *)
   CrawlerCwQsDashVisual:
     Type: AWS::Glue::Crawler
     Properties:
       Name: crawler-cw-qs-dash-visual
-      Role: !Sub arn:aws:iam::${AWS::AccountId}:role/QuickSightAdminConsole2025
-      DatabaseName: admin-console-2025
+      Role: !Sub arn:aws:iam::${AWS::AccountId}:role/QuickSuiteAdmin-${AWS::AccountId}
+      DatabaseName: !Ref adminconsoledb2025
       Targets:
         S3Targets:
-          - Path: !Sub s3://cw-qs-dash-visual-${AWS::AccountId}/
+          - Path: !Sub s3://admin-suite-${AWS::AccountId}/cloudwatch/cw-qs-dash-visual/
       SchemaChangePolicy:
         UpdateBehavior: UPDATE_IN_DATABASE
         DeleteBehavior: DEPRECATE_IN_DATABASE
@@ -974,128 +869,22 @@ Resources:
         }
       RecrawlPolicy:
         RecrawlBehavior: CRAWL_EVERYTHING
-  CrawlerCwQsDsAddPart:
-    Type: AWS::Glue::Crawler
-    DependsOn: CwQsDsTable
-    Properties:
-      Name: crawler-cw-qs-ds-add-part
-      Role: !Sub arn:aws:iam::${AWS::AccountId}:role/QuickSightAdminConsole2025
-      DatabaseName: admin-console-2025
-      Targets:
-        CatalogTargets:
-          - DatabaseName: admin-console-2025
-            Tables:
-              - !Sub cw_qs_ds_${AWS::AccountId}
-      SchemaChangePolicy:
-        UpdateBehavior: UPDATE_IN_DATABASE
-        DeleteBehavior: LOG
       Schedule:
-        ScheduleExpression: cron(0 * * * ? *)
-      Configuration: |
-        {
-          "Version": 1.0,
-          "CrawlerOutput": {
-            "Partitions": {"AddOrUpdateBehavior": "InheritFromTable"},
-            "Tables": {"AddOrUpdateBehavior": "MergeNewColumns"}
-          }
-        }
-  CrawlerCwQsSpiceAddPart:
-    Type: AWS::Glue::Crawler
-    DependsOn: CwQsSpiceTable
+        ScheduleExpression: cron(0 5 * * ? *)
+
+  CrawlerTriggerJob:
+    Type: AWS::Glue::Job
     Properties:
-      Name: crawler-cw-qs-spice-add-part
-      Role: !Sub arn:aws:iam::${AWS::AccountId}:role/QuickSightAdminConsole2025
-      DatabaseName: admin-console-2025
-      Targets:
-        CatalogTargets:
-          - DatabaseName: admin-console-2025
-            Tables:
-              - !Sub cw_qs_spice_${AWS::AccountId}
-      SchemaChangePolicy:
-        UpdateBehavior: UPDATE_IN_DATABASE
-        DeleteBehavior: LOG
-      Schedule:
-        ScheduleExpression: cron(0 * * * ? *)
-      Configuration: |
-        {
-          "Version": 1.0,
-          "CrawlerOutput": {
-            "Partitions": {"AddOrUpdateBehavior": "InheritFromTable"},
-            "Tables": {"AddOrUpdateBehavior": "MergeNewColumns"}
-          }
-        }
-  CrawlerCwQsQIndexAddPart:
-    Type: AWS::Glue::Crawler
-    DependsOn: CwQsQIndexTable
-    Properties:
-      Name: crawler-cw-qs-qindex-add-part
-      Role: !Sub arn:aws:iam::${AWS::AccountId}:role/QuickSightAdminConsole2025
-      DatabaseName: admin-console-2025
-      Targets:
-        CatalogTargets:
-          - DatabaseName: admin-console-2025
-            Tables:
-              - !Sub cw_qs_qindex_${AWS::AccountId}
-      SchemaChangePolicy:
-        UpdateBehavior: UPDATE_IN_DATABASE
-        DeleteBehavior: LOG
-      Schedule:
-        ScheduleExpression: cron(0 * * * ? *)
-      Configuration: |
-        {
-          "Version": 1.0,
-          "CrawlerOutput": {
-            "Partitions": {"AddOrUpdateBehavior": "InheritFromTable"},
-            "Tables": {"AddOrUpdateBehavior": "MergeNewColumns"}
-          }
-        }
-  CrawlerCwQsQActionAddPart:
-    Type: AWS::Glue::Crawler
-    DependsOn: CwQsQActionTable
-    Properties:
-      Name: crawler-cw-qs-qaction-add-part
-      Role: !Sub arn:aws:iam::${AWS::AccountId}:role/QuickSightAdminConsole2025
-      DatabaseName: admin-console-2025
-      Targets:
-        CatalogTargets:
-          - DatabaseName: admin-console-2025
-            Tables:
-              - !Sub cw_qs_qaction_${AWS::AccountId}
-      SchemaChangePolicy:
-        UpdateBehavior: UPDATE_IN_DATABASE
-        DeleteBehavior: LOG
-      Schedule:
-        ScheduleExpression: cron(0 * * * ? *)
-      Configuration: |
-        {
-          "Version": 1.0,
-          "CrawlerOutput": {
-            "Partitions": {"AddOrUpdateBehavior": "InheritFromTable"},
-            "Tables": {"AddOrUpdateBehavior": "MergeNewColumns"}
-          }
-        }
-  CrawlerCwQsDashVisualAddPart:
-    Type: AWS::Glue::Crawler
-    DependsOn: CwQsDashVisualTable
-    Properties:
-      Name: crawler-cw-qs-dash-visual-add-part
-      Role: !Sub arn:aws:iam::${AWS::AccountId}:role/QuickSightAdminConsole2025
-      DatabaseName: admin-console-2025
-      Targets:
-        CatalogTargets:
-          - DatabaseName: admin-console-2025
-            Tables:
-              - !Sub cw_qs_dash_visual_${AWS::AccountId}
-      SchemaChangePolicy:
-        UpdateBehavior: UPDATE_IN_DATABASE
-        DeleteBehavior: LOG
-      Schedule:
-        ScheduleExpression: cron(0 * * * ? *)
-      Configuration: |
-        {
-          "Version": 1.0,
-          "CrawlerOutput": {
-            "Partitions": {"AddOrUpdateBehavior": "InheritFromTable"},
-            "Tables": {"AddOrUpdateBehavior": "MergeNewColumns"}
-          }
-        }
+      Name: crawler-trigger-job
+      Role: !Sub arn:aws:iam::${AWS::AccountId}:role/QuickSuiteAdmin-${AWS::AccountId}
+      Command:
+        Name: pythonshell
+        ScriptLocation: !Sub s3://${ScriptBucketName}/glue/scripts/2025/crawler_trigger.py
+        PythonVersion: '3.9'
+      DefaultArguments:
+        '--job-language': python
+        '--enable-metrics': ''
+      MaxRetries: 0
+      Timeout: 60
+      GlueVersion: '3.0'
+      MaxCapacity: 0.0625

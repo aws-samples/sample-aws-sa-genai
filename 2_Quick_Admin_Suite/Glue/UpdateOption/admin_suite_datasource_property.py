@@ -15,9 +15,10 @@ from awsglue.utils import getResolvedOptions
 import botocore
 
 # Get AWS region and QuickSight Identity Region from Glue job parameters
-args = getResolvedOptions(sys.argv, ['AWS_REGION', 'QUICKSIGHT_IDENTITY_REGION'])
+args = getResolvedOptions(sys.argv, ['AWS_REGION', 'QUICKSIGHT_IDENTITY_REGION', 'S3_OUTPUT_PATH'])
 aws_region = args['AWS_REGION']
 quicksight_identity_region = args['QUICKSIGHT_IDENTITY_REGION']
+s3_output_path = args['S3_OUTPUT_PATH']
 
 # Initialize AWS service clients for SNS, QuickSight and STS
 client = boto3.client('sns')
@@ -28,11 +29,12 @@ aws_account_id = client2.get_caller_identity()['Account']
 
 # Initialize S3 resource and set up bucket name
 s3 = boto3.resource('s3')
-bucketname = 'admin-console-new-' + aws_account_id
+bucketname = s3_output_path.replace('s3://', '').split('/')[0]
 bucket = s3.Bucket(bucketname)
 
 # Define S3 key paths for storing different QuickSight information
-key = 'monitoring/quicksight/datasource_property/datasource_property.csv'
+s3_prefix = '/'.join(s3_output_path.replace('s3://', '').split('/')[1:])
+key = f'{s3_prefix}/datasource_property.csv'
 
 # Create temporary directory and file path for processing
 tmpdir = tempfile.mkdtemp()

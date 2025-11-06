@@ -34,9 +34,10 @@ global account_id
 global aws_region
 sts_client = boto3.client("sts", config=default_botocore_config())
 account_id = sts_client.get_caller_identity()["Account"]
-args = getResolvedOptions(sys.argv, ['AWS_REGION'])
+args = getResolvedOptions(sys.argv, ['AWS_REGION', 'S3_OUTPUT_PATH'])
 print('region', args['AWS_REGION'])
 aws_region = args['AWS_REGION']
+s3_output_path = args['S3_OUTPUT_PATH']
 qs_client = boto3.client('quicksight', config=default_botocore_config())
 qs_local_client = boto3.client('quicksight', region_name=aws_region, config=default_botocore_config())
 
@@ -212,9 +213,9 @@ def describe_data_source_permissions(account_id, DataSourceId, aws_region):
     )
     return res
 
-def get_s3_bucket_name(account_id: str) -> str:
-        """Generate S3 bucket name based on account ID."""
-        return f"admin-console-new-{account_id}"
+def get_s3_bucket_name_from_path(s3_path: str) -> str:
+        """Extract S3 bucket name from S3 path."""
+        return s3_path.replace('s3://', '').split('/')[0]
 
 if __name__ == "__main__":
     #sts_client = boto3.client("sts", region_name=aws_region, config=default_botocore_config())
@@ -222,7 +223,7 @@ if __name__ == "__main__":
     
     # Create S3 resource
     s3 = boto3.resource('s3')
-    bucketname = get_s3_bucket_name(account_id)
+    bucketname = get_s3_bucket_name_from_path(s3_output_path)
     bucket = s3.Bucket(bucketname)
 
     # Check if bucket exists
@@ -237,9 +238,9 @@ if __name__ == "__main__":
             raise e
     
     # Create a temporary directory to store CSV files
-    key1 = 'monitoring/quicksight/datsets_info/datsets_info.csv'
-    #key2 = 'monitoring/quicksight/datsets_ingestion/datsets_ingestion.csv'
-    key3 = 'monitoring/quicksight/data_dictionary/data_dictionary.csv'
+    s3_prefix = '/'.join(s3_output_path.replace('s3://', '').split('/')[1:])
+    key1 = f'{s3_prefix}/datsets_info/datsets_info.csv'
+    key3 = f'{s3_prefix}/data_dictionary/data_dictionary.csv'
     tmpdir = tempfile.mkdtemp()
     local_file_name1 = 'datsets_info.csv'
     #local_file_name2 = 'datsets_ingestion.csv'
