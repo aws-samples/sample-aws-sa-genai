@@ -95,21 +95,19 @@ resource "aws_kinesis_firehose_delivery_stream" "cw_qs_qaction" {
   destination = "s3"
 
   s3_configuration {
-    role_arn   = aws_iam_role.quicksight_admin_console_2025.arn
-    bucket_arn = aws_s3_bucket.cw_qs_qaction.arn
+    role_arn   = aws_iam_role.quicksuite_admin.arn
+    bucket_arn = aws_s3_bucket.admin_suite.arn
+    prefix     = "cloudwatch/cw-qs-qaction/"
   }
 
-  depends_on = [
-    aws_iam_role.quicksight_admin_console_2025,
-    aws_s3_bucket.cw_qs_qaction
-  ]
+  depends_on = [aws_iam_role.quicksuite_admin]
 }
 
 # CloudWatch Metric Streams
 resource "aws_cloudwatch_metric_stream" "ds" {
   name          = "cw-qs-ds"
   firehose_arn  = aws_kinesis_firehose_delivery_stream.cw_qs_ds.arn
-  role_arn      = aws_iam_role.quicksuite_cw_stream_role.arn
+  role_arn      = aws_iam_role.quicksuite_admin.arn
   output_format = "json"
 
   include_filter {
@@ -126,7 +124,7 @@ resource "aws_cloudwatch_metric_stream" "ds" {
 resource "aws_cloudwatch_metric_stream" "dash_visual" {
   name          = "cw-qs-dash-visual"
   firehose_arn  = aws_kinesis_firehose_delivery_stream.cw_qs_dash_visual.arn
-  role_arn      = aws_iam_role.quicksuite_cw_stream_role.arn
+  role_arn      = aws_iam_role.quicksuite_admin.arn
   output_format = "json"
 
   include_filter {
@@ -143,7 +141,7 @@ resource "aws_cloudwatch_metric_stream" "dash_visual" {
 resource "aws_cloudwatch_metric_stream" "spice" {
   name          = "cw-qs-spice"
   firehose_arn  = aws_kinesis_firehose_delivery_stream.cw_qs_spice.arn
-  role_arn      = aws_iam_role.quicksuite_cw_stream_role.arn
+  role_arn      = aws_iam_role.quicksuite_admin.arn
   output_format = "json"
 
   include_filter {
@@ -158,7 +156,7 @@ resource "aws_cloudwatch_metric_stream" "spice" {
 resource "aws_cloudwatch_metric_stream" "qindex" {
   name          = "cw-qs-qindex"
   firehose_arn  = aws_kinesis_firehose_delivery_stream.cw_qs_qindex.arn
-  role_arn      = aws_iam_role.quicksuite_cw_stream_role.arn
+  role_arn      = aws_iam_role.quicksuite_admin.arn
   output_format = "json"
 
   include_filter {
@@ -173,7 +171,7 @@ resource "aws_cloudwatch_metric_stream" "qindex" {
 resource "aws_cloudwatch_metric_stream" "qaction" {
   name          = "cw-qs-qaction"
   firehose_arn  = aws_kinesis_firehose_delivery_stream.cw_qs_qaction.arn
-  role_arn      = aws_iam_role.quicksuite_cw_stream_role.arn
+  role_arn      = aws_iam_role.quicksuite_admin.arn
   output_format = "json"
 
   include_filter {

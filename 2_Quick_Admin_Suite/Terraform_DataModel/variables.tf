@@ -22,3 +22,9 @@ variable "start_date_parameter" {
   }
 }
 
+variable "script_bucket_name" {
+  description = "S3 bucket name containing Glue job scripts"
+  type        = string
+  default     = "admin-console-cfn-dataprepare-code"
+}
+
