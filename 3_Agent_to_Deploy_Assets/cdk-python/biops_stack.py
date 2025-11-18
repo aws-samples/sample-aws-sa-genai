@@ -8,6 +8,7 @@ from aws_cdk import (
     aws_dynamodb as dynamodb,
     aws_iam as iam,
     aws_s3 as s3,
+    aws_cognito as cognito,
 )
 from constructs import Construct
 import os
@@ -15,6 +16,52 @@ import os
 class BiopsStack(Stack):
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
+
+        # Cognito User Pool
+        user_pool = cognito.UserPool(
+            self, "BiopsUserPool",
+            user_pool_name="biops-users",
+            sign_in_aliases=cognito.SignInAliases(email=True),
+            auto_verify=cognito.AutoVerifiedAttrs(email=True),
+            password_policy=cognito.PasswordPolicy(
+                min_length=8,
+                require_lowercase=True,
+                require_uppercase=True,
+                require_digits=True,
+                require_symbols=True
+            ),
+            account_recovery=cognito.AccountRecovery.EMAIL_ONLY,
+            removal_policy=RemovalPolicy.DESTROY
+        )
+
+        # Cognito User Pool Client
+        user_pool_client = cognito.UserPoolClient(
+            self, "BiopsUserPoolClient",
+            user_pool=user_pool,
+            user_pool_client_name="biops-client",
+            generate_secret=False,
+            auth_flows=cognito.AuthFlow(
+                user_password=True,
+                user_srp=True
+            ),
+            o_auth=cognito.OAuthSettings(
+                flows=cognito.OAuthFlows(
+                    authorization_code_grant=True,
+                    implicit_code_grant=True
+                ),
+                scopes=[cognito.OAuthScope.OPENID, cognito.OAuthScope.EMAIL, cognito.OAuthScope.PROFILE],
+                callback_urls=["http://localhost:3000/callback", "https://localhost:3000/callback"]
+            )
+        )
+
+        # Cognito User Pool Domain
+        user_pool_domain = cognito.UserPoolDomain(
+            self, "BiopsUserPoolDomain",
+            user_pool=user_pool,
+            cognito_domain=cognito.CognitoDomainOptions(
+                domain_prefix=f"biops-{self.account}"
+            )
+        )
 
         # DynamoDB Table
         job_table = dynamodb.Table(
@@ -137,6 +184,13 @@ class BiopsStack(Stack):
             environment={"DYNAMODB_TABLE": job_table.table_name}
         )
 
+        # Cognito Authorizer
+        cognito_authorizer = apigateway.CognitoUserPoolsAuthorizer(
+            self, "BiopsAuthorizer",
+            cognito_user_pools=[user_pool],
+            authorizer_name="biops-authorizer"
+        )
+
         # API Gateway
         api = apigateway.RestApi(
             self, "BiopsApi",
@@ -159,17 +213,17 @@ class BiopsStack(Stack):
         import_job_id_resource = import_resource.add_resource("{importJobId}")
         permissions_resource = api.root.add_resource("permissions")
 
-        # API Methods
-        jobs_resource.add_method("GET", apigateway.LambdaIntegration(job_api_function))
-        jobs_resource.add_method("POST", apigateway.LambdaIntegration(job_api_function))
-        job_id_resource.add_method("GET", apigateway.LambdaIntegration(job_api_function))
+        # API Methods with Cognito Authorization
+        jobs_resource.add_method("GET", apigateway.LambdaIntegration(job_api_function), authorizer=cognito_authorizer)
+        jobs_resource.add_method("POST", apigateway.LambdaIntegration(job_api_function), authorizer=cognito_authorizer)
+        job_id_resource.add_method("GET", apigateway.LambdaIntegration(job_api_function), authorizer=cognito_authorizer)
 
-        export_resource.add_method("POST", apigateway.LambdaIntegration(export_function))
-        export_job_id_resource.add_method("GET", apigateway.LambdaIntegration(export_function))
-        upload_resource.add_method("POST", apigateway.LambdaIntegration(upload_function))
-        import_resource.add_method("POST", apigateway.LambdaIntegration(import_function))
-        import_job_id_resource.add_method("GET", apigateway.LambdaIntegration(import_function))
-        permissions_resource.add_method("POST", apigateway.LambdaIntegration(permissions_function))
+        export_resource.add_method("POST", apigateway.LambdaIntegration(export_function), authorizer=cognito_authorizer)
+        export_job_id_resource.add_method("GET", apigateway.LambdaIntegration(export_function), authorizer=cognito_authorizer)
+        upload_resource.add_method("POST", apigateway.LambdaIntegration(upload_function), authorizer=cognito_authorizer)
+        import_resource.add_method("POST", apigateway.LambdaIntegration(import_function), authorizer=cognito_authorizer)
+        import_job_id_resource.add_method("GET", apigateway.LambdaIntegration(import_function), authorizer=cognito_authorizer)
+        permissions_resource.add_method("POST", apigateway.LambdaIntegration(permissions_function), authorizer=cognito_authorizer)
 
         # S3 Bucket for asset storage
         asset_bucket = s3.Bucket(
@@ -183,3 +237,6 @@ class BiopsStack(Stack):
         CfnOutput(self, "ApiUrl", value=api.url, description="API Gateway endpoint URL")
         CfnOutput(self, "DynamoDBTable", value=job_table.table_name, description="DynamoDB table name")
         CfnOutput(self, "AssetBucketName", value=asset_bucket.bucket_name, description="S3 bucket for asset storage")
+        CfnOutput(self, "UserPoolId", value=user_pool.user_pool_id, description="Cognito User Pool ID")
+        CfnOutput(self, "UserPoolClientId", value=user_pool_client.user_pool_client_id, description="Cognito User Pool Client ID")
+        CfnOutput(self, "CognitoDomain", value=user_pool_domain.domain_name, description="Cognito Domain")

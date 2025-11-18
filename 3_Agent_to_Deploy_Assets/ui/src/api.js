@@ -1,4 +1,5 @@
 import axios from 'axios';
+import AuthService from './auth';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://your-api-id.execute-api.us-east-1.amazonaws.com/prod';
 
@@ -8,6 +9,31 @@ const api = axios.create({
     'Content-Type': 'application/json',
   },
 });
+
+// Add request interceptor to include auth headers
+api.interceptors.request.use(
+  (config) => {
+    const authHeaders = AuthService.getAuthHeaders();
+    config.headers = { ...config.headers, ...authHeaders };
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// Add response interceptor to handle auth errors
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Token expired or invalid, redirect to login
+      AuthService.signOut();
+      window.location.reload();
+    }
+    return Promise.reject(error);
+  }
+);
 
 export const jobsAPI = {
   createJob: (config, initiatedBy) => 

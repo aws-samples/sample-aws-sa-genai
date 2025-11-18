@@ -26,33 +26,27 @@ def lambda_handler(event, context):
                 aws_region = body.get('aws_region', 'us-east-1')
             
             elif http_method == 'GET' and '/export/' in path:
-                # Get export job status from DynamoDB
+                # Get export job status
                 export_job_id = path.split('/export/')[-1]
+                body = json.loads(event.get('body', '{}'))
+                source_account_id = body['source_account_id']
+                source_role_name = body['source_role_name']
+                aws_region = body.get('aws_region', 'us-east-1')
                 
-                # Query DynamoDB for job status
-                from shared.dynamodb_utils import JobStatusManager
-                job_manager = JobStatusManager()
+                # Assume role and get job status
+                source_session = assume_role(source_account_id, source_role_name, aws_region)
+                qs_client = source_session.client('quicksight')
                 
-                try:
-                    job_record = job_manager.get_job(export_job_id)
-                    if job_record:
-                        return {
-                            'statusCode': 200,
-                            'headers': {'Content-Type': 'application/json'},
-                            'body': json.dumps(job_record)
-                        }
-                    else:
-                        return {
-                            'statusCode': 404,
-                            'headers': {'Content-Type': 'application/json'},
-                            'body': json.dumps({'error': f'Job {export_job_id} not found'})
-                        }
-                except Exception as e:
-                    return {
-                        'statusCode': 500,
-                        'headers': {'Content-Type': 'application/json'},
-                        'body': json.dumps({'error': f'Failed to retrieve job: {str(e)}'})
-                    }
+                response = qs_client.describe_asset_bundle_export_job(
+                    AwsAccountId=source_account_id,
+                    AssetBundleExportJobId=export_job_id
+                )
+                
+                return {
+                    'statusCode': 200,
+                    'headers': {'Content-Type': 'application/json'},
+                    'body': json.dumps(response)
+                }
             else:
                 return {
                     'statusCode': 404,
