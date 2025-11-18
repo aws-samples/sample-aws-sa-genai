@@ -1,0 +1,47 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'IAM role in source account to allow tools account to export QuickSight assets'
+
+Parameters:
+  ToolsAccountId:
+    Type: String
+    Description: AWS Account ID of the tools account that hosts BIOPS infrastructure
+  LambdaRoleName:
+    Type: String
+    Default: BiopsStack-BiopsLambdaRole58B3079D-6oNrETkJT7Xv
+    Description: Name of the Lambda execution role in the tools account
+
+Resources:
+  BiopsSourceAccountRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: BiopsSourceAccountRole
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: !Sub 'arn:aws:iam::${ToolsAccountId}:role/${LambdaRoleName}'
+            Action: sts:AssumeRole
+            Condition:
+              StringEquals:
+                'sts:ExternalId': 'biops-export-access'
+      Policies:
+        - PolicyName: QuickSightExportPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - quicksight:DescribeAssetBundleExportJob
+                  - quicksight:ListAssetBundleExportJobs
+                  - quicksight:StartAssetBundleExportJob
+                  - quicksight:Describe*
+                  - quicksight:List*
+                Resource: '*'
+
+Outputs:
+  RoleArn:
+    Description: ARN of the source account role
+    Value: !GetAtt BiopsSourceAccountRole.Arn
+    Export:
+      Name: !Sub "${AWS::StackName}-SourceRoleArn"

@@ -1,0 +1,15 @@
+Outputs:
+BiopsStack.ApiUrl = https://7q563ixn1d.execute-api.us-east-1.amazonaws.com/prod/
+BiopsStack.BiopsApiEndpointC1512CF6 = https://7q563ixn1d.execute-api.us-east-1.amazonaws.com/prod/
+BiopsStack.DynamoDBTable = biops-job-runs
+
+
+
+
+tools:
+BiopsStack.ApiUrl = https://vfd1sccza3.execute-api.us-east-1.amazonaws.com/prod/
+BiopsStack.AssetBucketName = biops-version-control-demo-038198578763
+BiopsStack.BiopsApiEndpointC1512CF6 = https://vfd1sccza3.execute-api.us-east-1.amazonaws.com/prod/
+BiopsStack.DynamoDBTable = biops-job-runs
+Stack ARN:
+arn:aws:cloudformation:us-east-1:038198578763:stack/BiopsStack/c702b9a0-c32b-11f0-9605-0e15c688abe7

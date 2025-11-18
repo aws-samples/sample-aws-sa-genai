@@ -1,0 +1,99 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'IAM role in target account to allow tools account to import QuickSight assets'
+
+Parameters:
+  ToolsAccountId:
+    Type: String
+    Description: AWS Account ID of the tools account that hosts BIOPS infrastructure
+  LambdaRoleName:
+    Type: String
+    Default: BiopsStack-BiopsLambdaRole58B3079D-6oNrETkJT7Xv
+    Description: Name of the Lambda execution role in the tools account
+
+Resources:
+  BiopsTargetAccountRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: BiopsTargetAccountRole
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: !Sub 'arn:aws:iam::${ToolsAccountId}:role/${LambdaRoleName}'
+            Action: sts:AssumeRole
+            Condition:
+              StringEquals:
+                'sts:ExternalId': 'biops-import-access'
+      Policies:
+        - PolicyName: QuickSightImportPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - quicksight:DescribeAssetBundleImportJob
+                  - quicksight:ListAssetBundleImportJobs
+                  - quicksight:StartAssetBundleImportJob
+                  - quicksight:CreateAnalysis
+                  - quicksight:DeleteAnalysis
+                  - quicksight:DescribeAnalysis
+                  - quicksight:UpdateAnalysis
+                  - quicksight:CreateDashboard
+                  - quicksight:DeleteDashboard
+                  - quicksight:DescribeDashboard
+                  - quicksight:UpdateDashboard
+                  - quicksight:UpdateDashboardLinks
+                  - quicksight:UpdateDashboardPublishedVersion
+                  - quicksight:CreateDataSet
+                  - quicksight:DeleteDataSet
+                  - quicksight:DescribeDataSet
+                  - quicksight:PassDataSet
+                  - quicksight:UpdateDataSet
+                  - quicksight:DeleteDataSetRefreshProperties
+                  - quicksight:DescribeDataSetRefreshProperties
+                  - quicksight:PutDataSetRefreshProperties
+                  - quicksight:CreateRefreshSchedule
+                  - quicksight:DescribeRefreshSchedule
+                  - quicksight:DeleteRefreshSchedule
+                  - quicksight:ListRefreshSchedules
+                  - quicksight:UpdateRefreshSchedule
+                  - quicksight:CreateDataSource
+                  - quicksight:DescribeDataSource
+                  - quicksight:DeleteDataSource
+                  - quicksight:PassDataSource
+                  - quicksight:UpdateDataSource
+                  - quicksight:CreateTheme
+                  - quicksight:DeleteTheme
+                  - quicksight:DescribeTheme
+                  - quicksight:UpdateTheme
+                  - quicksight:CreateVPCConnection
+                  - quicksight:DescribeVPCConnection
+                  - quicksight:DeleteVPCConnection
+                  - quicksight:UpdateVPCConnection
+                  - quicksight:DescribeAnalysisPermissions
+                  - quicksight:DescribeDashboardPermissions
+                  - quicksight:DescribeDataSetPermissions
+                  - quicksight:DescribeDataSourcePermissions
+                  - quicksight:DescribeThemePermissions
+                  - quicksight:UpdateAnalysisPermissions
+                  - quicksight:UpdateDashboardPermissions
+                  - quicksight:UpdateDataSetPermissions
+                  - quicksight:UpdateDataSourcePermissions
+                  - quicksight:UpdateThemePermissions
+                  - quicksight:ListTagsForResource
+                  - quicksight:TagResource
+                  - quicksight:UntagResource
+                  - quicksight:SearchDashboards
+                  - quicksight:ListUsers
+                  - quicksight:DescribeUser
+                  - s3:GetObject
+                  - iam:PassRole
+                Resource: '*'
+
+Outputs:
+  RoleArn:
+    Description: ARN of the target account role
+    Value: !GetAtt BiopsTargetAccountRole.Arn
+    Export:
+      Name: !Sub "${AWS::StackName}-TargetRoleArn"

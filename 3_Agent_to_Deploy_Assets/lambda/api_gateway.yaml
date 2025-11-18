@@ -1,0 +1,239 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'API Gateway for BIOPS job management'
+
+Resources:
+  BiopsApi:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: biops-job-api
+      Description: API for BIOPS asset deployment job management
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+
+  JobsResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      RestApiId: !Ref BiopsApi
+      ParentId: !GetAtt BiopsApi.RootResourceId
+      PathPart: jobs
+
+  JobIdResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      RestApiId: !Ref BiopsApi
+      ParentId: !Ref JobsResource
+      PathPart: '{jobId}'
+
+  ExportResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      RestApiId: !Ref BiopsApi
+      ParentId: !GetAtt BiopsApi.RootResourceId
+      PathPart: export
+
+  ExportJobIdResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      RestApiId: !Ref BiopsApi
+      ParentId: !Ref ExportResource
+      PathPart: '{exportJobId}'
+
+  UploadResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      RestApiId: !Ref BiopsApi
+      ParentId: !GetAtt BiopsApi.RootResourceId
+      PathPart: upload
+
+  ImportResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      RestApiId: !Ref BiopsApi
+      ParentId: !GetAtt BiopsApi.RootResourceId
+      PathPart: import
+
+  PermissionsResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      RestApiId: !Ref BiopsApi
+      ParentId: !GetAtt BiopsApi.RootResourceId
+      PathPart: permissions
+
+  ImportJobIdResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      RestApiId: !Ref BiopsApi
+      ParentId: !Ref ImportResource
+      PathPart: '{importJobId}'
+
+  JobsGetMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref BiopsApi
+      ResourceId: !Ref JobsResource
+      HttpMethod: GET
+      AuthorizationType: NONE
+      Integration:
+        Type: AWS_PROXY
+        IntegrationHttpMethod: POST
+        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:biops-job-api/invocations'
+
+  JobsPostMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref BiopsApi
+      ResourceId: !Ref JobsResource
+      HttpMethod: POST
+      AuthorizationType: NONE
+      Integration:
+        Type: AWS_PROXY
+        IntegrationHttpMethod: POST
+        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:biops-job-api/invocations'
+
+  JobGetMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref BiopsApi
+      ResourceId: !Ref JobIdResource
+      HttpMethod: GET
+      AuthorizationType: NONE
+      Integration:
+        Type: AWS_PROXY
+        IntegrationHttpMethod: POST
+        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:biops-job-api/invocations'
+
+  ExportPostMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref BiopsApi
+      ResourceId: !Ref ExportResource
+      HttpMethod: POST
+      AuthorizationType: NONE
+      Integration:
+        Type: AWS_PROXY
+        IntegrationHttpMethod: POST
+        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:biops-export-assets/invocations'
+
+  ExportGetMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref BiopsApi
+      ResourceId: !Ref ExportJobIdResource
+      HttpMethod: GET
+      AuthorizationType: NONE
+      Integration:
+        Type: AWS_PROXY
+        IntegrationHttpMethod: POST
+        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:biops-export-assets/invocations'
+
+  UploadPostMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref BiopsApi
+      ResourceId: !Ref UploadResource
+      HttpMethod: POST
+      AuthorizationType: NONE
+      Integration:
+        Type: AWS_PROXY
+        IntegrationHttpMethod: POST
+        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:biops-upload-assets/invocations'
+
+  ImportPostMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref BiopsApi
+      ResourceId: !Ref ImportResource
+      HttpMethod: POST
+      AuthorizationType: NONE
+      Integration:
+        Type: AWS_PROXY
+        IntegrationHttpMethod: POST
+        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:biops-import-assets/invocations'
+
+  ImportGetMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref BiopsApi
+      ResourceId: !Ref ImportJobIdResource
+      HttpMethod: GET
+      AuthorizationType: NONE
+      Integration:
+        Type: AWS_PROXY
+        IntegrationHttpMethod: POST
+        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:biops-import-assets/invocations'
+
+  PermissionsPostMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref BiopsApi
+      ResourceId: !Ref PermissionsResource
+      HttpMethod: POST
+      AuthorizationType: NONE
+      Integration:
+        Type: AWS_PROXY
+        IntegrationHttpMethod: POST
+        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:biops-update-permissions/invocations'
+
+  ApiDeployment:
+    Type: AWS::ApiGateway::Deployment
+    DependsOn:
+      - JobsGetMethod
+      - JobsPostMethod
+      - JobGetMethod
+      - ExportPostMethod
+      - ExportGetMethod
+      - UploadPostMethod
+      - ImportPostMethod
+      - ImportGetMethod
+      - PermissionsPostMethod
+    Properties:
+      RestApiId: !Ref BiopsApi
+      StageName: prod
+
+  LambdaInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: biops-job-api
+      Action: lambda:InvokeFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${BiopsApi}/*/*'
+
+  ExportLambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: biops-export-assets
+      Action: lambda:InvokeFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${BiopsApi}/*/*'
+
+  UploadLambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: biops-upload-assets
+      Action: lambda:InvokeFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${BiopsApi}/*/*'
+
+  ImportLambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: biops-import-assets
+      Action: lambda:InvokeFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${BiopsApi}/*/*'
+
+  PermissionsLambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: biops-update-permissions
+      Action: lambda:InvokeFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${BiopsApi}/*/*'
+
+Outputs:
+  ApiUrl:
+    Description: API Gateway endpoint URL
+    Value: !Sub 'https://${BiopsApi}.execute-api.${AWS::Region}.amazonaws.com/prod'
+    Export:
+      Name: !Sub "${AWS::StackName}-ApiUrl"

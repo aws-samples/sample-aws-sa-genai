@@ -1,0 +1,60 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'S3 bucket policy in tools account to allow cross-account access'
+
+Parameters:
+  ToolsAccountId:
+    Type: String
+    Description: AWS Account ID of the tools account that hosts BIOPS infrastructure
+  
+  SourceAccountIds:
+    Type: CommaDelimitedList
+    Description: Comma-delimited list of source/target account IDs that need access
+
+Resources:
+  BucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Sub 'biops-version-control-demo-${ToolsAccountId}'
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: AllowCrossAccountAccess
+            Effect: Allow
+            Principal:
+              AWS: !Split
+                - ','
+                - !Sub
+                  - 'arn:aws:iam::${inner}:root'
+                  - inner: !Join
+                    - ':root,arn:aws:iam::'
+                    - !Ref SourceAccountIds
+            Action:
+              - s3:GetObject
+              - s3:PutObject
+            Resource: !Sub 'arn:aws:s3:::biops-version-control-demo-${ToolsAccountId}/*'
+          - Sid: AllowCrossAccountList
+            Effect: Allow
+            Principal:
+              AWS: !Split
+                - ','
+                - !Sub
+                  - 'arn:aws:iam::${inner}:root'
+                  - inner: !Join
+                    - ':root,arn:aws:iam::'
+                    - !Ref SourceAccountIds
+            Action:
+              - s3:ListBucket
+            Resource: !Sub 'arn:aws:s3:::biops-version-control-demo-${ToolsAccountId}'
+          - Sid: AllowQuickSightServiceAccess
+            Effect: Allow
+            Principal:
+              Service: quicksight.amazonaws.com
+            Action:
+              - s3:GetObject
+              - s3:ListBucket
+            Resource:
+              - !Sub 'arn:aws:s3:::biops-version-control-demo-${ToolsAccountId}'
+              - !Sub 'arn:aws:s3:::biops-version-control-demo-${ToolsAccountId}/*'
+            Condition:
+              StringEquals:
+                'aws:SourceAccount': !Ref SourceAccountIds

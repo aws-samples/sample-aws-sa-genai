@@ -1,0 +1,183 @@
+Nice — this is a great candidate for turning into a small self-service app with observable, reliable orchestration. Below I’ll give a pragmatic, production-ready architecture you can implement quickly, plus concrete implementation details (APIs, DynamoDB schema, state-machine behavior, IAM, UI hosting, monitoring, and realtime status options).
+
+# Recommended architecture (high level)
+
+1. **Frontend**: Single Page App (React) hosted on S3 + CloudFront (or Amplify) — simple UI for triggering exports/imports, viewing run history and details.
+2. **API layer**: Amazon API Gateway (REST or HTTP API) or AWS AppSync. Frontend calls API to start a job and to query job status/history.
+3. **Orchestration**: AWS Step Functions state machine (recommended) that runs the five existing Lambda tasks in sequence with built-in retries, timeouts, error handling, and per-step status updates. Step Functions gives history, visual execution, and native integrations.
+4. **Worker Lambdas**: Keep your existing five Lambdas (biops-export-assets, biops-upload-assets, biops-import-assets, biops-update-permissions, biops-orchestrator). Replace biops-orchestrator with a Step Functions starter (or keep it if you prefer Step Functions StartExecution via a small API Lambda).
+5. **Persistence**: DynamoDB table to record job runs, step-level statuses, outputs, timestamps, and links to S3 bundles/logs.
+6. **Storage**: S3 for asset bundles (already used).
+7. **Notifications / Realtime updates**: Option A: WebSocket API (API Gateway) to push updates to frontend; Option B: AppSync with subscriptions; Option C: Frontend polling (simplest).
+8. **Observability & retries**: CloudWatch Logs + X-Ray + Step Functions retry/catch + DLQs (SNS/SQS) for failed async messages.
+9. **Security & IAM**: Fine-grained IAM roles: Step Functions execution role that can invoke Lambdas and write to DynamoDB/S3; Lambda roles limited to required resources; API Gateway authorizer (Cognito or IAM) for user auth.
+10. **Optional**: EventBridge for cross-account events, or to trigger automated periodic runs.
+
+# Sequence flow (concrete)
+
+1. User clicks “Start job” in the web UI → frontend POSTs to API Gateway `POST /jobs` with payload (source account, target account, assets list, run options).
+2. API Gateway triggers a lightweight API Lambda (StartJobLambda) which:
+
+   * Validates request
+   * Writes initial job item to DynamoDB (jobId, status=PENDING, createdAt, payload)
+   * Starts Step Functions execution `StartExecution` with `jobId` + payload
+   * Returns jobId and initial response to frontend
+3. Step Functions execution runs steps in sequence:
+
+   * Task: `biops-export-assets` Lambda (with `jobId` passed)
+
+     * On success, Step Functions adds step output into execution context
+     * Task: write step status to DynamoDB (Step Functions Task or integrated Lambda PutItem)
+   * Task: `biops-upload-assets` Lambda
+   * Task: `biops-import-assets` Lambda
+   * Task: `biops-update-permissions` Lambda
+   * Task: finalization step: update job status to COMPLETED (with results) in DynamoDB, send notification
+4. If any step fails, Step Functions `Catch` branch:
+
+   * Update job item in DynamoDB with status=FAILED, failedStep, error details, timestamp
+   * Optionally push to SNS or SQS for ops/alerting
+
+# Why Step Functions?
+
+* Visual execution history and built-in retries and timeouts.
+* Easy to add parallelism (if you ever want to import assets in parallel), branching, and manual approval steps.
+* Can directly call Lambda, write to DynamoDB via SDK integrations, and send events to EventBridge / SNS.
+
+# DynamoDB table design (example)
+
+Table name: `biops-job-runs`
+Primary key: `jobId` (PK - string)
+Sort key: not required (use jobId as PK only) — or use `pk` and `sk` pattern if you want multiple record types per job.
+
+Suggested item attributes:
+
+* `jobId` (string, PK)
+* `status` (string) — PENDING / RUNNING / COMPLETED / FAILED / CANCELLED
+* `createdAt` (ISO8601 string)
+* `updatedAt` (ISO8601 string)
+* `initiatedBy` (string) — username or caller
+* `payload` (map) — original request payload
+* `currentStep` (string)
+* `steps` (list of maps) — each step: `{ name, status, startedAt, endedAt, errorMessage, outputS3Key }`
+* `results` (map) — aggregated outputs (e.g., list of imported asset ARNs)
+* `logsLocation` (string) — link to CloudWatch or S3 logs
+* `retryCount` (number)
+* `tags` (map)
+
+Example item (abbreviated):
+
+```json
+{
+  "jobId": "job-20251113-0001",
+  "status": "RUNNING",
+  "createdAt": "2025-11-13T15:22:10Z",
+  "updatedAt": "2025-11-13T15:25:30Z",
+  "initiatedBy": "alice@example.com",
+  "currentStep": "biops-upload-assets",
+  "steps": [
+    { "name": "biops-export-assets", "status": "SUCCEEDED", "startedAt":"...", "endedAt":"...", "outputS3Key":"s3://..." },
+    { "name": "biops-upload-assets", "status": "RUNNING", "startedAt":"..." }
+  ]
+}
+```
+
+# API design (suggested endpoints)
+
+* `POST /jobs` — start a job. Request returns `jobId`.
+* `GET  /jobs` — list jobs (with pagination).
+* `GET  /jobs/{jobId}` — get job details + step history.
+* `POST /jobs/{jobId}/cancel` — cancel an ongoing job (Step Functions StopExecution).
+* `GET  /jobs/{jobId}/logs` — link or snippet of logs.
+
+# Realtime UI updates (3 options)
+
+1. **Polling**: frontend polls `GET /jobs/{jobId}` every 5–10s. Simple and reliable.
+2. **WebSocket API (API Gateway)**: backend pushes messages to connected clients when DynamoDB item changes (via DynamoDB Streams -> Lambda -> WebSocket send). More complex but low latency.
+3. **AppSync / GraphQL subscriptions**: built-in subscription support; use DynamoDB resolvers plus Lambda for updates.
+
+If you want fastest delivery with moderate complexity, use DynamoDB Streams → Lambda that publishes to a WebSocket connection (API Gateway v2). If you prefer low-effort, go with polling.
+
+# Implementation details & patterns
+
+**Step Functions state machine (pseudocode):**
+
+* `Start` → `ExportAssets` (Lambda)
+
+  * `Retry` with exponential backoff (e.g., 3 attempts)
+  * `Catch` → `FailHandler`
+* `NotifyExportSuccess` (DynamoDB PutItem / UpdateItem)  — optional
+* `UploadAssets` (Lambda) → `NotifyUpload`
+* `ImportAssets` (Lambda) → `NotifyImport`
+* `UpdatePermissions` (Lambda) → `NotifyPermissions`
+* `Finalize` → Update DynamoDB job item to COMPLETED and write results
+* `FailHandler`: Update DynamoDB job item to FAILED, include error details, send SNS alert
+
+**Who writes to DynamoDB?**
+Option A (recommended): Use a small dedicated `JobStatusUpdater` Lambda invoked as a Task in Step Functions to perform all DynamoDB updates. That centralizes updates and avoids embedding DB writes inside every worker. Option B: each worker Lambda updates DynamoDB directly (works, but risk of inconsistent writes).
+
+**Idempotency & retries**
+
+* Add `jobId` as an input to each Lambda so any retry knows it’s safe to resume (e.g., check S3 for bundle, skip re-download if exists).
+* Use conditional writes in DynamoDB (e.g., `UpdateItem` with condition expression) to prevent accidental duplicate status transitions.
+
+**Permissions (IAM)**
+
+* Step Functions Execution Role: `states:StartExecution`, `lambda:InvokeFunction`, `dynamodb:PutItem/UpdateItem`, `s3:GetObject/PutObject` if Step Functions will access S3 directly via SDK integrations.
+* Each Lambda role minimal: only required S3 buckets, DynamoDB table, QuickSight APIs, CloudWatch Logs.
+* API Gateway: use Cognito User Pools for auth or IAM-based if only internal users.
+
+**Observability**
+
+* Enable CloudWatch Logs and X-Ray on all Lambdas.
+* Use Step Functions execution logs (enable `executionHistory` & CloudWatch).
+* Add metrics: metrics per job status, step duration, failure counts (CloudWatch custom metrics).
+
+**Error handling & operator UX**
+
+* Store error stack/trace in DynamoDB and link to CloudWatch logs.
+* Provide a “Re-run job from failed step” button that triggers StartExecution with `resumeFrom` field and Step Functions branches to skip already-successful tasks.
+* Optionally add manual approval step in Step Functions before import to target account.
+
+# Deployment & CI
+
+* Package Lambdas in SAM / CDK / Terraform. I recommend CDK (TypeScript/Python) for composing Step Functions + Lambdas + API Gateway + DynamoDB.
+* For frontend, use CI to build and deploy to S3 + CloudFront (or Amplify hosting).
+
+# Cost & scaling notes
+
+* Step Functions charges per state transition — fine for human-triggered workflows. If you plan high-volume automation, compare costs to orchestration via ECS.
+* DynamoDB small reads/writes per job — keep item sizes modest (store long logs in S3 instead).
+* Use S3 lifecycle rules to expire old bundles.
+
+# Optional enhancements
+
+* Multi-tenant: attribute `accountId` or `tenantId` on job items; filter in API/list endpoints.
+* Audit trail: immutable log entries in DynamoDB (or append-only S3 logs).
+* Role assumption: use cross-account IAM roles for import/export with short-lived credentials.
+* Preview results page that links to newly-imported QuickSight assets (asset ARNs) and quick “open in QuickSight” links.
+
+# Quick checklist to implement (minimal viable)
+
+1. Create `biops-job-runs` DynamoDB table.
+2. Create Step Functions state machine that sequences your 4 worker Lambdas (export/upload/import/update-permissions) with retry/catch and finalization.
+3. Create a small `StartJobLambda` that:
+
+   * inserts initial item to DynamoDB,
+   * calls `StartExecution` on Step Functions,
+   * returns `jobId`.
+4. Build simple React UI with:
+
+   * form to start job (calls `POST /jobs`),
+   * jobs list (GET `/jobs`),
+   * job detail page showing steps and logs (GET `/jobs/{jobId}`).
+5. Wire notifications: DynamoDB Streams -> Lambda -> WebSocket sends (optional).
+6. Add IAM roles and monitoring.
+
+---
+
+If you want, I can:
+
+* produce a Step Functions state machine JSON/YAML for your exact five steps (with retry/catch and DynamoDB update tasks), and a sample `StartJobLambda` implementation in Python that creates the DynamoDB item and starts the execution;
+* or sketch a React UI and API Gateway config.
+
+Which one would be most helpful for next step?
