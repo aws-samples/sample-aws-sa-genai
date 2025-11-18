@@ -1,5 +1,3 @@
-Nice — this is a great candidate for turning into a small self-service app with observable, reliable orchestration. Below I’ll give a pragmatic, production-ready architecture you can implement quickly, plus concrete implementation details (APIs, DynamoDB schema, state-machine behavior, IAM, UI hosting, monitoring, and realtime status options).
-
 # Recommended architecture (high level)
 
 1. **Frontend**: Single Page App (React) hosted on S3 + CloudFront (or Amplify) — simple UI for triggering exports/imports, viewing run history and details.
@@ -173,11 +171,3 @@ Option A (recommended): Use a small dedicated `JobStatusUpdater` Lambda invoked 
 5. Wire notifications: DynamoDB Streams -> Lambda -> WebSocket sends (optional).
 6. Add IAM roles and monitoring.
 
----
-
-If you want, I can:
-
-* produce a Step Functions state machine JSON/YAML for your exact five steps (with retry/catch and DynamoDB update tasks), and a sample `StartJobLambda` implementation in Python that creates the DynamoDB item and starts the execution;
-* or sketch a React UI and API Gateway config.
-
-Which one would be most helpful for next step?

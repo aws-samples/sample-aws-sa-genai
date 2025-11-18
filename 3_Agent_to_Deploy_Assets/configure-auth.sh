@@ -7,11 +7,11 @@ echo "🔧 Configuring OAuth Authentication..."
 
 # Get CDK stack outputs
 STACK_NAME="BiopsStack"
-USER_POOL_ID=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --query 'Stacks[0].Outputs[?OutputKey==`UserPoolId`].OutputValue' --output text)
-CLIENT_ID=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --query 'Stacks[0].Outputs[?OutputKey==`UserPoolClientId`].OutputValue' --output text)
-COGNITO_DOMAIN=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --query 'Stacks[0].Outputs[?OutputKey==`CognitoDomain`].OutputValue' --output text)
-API_URL=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --query 'Stacks[0].Outputs[?OutputKey==`ApiUrl`].OutputValue' --output text)
-ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+USER_POOL_ID=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --query 'Stacks[0].Outputs[?OutputKey==`UserPoolId`].OutputValue' --output text --profile tools-account --region us-east-1)
+CLIENT_ID=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --query 'Stacks[0].Outputs[?OutputKey==`UserPoolClientId`].OutputValue' --output text --profile tools-account --region us-east-1)
+COGNITO_DOMAIN=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --query 'Stacks[0].Outputs[?OutputKey==`CognitoDomain`].OutputValue' --output text --profile tools-account --region us-east-1)
+API_URL=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --query 'Stacks[0].Outputs[?OutputKey==`ApiUrl`].OutputValue' --output text --profile tools-account --region us-east-1)
+ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text --profile tools-account --region us-east-1)
 
 echo "📋 Configuration Values:"
 echo "User Pool ID: $USER_POOL_ID"

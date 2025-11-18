@@ -1,19 +1,28 @@
 import React, { useEffect } from 'react';
-import AuthService from '../auth';
 
 const Callback = () => {
   useEffect(() => {
-    // Parse the callback URL and handle the authentication result
-    const urlParams = new URLSearchParams(window.location.search);
-    const code = urlParams.get('code');
-    const error = urlParams.get('error');
+    // Parse tokens from URL hash (implicit flow)
+    const hash = window.location.hash.substring(1);
+    const params = new URLSearchParams(hash);
+    
+    const idToken = params.get('id_token');
+    const accessToken = params.get('access_token');
+    const error = params.get('error');
 
     if (error) {
       console.error('Authentication error:', error);
       window.location.href = '/';
-    } else if (code) {
-      // Let Cognito Auth handle the callback
-      AuthService.auth.parseCognitoWebResponse(window.location.href);
+    } else if (idToken && accessToken) {
+      // Store tokens in localStorage
+      localStorage.setItem('id_token', idToken);
+      localStorage.setItem('access_token', accessToken);
+      
+      // Redirect to main app
+      window.location.href = '/';
+    } else {
+      console.error('No tokens found in callback');
+      window.location.href = '/';
     }
   }, []);
 

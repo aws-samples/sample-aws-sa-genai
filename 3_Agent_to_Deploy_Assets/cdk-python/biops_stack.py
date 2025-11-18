@@ -9,6 +9,7 @@ from aws_cdk import (
     aws_iam as iam,
     aws_s3 as s3,
     aws_cognito as cognito,
+    aws_amplify_alpha as amplify,
 )
 from constructs import Construct
 import os
@@ -34,6 +35,17 @@ class BiopsStack(Stack):
             removal_policy=RemovalPolicy.DESTROY
         )
 
+
+
+        # Cognito User Pool Domain
+        user_pool_domain = cognito.UserPoolDomain(
+            self, "BiopsUserPoolDomain",
+            user_pool=user_pool,
+            cognito_domain=cognito.CognitoDomainOptions(
+                domain_prefix=f"biops-{self.account}"
+            )
+        )
+
         # Cognito User Pool Client
         user_pool_client = cognito.UserPoolClient(
             self, "BiopsUserPoolClient",
@@ -50,16 +62,8 @@ class BiopsStack(Stack):
                     implicit_code_grant=True
                 ),
                 scopes=[cognito.OAuthScope.OPENID, cognito.OAuthScope.EMAIL, cognito.OAuthScope.PROFILE],
-                callback_urls=["http://localhost:3000/callback", "https://localhost:3000/callback"]
-            )
-        )
-
-        # Cognito User Pool Domain
-        user_pool_domain = cognito.UserPoolDomain(
-            self, "BiopsUserPoolDomain",
-            user_pool=user_pool,
-            cognito_domain=cognito.CognitoDomainOptions(
-                domain_prefix=f"biops-{self.account}"
+                callback_urls=["http://localhost:3000/callback"],
+                logout_urls=["http://localhost:3000/"]
             )
         )
 
@@ -233,6 +237,26 @@ class BiopsStack(Stack):
             auto_delete_objects=True
         )
 
+        # Amplify App for UI hosting
+        amplify_app = amplify.App(
+            self, "BiopsAmplifyApp",
+            app_name="biops-ui",
+            description="BIOPS Asset Management UI",
+            environment_variables={
+                "REACT_APP_API_URL": api.url,
+                "REACT_APP_USER_POOL_ID": user_pool.user_pool_id,
+                "REACT_APP_CLIENT_ID": user_pool_client.user_pool_client_id,
+                "REACT_APP_COGNITO_DOMAIN": user_pool_domain.domain_name
+            }
+        )
+
+        # Amplify Branch
+        main_branch = amplify_app.add_branch(
+            "main",
+            branch_name="main",
+            auto_build=True
+        )
+
         # Outputs
         CfnOutput(self, "ApiUrl", value=api.url, description="API Gateway endpoint URL")
         CfnOutput(self, "DynamoDBTable", value=job_table.table_name, description="DynamoDB table name")
@@ -240,3 +264,5 @@ class BiopsStack(Stack):
         CfnOutput(self, "UserPoolId", value=user_pool.user_pool_id, description="Cognito User Pool ID")
         CfnOutput(self, "UserPoolClientId", value=user_pool_client.user_pool_client_id, description="Cognito User Pool Client ID")
         CfnOutput(self, "CognitoDomain", value=user_pool_domain.domain_name, description="Cognito Domain")
+        CfnOutput(self, "AmplifyAppId", value=amplify_app.app_id, description="Amplify App ID")
+        CfnOutput(self, "AmplifyUrl", value=f"https://main.{amplify_app.app_id}.amplifyapp.com", description="Amplify App URL")

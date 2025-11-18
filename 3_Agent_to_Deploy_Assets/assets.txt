@@ -7,9 +7,14 @@ BiopsStack.DynamoDBTable = biops-job-runs
 
 
 tools:
-BiopsStack.ApiUrl = https://vfd1sccza3.execute-api.us-east-1.amazonaws.com/prod/
+BiopsStack.AmplifyAppId = d23iig495jzn7u
+BiopsStack.AmplifyUrl = https://main.d23iig495jzn7u.amplifyapp.com
+BiopsStack.ApiUrl = https://1cv3q605h2.execute-api.us-east-1.amazonaws.com/prod/
 BiopsStack.AssetBucketName = biops-version-control-demo-038198578763
-BiopsStack.BiopsApiEndpointC1512CF6 = https://vfd1sccza3.execute-api.us-east-1.amazonaws.com/prod/
+BiopsStack.BiopsApiEndpointC1512CF6 = https://1cv3q605h2.execute-api.us-east-1.amazonaws.com/prod/
+BiopsStack.CognitoDomain = biops-038198578763
 BiopsStack.DynamoDBTable = biops-job-runs
+BiopsStack.UserPoolClientId = 6gepfa9rjuqcn2ql0k3na71417
+BiopsStack.UserPoolId = us-east-1_p7YlBR2h9
 Stack ARN:
-arn:aws:cloudformation:us-east-1:038198578763:stack/BiopsStack/c702b9a0-c32b-11f0-9605-0e15c688abe7
+arn:aws:cloudformation:us-east-1:038198578763:stack/BiopsStack/2bb4e730-c33e-11f0-8e8d-0ee7c6114f57

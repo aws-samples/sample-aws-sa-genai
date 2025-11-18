@@ -1,69 +1,46 @@
-# BIOPS React UI
+# BIOPS UI with OAuth Authentication
 
-Simple React application for managing BIOPS asset deployment jobs.
+## Quick Start
 
-## Features
-
-- **Job Creation Form**: Start new asset deployment jobs
-- **Jobs List**: View all jobs with real-time status updates
-- **Job Details**: Monitor step-by-step progress with logs
-- **Auto-refresh**: Polls API every 5-10 seconds for updates
-
-## Setup
-
-1. **Install dependencies:**
-   ```bash
-   npm install
-   ```
-
-2. **Configure API endpoint:**
-   ```bash
-   cp .env.example .env
-   # Edit .env with your API Gateway URL
-   ```
-
-3. **Run locally:**
-   ```bash
-   npm start
-   ```
-
-## Deployment
-
-### Option 1: Automated Deployment
+### Option 1: HTTPS (Recommended for OAuth)
 ```bash
-chmod +x deploy.sh
-./deploy.sh https://your-api-id.execute-api.us-east-1.amazonaws.com/prod
+npm run start:https
 ```
+- App runs at: `https://localhost:3000`
+- Accept the self-signed certificate warning in your browser
+- OAuth authentication will work properly
 
-### Option 2: Manual Deployment
+### Option 2: HTTP (Limited functionality)
 ```bash
-# Build
-npm run build
-
-# Deploy infrastructure
-aws cloudformation deploy --template-file deploy.yaml --stack-name biops-ui-stack
-
-# Upload files
-aws s3 sync build/ s3://biops-ui-bucket --delete
+npm start
 ```
+- App runs at: `http://localhost:3000`
+- OAuth may not work due to browser security restrictions
 
-## Components
+## Test Credentials
+- **Email**: `test@example.com`
+- **Password**: `NewPassword123!`
 
-- **App.js**: Main application with routing
-- **JobForm.js**: Form to create new deployment jobs
-- **JobsList.js**: List view of all jobs with status
-- **JobDetail.js**: Detailed view of job steps and progress
-- **api.js**: API service layer for backend communication
+## Authentication Flow
+1. Visit `https://localhost:3000`
+2. Click "Sign In with Cognito"
+3. Enter test credentials
+4. Get redirected back to the app
+5. All API calls will include JWT tokens
 
-## API Integration
+## Troubleshooting
 
-The UI integrates with the BIOPS API Gateway endpoints:
-- `POST /jobs` - Create new job
-- `GET /jobs` - List all jobs  
-- `GET /jobs/{jobId}` - Get job details
+### Certificate Warning
+- Browser will show "Not Secure" warning for self-signed certificate
+- Click "Advanced" → "Proceed to localhost (unsafe)"
+- This is normal for local development
 
-## Real-time Updates
+### OAuth Redirect Issues
+- Ensure you're using HTTPS version
+- Check browser console for errors
+- Verify Cognito configuration is correct
 
-- Jobs list refreshes every 10 seconds
-- Job details refresh every 5 seconds
-- Status changes are reflected immediately
+### API Authentication Errors
+- Check that JWT tokens are being sent
+- Verify API Gateway authorizer is working
+- Check browser network tab for 401 errors
