@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::038198578763:role/cdk-hnb659fds-deploy-role-038198578763-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::038198578763:role/cdk-hnb659fds-cfn-exec-role-038198578763-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-038198578763-us-east-1/89bc996504fadf2ebc77686a0c4d6690a3fcb94d13cb9b935466a9c9238d1fdc.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-038198578763-us-east-1/f5335b4aa4f5b7ae1ae20cf55830b3a5ef6636691d43b084577111a36c00c79b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -114,10 +114,34 @@
             "data": "JobApiFunctionA69287C9"
           }
         ],
-        "/BiopsStack/BiopsAuthorizer/Resource": [
+        "/BiopsStack/QuickSightInfoFunction/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "BiopsAuthorizerFB2ABF2F"
+            "data": "QuickSightInfoFunction2F5BD5C8"
+          }
+        ],
+        "/BiopsStack/TokenAuthorizerFunction/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TokenAuthorizerFunctionServiceRoleCBD0E807"
+          }
+        ],
+        "/BiopsStack/TokenAuthorizerFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TokenAuthorizerFunctionF9C35432"
+          }
+        ],
+        "/BiopsStack/TokenAuthorizerFunction/BiopsStackBiopsLambdaAuthorizerE9101613:Permissions": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TokenAuthorizerFunctionBiopsStackBiopsLambdaAuthorizerE9101613PermissionsB284BF02"
+          }
+        ],
+        "/BiopsStack/BiopsLambdaAuthorizer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BiopsLambdaAuthorizer8C91D92E"
           }
         ],
         "/BiopsStack/BiopsApi/Resource": [
@@ -141,7 +165,7 @@
         "/BiopsStack/BiopsApi/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "BiopsApiDeployment1CE16AB36d03bcd1ffd054dd0016676a9db12556"
+            "data": "BiopsApiDeployment1CE16AB36c84446ba71c6d05dd8ec1a5ec85957f"
           }
         ],
         "/BiopsStack/BiopsApi/DeploymentStage.prod/Resource": [
@@ -418,6 +442,294 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "BiopsApipermissionsPOST6BAAFB34"
+          }
+        ],
+        "/BiopsStack/BiopsApi/Default/dashboards/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BiopsApidashboardsF49E5059"
+          }
+        ],
+        "/BiopsStack/BiopsApi/Default/dashboards/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BiopsApidashboardsOPTIONS12A15684"
+          }
+        ],
+        "/BiopsStack/BiopsApi/Default/dashboards/GET/ApiPermission.BiopsStackBiopsApi81984D03.GET..dashboards": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BiopsApidashboardsGETApiPermissionBiopsStackBiopsApi81984D03GETdashboards74227CDF"
+          }
+        ],
+        "/BiopsStack/BiopsApi/Default/dashboards/GET/ApiPermission.Test.BiopsStackBiopsApi81984D03.GET..dashboards": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BiopsApidashboardsGETApiPermissionTestBiopsStackBiopsApi81984D03GETdashboards088E310E"
+          }
+        ],
+        "/BiopsStack/BiopsApi/Default/dashboards/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BiopsApidashboardsGET5292D3C7"
+          }
+        ],
+        "/BiopsStack/BiopsApi/Default/dashboard/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BiopsApidashboardB548681B"
+          }
+        ],
+        "/BiopsStack/BiopsApi/Default/dashboard/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BiopsApidashboardOPTIONSFA03F02F"
+          }
+        ],
+        "/BiopsStack/BiopsApi/Default/dashboard/{dashboardId}/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BiopsApidashboarddashboardId1A42829A"
+          }
+        ],
+        "/BiopsStack/BiopsApi/Default/dashboard/{dashboardId}/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BiopsApidashboarddashboardIdOPTIONS1A4DA979"
+          }
+        ],
+        "/BiopsStack/BiopsApi/Default/dashboard/{dashboardId}/definition/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BiopsApidashboarddashboardIddefinition34482726"
+          }
+        ],
+        "/BiopsStack/BiopsApi/Default/dashboard/{dashboardId}/definition/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BiopsApidashboarddashboardIddefinitionOPTIONS82E81366"
+          }
+        ],
+        "/BiopsStack/BiopsApi/Default/dashboard/{dashboardId}/definition/GET/ApiPermission.BiopsStackBiopsApi81984D03.GET..dashboard.{dashboardId}.definition": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BiopsApidashboarddashboardIddefinitionGETApiPermissionBiopsStackBiopsApi81984D03GETdashboarddashboardIddefinition134CBB07"
+          }
+        ],
+        "/BiopsStack/BiopsApi/Default/dashboard/{dashboardId}/definition/GET/ApiPermission.Test.BiopsStackBiopsApi81984D03.GET..dashboard.{dashboardId}.definition": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BiopsApidashboarddashboardIddefinitionGETApiPermissionTestBiopsStackBiopsApi81984D03GETdashboarddashboardIddefinitionDBADC54D"
+          }
+        ],
+        "/BiopsStack/BiopsApi/Default/dashboard/{dashboardId}/definition/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BiopsApidashboarddashboardIddefinitionGET2CE09A81"
+          }
+        ],
+        "/BiopsStack/BiopsApi/Default/dashboard/{dashboardId}/datasets/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BiopsApidashboarddashboardIddatasetsD80FC282"
+          }
+        ],
+        "/BiopsStack/BiopsApi/Default/dashboard/{dashboardId}/datasets/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BiopsApidashboarddashboardIddatasetsOPTIONSEC841BE5"
+          }
+        ],
+        "/BiopsStack/BiopsApi/Default/dashboard/{dashboardId}/datasets/GET/ApiPermission.BiopsStackBiopsApi81984D03.GET..dashboard.{dashboardId}.datasets": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BiopsApidashboarddashboardIddatasetsGETApiPermissionBiopsStackBiopsApi81984D03GETdashboarddashboardIddatasetsB060D765"
+          }
+        ],
+        "/BiopsStack/BiopsApi/Default/dashboard/{dashboardId}/datasets/GET/ApiPermission.Test.BiopsStackBiopsApi81984D03.GET..dashboard.{dashboardId}.datasets": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BiopsApidashboarddashboardIddatasetsGETApiPermissionTestBiopsStackBiopsApi81984D03GETdashboarddashboardIddatasetsDCB60A59"
+          }
+        ],
+        "/BiopsStack/BiopsApi/Default/dashboard/{dashboardId}/datasets/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BiopsApidashboarddashboardIddatasetsGET4D4DD1FC"
+          }
+        ],
+        "/BiopsStack/BiopsApi/Default/dashboard/{dashboardId}/permissions/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BiopsApidashboarddashboardIdpermissions29FAEB37"
+          }
+        ],
+        "/BiopsStack/BiopsApi/Default/dashboard/{dashboardId}/permissions/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BiopsApidashboarddashboardIdpermissionsOPTIONSCE2EAB1D"
+          }
+        ],
+        "/BiopsStack/BiopsApi/Default/dashboard/{dashboardId}/permissions/GET/ApiPermission.BiopsStackBiopsApi81984D03.GET..dashboard.{dashboardId}.permissions": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BiopsApidashboarddashboardIdpermissionsGETApiPermissionBiopsStackBiopsApi81984D03GETdashboarddashboardIdpermissions36251C55"
+          }
+        ],
+        "/BiopsStack/BiopsApi/Default/dashboard/{dashboardId}/permissions/GET/ApiPermission.Test.BiopsStackBiopsApi81984D03.GET..dashboard.{dashboardId}.permissions": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BiopsApidashboarddashboardIdpermissionsGETApiPermissionTestBiopsStackBiopsApi81984D03GETdashboarddashboardIdpermissions9FAA70B9"
+          }
+        ],
+        "/BiopsStack/BiopsApi/Default/dashboard/{dashboardId}/permissions/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BiopsApidashboarddashboardIdpermissionsGET328F9CD6"
+          }
+        ],
+        "/BiopsStack/BiopsApi/Default/dataset/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BiopsApidataset8EF3CBEF"
+          }
+        ],
+        "/BiopsStack/BiopsApi/Default/dataset/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BiopsApidatasetOPTIONS28B576A1"
+          }
+        ],
+        "/BiopsStack/BiopsApi/Default/dataset/{datasetId}/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BiopsApidatasetdatasetId017EEB58"
+          }
+        ],
+        "/BiopsStack/BiopsApi/Default/dataset/{datasetId}/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BiopsApidatasetdatasetIdOPTIONS090D3274"
+          }
+        ],
+        "/BiopsStack/BiopsApi/Default/dataset/{datasetId}/definition/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BiopsApidatasetdatasetIddefinition829B8D73"
+          }
+        ],
+        "/BiopsStack/BiopsApi/Default/dataset/{datasetId}/definition/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BiopsApidatasetdatasetIddefinitionOPTIONS96A4D176"
+          }
+        ],
+        "/BiopsStack/BiopsApi/Default/dataset/{datasetId}/definition/GET/ApiPermission.BiopsStackBiopsApi81984D03.GET..dataset.{datasetId}.definition": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BiopsApidatasetdatasetIddefinitionGETApiPermissionBiopsStackBiopsApi81984D03GETdatasetdatasetIddefinition2FD5274E"
+          }
+        ],
+        "/BiopsStack/BiopsApi/Default/dataset/{datasetId}/definition/GET/ApiPermission.Test.BiopsStackBiopsApi81984D03.GET..dataset.{datasetId}.definition": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BiopsApidatasetdatasetIddefinitionGETApiPermissionTestBiopsStackBiopsApi81984D03GETdatasetdatasetIddefinition99AE6705"
+          }
+        ],
+        "/BiopsStack/BiopsApi/Default/dataset/{datasetId}/definition/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BiopsApidatasetdatasetIddefinitionGETDC74E71B"
+          }
+        ],
+        "/BiopsStack/BiopsApi/Default/dataset/{datasetId}/datasources/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BiopsApidatasetdatasetIddatasources932BAEE4"
+          }
+        ],
+        "/BiopsStack/BiopsApi/Default/dataset/{datasetId}/datasources/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BiopsApidatasetdatasetIddatasourcesOPTIONS61BAA449"
+          }
+        ],
+        "/BiopsStack/BiopsApi/Default/dataset/{datasetId}/datasources/GET/ApiPermission.BiopsStackBiopsApi81984D03.GET..dataset.{datasetId}.datasources": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BiopsApidatasetdatasetIddatasourcesGETApiPermissionBiopsStackBiopsApi81984D03GETdatasetdatasetIddatasources5C75E4C1"
+          }
+        ],
+        "/BiopsStack/BiopsApi/Default/dataset/{datasetId}/datasources/GET/ApiPermission.Test.BiopsStackBiopsApi81984D03.GET..dataset.{datasetId}.datasources": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BiopsApidatasetdatasetIddatasourcesGETApiPermissionTestBiopsStackBiopsApi81984D03GETdatasetdatasetIddatasources15C49B13"
+          }
+        ],
+        "/BiopsStack/BiopsApi/Default/dataset/{datasetId}/datasources/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BiopsApidatasetdatasetIddatasourcesGETBB411CB8"
+          }
+        ],
+        "/BiopsStack/BiopsApi/Default/dataset/{datasetId}/permissions/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BiopsApidatasetdatasetIdpermissionsDDECB5C6"
+          }
+        ],
+        "/BiopsStack/BiopsApi/Default/dataset/{datasetId}/permissions/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BiopsApidatasetdatasetIdpermissionsOPTIONSA28F98B0"
+          }
+        ],
+        "/BiopsStack/BiopsApi/Default/dataset/{datasetId}/permissions/GET/ApiPermission.BiopsStackBiopsApi81984D03.GET..dataset.{datasetId}.permissions": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BiopsApidatasetdatasetIdpermissionsGETApiPermissionBiopsStackBiopsApi81984D03GETdatasetdatasetIdpermissions7268A11B"
+          }
+        ],
+        "/BiopsStack/BiopsApi/Default/dataset/{datasetId}/permissions/GET/ApiPermission.Test.BiopsStackBiopsApi81984D03.GET..dataset.{datasetId}.permissions": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BiopsApidatasetdatasetIdpermissionsGETApiPermissionTestBiopsStackBiopsApi81984D03GETdatasetdatasetIdpermissions6B395D96"
+          }
+        ],
+        "/BiopsStack/BiopsApi/Default/dataset/{datasetId}/permissions/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BiopsApidatasetdatasetIdpermissionsGET2A96F111"
+          }
+        ],
+        "/BiopsStack/BiopsApi/Default/users/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BiopsApiusers29C0E1F1"
+          }
+        ],
+        "/BiopsStack/BiopsApi/Default/users/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BiopsApiusersOPTIONS4BE616B3"
+          }
+        ],
+        "/BiopsStack/BiopsApi/Default/users/GET/ApiPermission.BiopsStackBiopsApi81984D03.GET..users": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BiopsApiusersGETApiPermissionBiopsStackBiopsApi81984D03GETusersB93BC4CD"
+          }
+        ],
+        "/BiopsStack/BiopsApi/Default/users/GET/ApiPermission.Test.BiopsStackBiopsApi81984D03.GET..users": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BiopsApiusersGETApiPermissionTestBiopsStackBiopsApi81984D03GETusersD6A0955C"
+          }
+        ],
+        "/BiopsStack/BiopsApi/Default/users/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BiopsApiusersGET6CA48250"
           }
         ],
         "/BiopsStack/AssetBucket/Resource": [

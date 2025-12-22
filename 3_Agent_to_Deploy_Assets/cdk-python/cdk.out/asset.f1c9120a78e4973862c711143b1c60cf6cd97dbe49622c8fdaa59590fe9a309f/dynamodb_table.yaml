@@ -1,0 +1,43 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'DynamoDB table for BIOPS job status tracking'
+
+Resources:
+  BiopsJobRunsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: biops-job-runs
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: jobId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: jobId
+          KeyType: HASH
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      Tags:
+        - Key: Project
+          Value: BIOPS
+        - Key: Environment
+          Value: Production
+
+Outputs:
+  TableName:
+    Description: Name of the DynamoDB table
+    Value: !Ref BiopsJobRunsTable
+    Export:
+      Name: !Sub "${AWS::StackName}-TableName"
+  
+  TableArn:
+    Description: ARN of the DynamoDB table
+    Value: !GetAtt BiopsJobRunsTable.Arn
+    Export:
+      Name: !Sub "${AWS::StackName}-TableArn"
+  
+  StreamArn:
+    Description: ARN of the DynamoDB stream
+    Value: !GetAtt BiopsJobRunsTable.StreamArn
+    Export:
+      Name: !Sub "${AWS::StackName}-StreamArn"

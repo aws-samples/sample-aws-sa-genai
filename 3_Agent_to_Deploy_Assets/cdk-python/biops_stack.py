@@ -81,7 +81,7 @@ class BiopsStack(Stack):
         # Lambda Layer
         shared_layer = _lambda.LayerVersion(
             self, "SharedLayer",
-            code=_lambda.Code.from_asset("../lambda/python"),
+            code=_lambda.Code.from_asset("../lambda/layer.zip"),
             compatible_runtimes=[_lambda.Runtime.PYTHON_3_9],
             description="Shared utilities for BIOPS Lambda functions"
         )
@@ -188,11 +188,38 @@ class BiopsStack(Stack):
             environment={"DYNAMODB_TABLE": job_table.table_name}
         )
 
-        # Cognito Authorizer
-        cognito_authorizer = apigateway.CognitoUserPoolsAuthorizer(
-            self, "BiopsAuthorizer",
-            cognito_user_pools=[user_pool],
-            authorizer_name="biops-authorizer"
+        quicksight_info_function = _lambda.Function(
+            self, "QuickSightInfoFunction",
+            function_name="biops-quicksight-info",
+            runtime=_lambda.Runtime.PYTHON_3_9,
+            handler="lambda_function.lambda_handler",
+            code=_lambda.Code.from_asset("../lambda/quicksight_info"),
+            layers=[shared_layer],
+            role=lambda_role,
+            timeout=Duration.minutes(5)
+        )
+
+        # Token Authorizer Lambda Function
+        token_authorizer_function = _lambda.Function(
+            self, "TokenAuthorizerFunction",
+            function_name="biops-token-authorizer",
+            runtime=_lambda.Runtime.PYTHON_3_9,
+            handler="token_authorizer.lambda_handler",
+            code=_lambda.Code.from_asset("../lambda"),
+            timeout=Duration.seconds(30),
+            environment={
+                "USER_POOL_ID": user_pool.user_pool_id,
+                "REGION": self.region
+            }
+        )
+
+        # Lambda Authorizer
+        lambda_authorizer = apigateway.TokenAuthorizer(
+            self, "BiopsLambdaAuthorizer",
+            handler=token_authorizer_function,
+            authorizer_name="biops-lambda-authorizer",
+            identity_source="method.request.header.Authorization",
+            results_cache_ttl=Duration.minutes(5)
         )
 
         # API Gateway
@@ -216,18 +243,44 @@ class BiopsStack(Stack):
         import_resource = api.root.add_resource("import")
         import_job_id_resource = import_resource.add_resource("{importJobId}")
         permissions_resource = api.root.add_resource("permissions")
+        
+        # QuickSight Info Resources
+        dashboards_resource = api.root.add_resource("dashboards")
+        dashboard_resource = api.root.add_resource("dashboard")
+        dashboard_id_resource = dashboard_resource.add_resource("{dashboardId}")
+        dashboard_definition_resource = dashboard_id_resource.add_resource("definition")
+        dashboard_datasets_resource = dashboard_id_resource.add_resource("datasets")
+        dashboard_permissions_resource = dashboard_id_resource.add_resource("permissions")
+        
+        dataset_resource = api.root.add_resource("dataset")
+        dataset_id_resource = dataset_resource.add_resource("{datasetId}")
+        dataset_definition_resource = dataset_id_resource.add_resource("definition")
+        dataset_datasources_resource = dataset_id_resource.add_resource("datasources")
+        dataset_permissions_resource = dataset_id_resource.add_resource("permissions")
+        
+        users_resource = api.root.add_resource("users")
 
-        # API Methods with Cognito Authorization
-        jobs_resource.add_method("GET", apigateway.LambdaIntegration(job_api_function), authorizer=cognito_authorizer)
-        jobs_resource.add_method("POST", apigateway.LambdaIntegration(job_api_function), authorizer=cognito_authorizer)
-        job_id_resource.add_method("GET", apigateway.LambdaIntegration(job_api_function), authorizer=cognito_authorizer)
+        # API Methods with Lambda Authorization
+        jobs_resource.add_method("GET", apigateway.LambdaIntegration(job_api_function), authorizer=lambda_authorizer)
+        jobs_resource.add_method("POST", apigateway.LambdaIntegration(job_api_function), authorizer=lambda_authorizer)
+        job_id_resource.add_method("GET", apigateway.LambdaIntegration(job_api_function), authorizer=lambda_authorizer)
 
-        export_resource.add_method("POST", apigateway.LambdaIntegration(export_function), authorizer=cognito_authorizer)
-        export_job_id_resource.add_method("GET", apigateway.LambdaIntegration(export_function), authorizer=cognito_authorizer)
-        upload_resource.add_method("POST", apigateway.LambdaIntegration(upload_function), authorizer=cognito_authorizer)
-        import_resource.add_method("POST", apigateway.LambdaIntegration(import_function), authorizer=cognito_authorizer)
-        import_job_id_resource.add_method("GET", apigateway.LambdaIntegration(import_function), authorizer=cognito_authorizer)
-        permissions_resource.add_method("POST", apigateway.LambdaIntegration(permissions_function), authorizer=cognito_authorizer)
+        export_resource.add_method("POST", apigateway.LambdaIntegration(export_function), authorizer=lambda_authorizer)
+        export_job_id_resource.add_method("GET", apigateway.LambdaIntegration(export_function), authorizer=lambda_authorizer)
+        upload_resource.add_method("POST", apigateway.LambdaIntegration(upload_function), authorizer=lambda_authorizer)
+        import_resource.add_method("POST", apigateway.LambdaIntegration(import_function), authorizer=lambda_authorizer)
+        import_job_id_resource.add_method("GET", apigateway.LambdaIntegration(import_function), authorizer=lambda_authorizer)
+        permissions_resource.add_method("POST", apigateway.LambdaIntegration(permissions_function), authorizer=lambda_authorizer)
+        
+        # QuickSight Info API Methods
+        dashboards_resource.add_method("GET", apigateway.LambdaIntegration(quicksight_info_function), authorizer=lambda_authorizer)
+        dashboard_definition_resource.add_method("GET", apigateway.LambdaIntegration(quicksight_info_function), authorizer=lambda_authorizer)
+        dashboard_datasets_resource.add_method("GET", apigateway.LambdaIntegration(quicksight_info_function), authorizer=lambda_authorizer)
+        dashboard_permissions_resource.add_method("GET", apigateway.LambdaIntegration(quicksight_info_function), authorizer=lambda_authorizer)
+        dataset_definition_resource.add_method("GET", apigateway.LambdaIntegration(quicksight_info_function), authorizer=lambda_authorizer)
+        dataset_datasources_resource.add_method("GET", apigateway.LambdaIntegration(quicksight_info_function), authorizer=lambda_authorizer)
+        dataset_permissions_resource.add_method("GET", apigateway.LambdaIntegration(quicksight_info_function), authorizer=lambda_authorizer)
+        users_resource.add_method("GET", apigateway.LambdaIntegration(quicksight_info_function), authorizer=lambda_authorizer)
 
         # S3 Bucket for asset storage
         asset_bucket = s3.Bucket(

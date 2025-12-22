@@ -1,0 +1,433 @@
+openapi: 3.0.3
+info:
+  title: BIOPS Asset Management API
+  description: API for QuickSight asset deployment and management across AWS accounts
+  version: 1.0.0
+  contact:
+    name: AWS SSA GenAI Team
+servers:
+  - url: https://1cv3q605h2.execute-api.us-east-1.amazonaws.com/prod
+    description: Production API Gateway
+security:
+  - CognitoAuth: []
+paths:
+  /jobs:
+    get:
+      summary: List all jobs
+      description: Retrieve all asset deployment jobs
+      responses:
+        '200':
+          description: List of jobs
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jobs:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Job'
+    post:
+      summary: Create orchestrated job
+      description: Start a complete asset deployment workflow
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JobRequest'
+      responses:
+        '200':
+          description: Job created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobResponse'
+  /jobs/{jobId}:
+    get:
+      summary: Get job details
+      description: Retrieve details of a specific job
+      parameters:
+        - name: jobId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Job details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Job'
+  /export:
+    post:
+      summary: Start export job
+      description: Export QuickSight assets from source account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExportRequest'
+      responses:
+        '200':
+          description: Export job started
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExportResponse'
+  /export/{exportJobId}:
+    get:
+      summary: Check export status
+      description: Get status of export job
+      parameters:
+        - name: exportJobId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExportStatusRequest'
+      responses:
+        '200':
+          description: Export status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExportStatusResponse'
+  /upload:
+    post:
+      summary: Upload assets to S3
+      description: Upload exported assets to S3 bucket
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UploadRequest'
+      responses:
+        '200':
+          description: Upload completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadResponse'
+  /import:
+    post:
+      summary: Import assets
+      description: Import assets from S3 to target account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImportRequest'
+      responses:
+        '200':
+          description: Import job started
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImportResponse'
+  /import/{importJobId}:
+    get:
+      summary: Check import status
+      description: Get status of import job
+      parameters:
+        - name: importJobId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImportStatusRequest'
+      responses:
+        '200':
+          description: Import status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImportStatusResponse'
+  /permissions:
+    post:
+      summary: Update permissions
+      description: Update permissions for imported assets
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PermissionsRequest'
+      responses:
+        '200':
+          description: Permissions updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionsResponse'
+components:
+  securitySchemes:
+    CognitoAuth:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://biops-038198578763.auth.us-east-1.amazoncognito.com/oauth2/authorize
+          tokenUrl: https://biops-038198578763.auth.us-east-1.amazoncognito.com/oauth2/token
+          scopes:
+            openid: OpenID Connect scope
+            email: Email access
+            profile: Profile access
+            biops-api/read: Read access to BIOPS API
+            biops-api/write: Write access to BIOPS API
+  schemas:
+    JobRequest:
+      type: object
+      required:
+        - config
+        - initiated_by
+      properties:
+        config:
+          $ref: '#/components/schemas/JobConfig'
+        initiated_by:
+          type: string
+          description: User who initiated the job
+    JobConfig:
+      type: object
+      required:
+        - source_account_id
+        - source_role_name
+        - source_asset_id
+        - target_account_id
+        - target_role_name
+        - aws_region
+      properties:
+        source_account_id:
+          type: string
+          description: Source AWS account ID
+        source_role_name:
+          type: string
+          description: IAM role name in source account
+        source_asset_id:
+          type: string
+          description: QuickSight asset ID to export
+        target_account_id:
+          type: string
+          description: Target AWS account ID
+        target_role_name:
+          type: string
+          description: IAM role name in target account
+        target_admin_user:
+          type: string
+          description: Admin user in target account
+        aws_region:
+          type: string
+          description: AWS region
+          default: us-east-1
+    JobResponse:
+      type: object
+      properties:
+        jobId:
+          type: string
+        status:
+          type: string
+        message:
+          type: string
+    Job:
+      type: object
+      properties:
+        jobId:
+          type: string
+        status:
+          type: string
+          enum: [PENDING, RUNNING, SUCCESSFUL, FAILED]
+        initiatedBy:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        currentStep:
+          type: string
+        config:
+          $ref: '#/components/schemas/JobConfig'
+    ExportRequest:
+      type: object
+      required:
+        - source_account_id
+        - source_role_name
+        - source_asset_id
+        - aws_region
+      properties:
+        source_account_id:
+          type: string
+        source_role_name:
+          type: string
+        source_asset_id:
+          type: string
+        aws_region:
+          type: string
+          default: us-east-1
+    ExportResponse:
+      type: object
+      properties:
+        job_id:
+          type: string
+        status:
+          type: string
+        message:
+          type: string
+        download_url:
+          type: string
+        export_format:
+          type: string
+    ExportStatusRequest:
+      type: object
+      required:
+        - source_account_id
+        - source_role_name
+        - aws_region
+      properties:
+        source_account_id:
+          type: string
+        source_role_name:
+          type: string
+        aws_region:
+          type: string
+    ExportStatusResponse:
+      type: object
+      properties:
+        JobStatus:
+          type: string
+          enum: [QUEUED, RUNNING, SUCCESSFUL, FAILED]
+        DownloadUrl:
+          type: string
+        ExportFormat:
+          type: string
+        CreatedTime:
+          type: string
+          format: date-time
+    UploadRequest:
+      type: object
+      required:
+        - download_url
+        - job_id
+        - export_format
+        - bucket_name
+        - aws_region
+      properties:
+        download_url:
+          type: string
+        job_id:
+          type: string
+        export_format:
+          type: string
+        bucket_name:
+          type: string
+        aws_region:
+          type: string
+    UploadResponse:
+      type: object
+      properties:
+        s3_uri:
+          type: string
+        status:
+          type: string
+        message:
+          type: string
+    ImportRequest:
+      type: object
+      required:
+        - s3_uri
+        - source_asset_id
+        - target_account_id
+        - target_role_name
+        - aws_region
+      properties:
+        s3_uri:
+          type: string
+        source_asset_id:
+          type: string
+        target_account_id:
+          type: string
+        target_role_name:
+          type: string
+        aws_region:
+          type: string
+    ImportResponse:
+      type: object
+      properties:
+        job_id:
+          type: string
+        status:
+          type: string
+        message:
+          type: string
+    ImportStatusRequest:
+      type: object
+      required:
+        - target_account_id
+        - target_role_name
+        - aws_region
+      properties:
+        target_account_id:
+          type: string
+        target_role_name:
+          type: string
+        aws_region:
+          type: string
+    ImportStatusResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [QUEUED, RUNNING, SUCCESSFUL, FAILED]
+        job_id:
+          type: string
+        errors:
+          type: array
+          items:
+            type: object
+        rollback_errors:
+          type: array
+          items:
+            type: object
+        request_id:
+          type: string
+    PermissionsRequest:
+      type: object
+      required:
+        - dashboard_name
+        - target_account_id
+        - target_role_name
+        - target_admin_user
+        - aws_region
+      properties:
+        dashboard_name:
+          type: string
+        target_account_id:
+          type: string
+        target_role_name:
+          type: string
+        target_admin_user:
+          type: string
+        aws_region:
+          type: string
+    PermissionsResponse:
+      type: object
+      properties:
+        status:
+          type: string
+        message:
+          type: string
+        updated_permissions:
+          type: array
+          items:
+            type: object

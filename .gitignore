@@ -3,3 +3,12 @@
 
 # node virtual environment
 node_modules
+
+# Ignore CDK output directories
+**/cdk.out/
+
+# GitLab/Midway keys or any private key
+**/gitlab/*.pem
+**/gitlab/*.key
+**/gitlab/id_rsa*
+**/gitlab/id_ed25519*

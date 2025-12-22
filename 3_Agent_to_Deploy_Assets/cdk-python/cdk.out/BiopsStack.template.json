@@ -133,13 +133,13 @@
     ],
     "Content": {
      "S3Bucket": "cdk-hnb659fds-assets-038198578763-us-east-1",
-     "S3Key": "f9d2c62c98d5ce37ea6ce1b92da6700dfb6bae82f31fbe6b40ec34be21d5c420.zip"
+     "S3Key": "49a142b84942a9052341b52a923a501d900790ae893c05bbdb7c735e31d5936a.zip"
     },
     "Description": "Shared utilities for BIOPS Lambda functions"
    },
    "Metadata": {
     "aws:cdk:path": "BiopsStack/SharedLayer/Resource",
-    "aws:asset:path": "asset.f9d2c62c98d5ce37ea6ce1b92da6700dfb6bae82f31fbe6b40ec34be21d5c420",
+    "aws:asset:path": "asset.49a142b84942a9052341b52a923a501d900790ae893c05bbdb7c735e31d5936a.zip",
     "aws:asset:is-bundled": false,
     "aws:asset:property": "Content"
    }
@@ -207,7 +207,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-038198578763-us-east-1",
-     "S3Key": "4c058db22daeaefc4a7f7bb46f0f20ae9f6975a82e545356490de9cb09c7abae.zip"
+     "S3Key": "99a1090a74257689cfd58fde1c8fc982a91c7db04352292f5f1dbb48e9d0549f.zip"
     },
     "Environment": {
      "Variables": {
@@ -237,7 +237,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "BiopsStack/ExportAssetsFunction/Resource",
-    "aws:asset:path": "asset.4c058db22daeaefc4a7f7bb46f0f20ae9f6975a82e545356490de9cb09c7abae",
+    "aws:asset:path": "asset.99a1090a74257689cfd58fde1c8fc982a91c7db04352292f5f1dbb48e9d0549f",
     "aws:asset:is-bundled": false,
     "aws:asset:property": "Code"
    }
@@ -287,7 +287,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-038198578763-us-east-1",
-     "S3Key": "5221d8a207270739faf49aa406ae9155182fc053a8e3aa2814c8071bbc14cdc2.zip"
+     "S3Key": "cee1096ca516b8f604a9a8f895841cb9289c749d277d3007c855d512ea9f8cd2.zip"
     },
     "Environment": {
      "Variables": {
@@ -317,7 +317,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "BiopsStack/ImportAssetsFunction/Resource",
-    "aws:asset:path": "asset.5221d8a207270739faf49aa406ae9155182fc053a8e3aa2814c8071bbc14cdc2",
+    "aws:asset:path": "asset.cee1096ca516b8f604a9a8f895841cb9289c749d277d3007c855d512ea9f8cd2",
     "aws:asset:is-bundled": false,
     "aws:asset:property": "Code"
    }
@@ -367,7 +367,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-038198578763-us-east-1",
-     "S3Key": "9c2282c03f9571975533ceb81d4d61128821637237a0bd558d25c3f54797d304.zip"
+     "S3Key": "330308fd38c051ffdd8943ba8edc388178acd8612eef799686f3728a671d9087.zip"
     },
     "Environment": {
      "Variables": {
@@ -397,7 +397,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "BiopsStack/OrchestratorFunction/Resource",
-    "aws:asset:path": "asset.9c2282c03f9571975533ceb81d4d61128821637237a0bd558d25c3f54797d304",
+    "aws:asset:path": "asset.330308fd38c051ffdd8943ba8edc388178acd8612eef799686f3728a671d9087",
     "aws:asset:is-bundled": false,
     "aws:asset:property": "Code"
    }
@@ -442,26 +442,206 @@
     "aws:asset:property": "Code"
    }
   },
-  "BiopsAuthorizerFB2ABF2F": {
-   "Type": "AWS::ApiGateway::Authorizer",
+  "QuickSightInfoFunction2F5BD5C8": {
+   "Type": "AWS::Lambda::Function",
    "Properties": {
-    "IdentitySource": "method.request.header.Authorization",
-    "Name": "biops-authorizer",
-    "ProviderARNs": [
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-038198578763-us-east-1",
+     "S3Key": "9e0a3e21a917a6f9733eb032fc0a0b8121c6ae875e5309ea4fd03be904091ab9.zip"
+    },
+    "FunctionName": "biops-quicksight-info",
+    "Handler": "lambda_function.lambda_handler",
+    "Layers": [
      {
-      "Fn::GetAtt": [
-       "BiopsUserPoolF7F1DAE8",
-       "Arn"
-      ]
+      "Ref": "SharedLayer27DFABF0"
      }
     ],
+    "Role": {
+     "Fn::GetAtt": [
+      "BiopsLambdaRole58B3079D",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.9",
+    "Timeout": 300
+   },
+   "DependsOn": [
+    "BiopsLambdaRole58B3079D"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "BiopsStack/QuickSightInfoFunction/Resource",
+    "aws:asset:path": "asset.9e0a3e21a917a6f9733eb032fc0a0b8121c6ae875e5309ea4fd03be904091ab9",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "TokenAuthorizerFunctionServiceRoleCBD0E807": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "BiopsStack/TokenAuthorizerFunction/ServiceRole/Resource"
+   }
+  },
+  "TokenAuthorizerFunctionF9C35432": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-038198578763-us-east-1",
+     "S3Key": "e3797ce6a2147b6822de81b81a7a2c4c7aaabb4bee5cf316d7c4126e9c9707b1.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "USER_POOL_ID": {
+       "Ref": "BiopsUserPoolF7F1DAE8"
+      },
+      "REGION": "us-east-1"
+     }
+    },
+    "FunctionName": "biops-token-authorizer",
+    "Handler": "token_authorizer.lambda_handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "TokenAuthorizerFunctionServiceRoleCBD0E807",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.9",
+    "Timeout": 30
+   },
+   "DependsOn": [
+    "TokenAuthorizerFunctionServiceRoleCBD0E807"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "BiopsStack/TokenAuthorizerFunction/Resource",
+    "aws:asset:path": "asset.e3797ce6a2147b6822de81b81a7a2c4c7aaabb4bee5cf316d7c4126e9c9707b1",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "TokenAuthorizerFunctionBiopsStackBiopsLambdaAuthorizerE9101613PermissionsB284BF02": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "TokenAuthorizerFunctionF9C35432",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-east-1:038198578763:",
+       {
+        "Ref": "BiopsApi34CDA1E6"
+       },
+       "/authorizers/",
+       {
+        "Ref": "BiopsLambdaAuthorizer8C91D92E"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BiopsStack/TokenAuthorizerFunction/BiopsStackBiopsLambdaAuthorizerE9101613:Permissions"
+   }
+  },
+  "BiopsLambdaAuthorizer8C91D92E": {
+   "Type": "AWS::ApiGateway::Authorizer",
+   "Properties": {
+    "AuthorizerResultTtlInSeconds": 300,
+    "AuthorizerUri": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Fn::Select": [
+         1,
+         {
+          "Fn::Split": [
+           ":",
+           {
+            "Fn::GetAtt": [
+             "TokenAuthorizerFunctionF9C35432",
+             "Arn"
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       ":apigateway:",
+       {
+        "Fn::Select": [
+         3,
+         {
+          "Fn::Split": [
+           ":",
+           {
+            "Fn::GetAtt": [
+             "TokenAuthorizerFunctionF9C35432",
+             "Arn"
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       ":lambda:path/2015-03-31/functions/",
+       {
+        "Fn::GetAtt": [
+         "TokenAuthorizerFunctionF9C35432",
+         "Arn"
+        ]
+       },
+       "/invocations"
+      ]
+     ]
+    },
+    "IdentitySource": "method.request.header.Authorization",
+    "Name": "biops-lambda-authorizer",
     "RestApiId": {
      "Ref": "BiopsApi34CDA1E6"
     },
-    "Type": "COGNITO_USER_POOLS"
+    "Type": "TOKEN"
    },
    "Metadata": {
-    "aws:cdk:path": "BiopsStack/BiopsAuthorizer/Resource"
+    "aws:cdk:path": "BiopsStack/BiopsLambdaAuthorizer/Resource"
    }
   },
   "BiopsApi34CDA1E6": {
@@ -529,7 +709,7 @@
     "aws:cdk:path": "BiopsStack/BiopsApi/Account"
    }
   },
-  "BiopsApiDeployment1CE16AB36d03bcd1ffd054dd0016676a9db12556": {
+  "BiopsApiDeployment1CE16AB36c84446ba71c6d05dd8ec1a5ec85957f": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
     "Description": "API for BIOPS asset deployment job management",
@@ -538,6 +718,35 @@
     }
    },
    "DependsOn": [
+    "BiopsApidashboarddashboardIddatasetsGET4D4DD1FC",
+    "BiopsApidashboarddashboardIddatasetsOPTIONSEC841BE5",
+    "BiopsApidashboarddashboardIddatasetsD80FC282",
+    "BiopsApidashboarddashboardIddefinitionGET2CE09A81",
+    "BiopsApidashboarddashboardIddefinitionOPTIONS82E81366",
+    "BiopsApidashboarddashboardIddefinition34482726",
+    "BiopsApidashboarddashboardIdOPTIONS1A4DA979",
+    "BiopsApidashboarddashboardIdpermissionsGET328F9CD6",
+    "BiopsApidashboarddashboardIdpermissionsOPTIONSCE2EAB1D",
+    "BiopsApidashboarddashboardIdpermissions29FAEB37",
+    "BiopsApidashboarddashboardId1A42829A",
+    "BiopsApidashboardOPTIONSFA03F02F",
+    "BiopsApidashboardB548681B",
+    "BiopsApidashboardsGET5292D3C7",
+    "BiopsApidashboardsOPTIONS12A15684",
+    "BiopsApidashboardsF49E5059",
+    "BiopsApidatasetdatasetIddatasourcesGETBB411CB8",
+    "BiopsApidatasetdatasetIddatasourcesOPTIONS61BAA449",
+    "BiopsApidatasetdatasetIddatasources932BAEE4",
+    "BiopsApidatasetdatasetIddefinitionGETDC74E71B",
+    "BiopsApidatasetdatasetIddefinitionOPTIONS96A4D176",
+    "BiopsApidatasetdatasetIddefinition829B8D73",
+    "BiopsApidatasetdatasetIdOPTIONS090D3274",
+    "BiopsApidatasetdatasetIdpermissionsGET2A96F111",
+    "BiopsApidatasetdatasetIdpermissionsOPTIONSA28F98B0",
+    "BiopsApidatasetdatasetIdpermissionsDDECB5C6",
+    "BiopsApidatasetdatasetId017EEB58",
+    "BiopsApidatasetOPTIONS28B576A1",
+    "BiopsApidataset8EF3CBEF",
     "BiopsApiexportexportJobIdGETBBE50585",
     "BiopsApiexportexportJobIdOPTIONS6837F7B1",
     "BiopsApiexportexportJobId6460A0C1",
@@ -563,7 +772,10 @@
     "BiopsApipermissions8E313A25",
     "BiopsApiuploadOPTIONSAE51E740",
     "BiopsApiuploadPOST876CF915",
-    "BiopsApiupload25E3B329"
+    "BiopsApiupload25E3B329",
+    "BiopsApiusersGET6CA48250",
+    "BiopsApiusersOPTIONS4BE616B3",
+    "BiopsApiusers29C0E1F1"
    ],
    "Metadata": {
     "aws:cdk:path": "BiopsStack/BiopsApi/Deployment/Resource",
@@ -574,7 +786,7 @@
    "Type": "AWS::ApiGateway::Stage",
    "Properties": {
     "DeploymentId": {
-     "Ref": "BiopsApiDeployment1CE16AB36d03bcd1ffd054dd0016676a9db12556"
+     "Ref": "BiopsApiDeployment1CE16AB36c84446ba71c6d05dd8ec1a5ec85957f"
     },
     "RestApiId": {
      "Ref": "BiopsApi34CDA1E6"
@@ -824,9 +1036,9 @@
   "BiopsApijobsjobIdGET5D3D1119": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
-    "AuthorizationType": "COGNITO_USER_POOLS",
+    "AuthorizationType": "CUSTOM",
     "AuthorizerId": {
-     "Ref": "BiopsAuthorizerFB2ABF2F"
+     "Ref": "BiopsLambdaAuthorizer8C91D92E"
     },
     "HttpMethod": "GET",
     "Integration": {
@@ -934,9 +1146,9 @@
   "BiopsApijobsGET77067DF3": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
-    "AuthorizationType": "COGNITO_USER_POOLS",
+    "AuthorizationType": "CUSTOM",
     "AuthorizerId": {
-     "Ref": "BiopsAuthorizerFB2ABF2F"
+     "Ref": "BiopsLambdaAuthorizer8C91D92E"
     },
     "HttpMethod": "GET",
     "Integration": {
@@ -1044,9 +1256,9 @@
   "BiopsApijobsPOST873FA617": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
-    "AuthorizationType": "COGNITO_USER_POOLS",
+    "AuthorizationType": "CUSTOM",
     "AuthorizerId": {
-     "Ref": "BiopsAuthorizerFB2ABF2F"
+     "Ref": "BiopsLambdaAuthorizer8C91D92E"
     },
     "HttpMethod": "POST",
     "Integration": {
@@ -1273,9 +1485,9 @@
   "BiopsApiexportexportJobIdGETBBE50585": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
-    "AuthorizationType": "COGNITO_USER_POOLS",
+    "AuthorizationType": "CUSTOM",
     "AuthorizerId": {
-     "Ref": "BiopsAuthorizerFB2ABF2F"
+     "Ref": "BiopsLambdaAuthorizer8C91D92E"
     },
     "HttpMethod": "GET",
     "Integration": {
@@ -1383,9 +1595,9 @@
   "BiopsApiexportPOST0008B4D9": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
-    "AuthorizationType": "COGNITO_USER_POOLS",
+    "AuthorizationType": "CUSTOM",
     "AuthorizerId": {
-     "Ref": "BiopsAuthorizerFB2ABF2F"
+     "Ref": "BiopsLambdaAuthorizer8C91D92E"
     },
     "HttpMethod": "POST",
     "Integration": {
@@ -1554,9 +1766,9 @@
   "BiopsApiuploadPOST876CF915": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
-    "AuthorizationType": "COGNITO_USER_POOLS",
+    "AuthorizationType": "CUSTOM",
     "AuthorizerId": {
-     "Ref": "BiopsAuthorizerFB2ABF2F"
+     "Ref": "BiopsLambdaAuthorizer8C91D92E"
     },
     "HttpMethod": "POST",
     "Integration": {
@@ -1783,9 +1995,9 @@
   "BiopsApiimportimportJobIdGET27975321": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
-    "AuthorizationType": "COGNITO_USER_POOLS",
+    "AuthorizationType": "CUSTOM",
     "AuthorizerId": {
-     "Ref": "BiopsAuthorizerFB2ABF2F"
+     "Ref": "BiopsLambdaAuthorizer8C91D92E"
     },
     "HttpMethod": "GET",
     "Integration": {
@@ -1893,9 +2105,9 @@
   "BiopsApiimportPOSTCB262879": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
-    "AuthorizationType": "COGNITO_USER_POOLS",
+    "AuthorizationType": "CUSTOM",
     "AuthorizerId": {
-     "Ref": "BiopsAuthorizerFB2ABF2F"
+     "Ref": "BiopsLambdaAuthorizer8C91D92E"
     },
     "HttpMethod": "POST",
     "Integration": {
@@ -2064,9 +2276,9 @@
   "BiopsApipermissionsPOST6BAAFB34": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
-    "AuthorizationType": "COGNITO_USER_POOLS",
+    "AuthorizationType": "CUSTOM",
     "AuthorizerId": {
-     "Ref": "BiopsAuthorizerFB2ABF2F"
+     "Ref": "BiopsLambdaAuthorizer8C91D92E"
     },
     "HttpMethod": "POST",
     "Integration": {
@@ -2101,6 +2313,1594 @@
    },
    "Metadata": {
     "aws:cdk:path": "BiopsStack/BiopsApi/Default/permissions/POST/Resource"
+   }
+  },
+  "BiopsApidashboardsF49E5059": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Fn::GetAtt": [
+      "BiopsApi34CDA1E6",
+      "RootResourceId"
+     ]
+    },
+    "PathPart": "dashboards",
+    "RestApiId": {
+     "Ref": "BiopsApi34CDA1E6"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BiopsStack/BiopsApi/Default/dashboards/Resource"
+   }
+  },
+  "BiopsApidashboardsOPTIONS12A15684": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "ApiKeyRequired": false,
+    "AuthorizationType": "NONE",
+    "HttpMethod": "OPTIONS",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "ResponseParameters": {
+        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,Authorization'",
+        "method.response.header.Access-Control-Allow-Origin": "'*'",
+        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+       },
+       "StatusCode": "204"
+      }
+     ],
+     "RequestTemplates": {
+      "application/json": "{ statusCode: 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "ResponseParameters": {
+       "method.response.header.Access-Control-Allow-Headers": true,
+       "method.response.header.Access-Control-Allow-Origin": true,
+       "method.response.header.Access-Control-Allow-Methods": true
+      },
+      "StatusCode": "204"
+     }
+    ],
+    "ResourceId": {
+     "Ref": "BiopsApidashboardsF49E5059"
+    },
+    "RestApiId": {
+     "Ref": "BiopsApi34CDA1E6"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BiopsStack/BiopsApi/Default/dashboards/OPTIONS/Resource"
+   }
+  },
+  "BiopsApidashboardsGETApiPermissionBiopsStackBiopsApi81984D03GETdashboards74227CDF": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "QuickSightInfoFunction2F5BD5C8",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-east-1:038198578763:",
+       {
+        "Ref": "BiopsApi34CDA1E6"
+       },
+       "/",
+       {
+        "Ref": "BiopsApiDeploymentStageprod2CA11D6C"
+       },
+       "/GET/dashboards"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BiopsStack/BiopsApi/Default/dashboards/GET/ApiPermission.BiopsStackBiopsApi81984D03.GET..dashboards"
+   }
+  },
+  "BiopsApidashboardsGETApiPermissionTestBiopsStackBiopsApi81984D03GETdashboards088E310E": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "QuickSightInfoFunction2F5BD5C8",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-east-1:038198578763:",
+       {
+        "Ref": "BiopsApi34CDA1E6"
+       },
+       "/test-invoke-stage/GET/dashboards"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BiopsStack/BiopsApi/Default/dashboards/GET/ApiPermission.Test.BiopsStackBiopsApi81984D03.GET..dashboards"
+   }
+  },
+  "BiopsApidashboardsGET5292D3C7": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "CUSTOM",
+    "AuthorizerId": {
+     "Ref": "BiopsLambdaAuthorizer8C91D92E"
+    },
+    "HttpMethod": "GET",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":apigateway:us-east-1:lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "QuickSightInfoFunction2F5BD5C8",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "BiopsApidashboardsF49E5059"
+    },
+    "RestApiId": {
+     "Ref": "BiopsApi34CDA1E6"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BiopsStack/BiopsApi/Default/dashboards/GET/Resource"
+   }
+  },
+  "BiopsApidashboardB548681B": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Fn::GetAtt": [
+      "BiopsApi34CDA1E6",
+      "RootResourceId"
+     ]
+    },
+    "PathPart": "dashboard",
+    "RestApiId": {
+     "Ref": "BiopsApi34CDA1E6"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BiopsStack/BiopsApi/Default/dashboard/Resource"
+   }
+  },
+  "BiopsApidashboardOPTIONSFA03F02F": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "ApiKeyRequired": false,
+    "AuthorizationType": "NONE",
+    "HttpMethod": "OPTIONS",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "ResponseParameters": {
+        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,Authorization'",
+        "method.response.header.Access-Control-Allow-Origin": "'*'",
+        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+       },
+       "StatusCode": "204"
+      }
+     ],
+     "RequestTemplates": {
+      "application/json": "{ statusCode: 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "ResponseParameters": {
+       "method.response.header.Access-Control-Allow-Headers": true,
+       "method.response.header.Access-Control-Allow-Origin": true,
+       "method.response.header.Access-Control-Allow-Methods": true
+      },
+      "StatusCode": "204"
+     }
+    ],
+    "ResourceId": {
+     "Ref": "BiopsApidashboardB548681B"
+    },
+    "RestApiId": {
+     "Ref": "BiopsApi34CDA1E6"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BiopsStack/BiopsApi/Default/dashboard/OPTIONS/Resource"
+   }
+  },
+  "BiopsApidashboarddashboardId1A42829A": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Ref": "BiopsApidashboardB548681B"
+    },
+    "PathPart": "{dashboardId}",
+    "RestApiId": {
+     "Ref": "BiopsApi34CDA1E6"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BiopsStack/BiopsApi/Default/dashboard/{dashboardId}/Resource"
+   }
+  },
+  "BiopsApidashboarddashboardIdOPTIONS1A4DA979": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "ApiKeyRequired": false,
+    "AuthorizationType": "NONE",
+    "HttpMethod": "OPTIONS",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "ResponseParameters": {
+        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,Authorization'",
+        "method.response.header.Access-Control-Allow-Origin": "'*'",
+        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+       },
+       "StatusCode": "204"
+      }
+     ],
+     "RequestTemplates": {
+      "application/json": "{ statusCode: 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "ResponseParameters": {
+       "method.response.header.Access-Control-Allow-Headers": true,
+       "method.response.header.Access-Control-Allow-Origin": true,
+       "method.response.header.Access-Control-Allow-Methods": true
+      },
+      "StatusCode": "204"
+     }
+    ],
+    "ResourceId": {
+     "Ref": "BiopsApidashboarddashboardId1A42829A"
+    },
+    "RestApiId": {
+     "Ref": "BiopsApi34CDA1E6"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BiopsStack/BiopsApi/Default/dashboard/{dashboardId}/OPTIONS/Resource"
+   }
+  },
+  "BiopsApidashboarddashboardIddefinition34482726": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Ref": "BiopsApidashboarddashboardId1A42829A"
+    },
+    "PathPart": "definition",
+    "RestApiId": {
+     "Ref": "BiopsApi34CDA1E6"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BiopsStack/BiopsApi/Default/dashboard/{dashboardId}/definition/Resource"
+   }
+  },
+  "BiopsApidashboarddashboardIddefinitionOPTIONS82E81366": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "ApiKeyRequired": false,
+    "AuthorizationType": "NONE",
+    "HttpMethod": "OPTIONS",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "ResponseParameters": {
+        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,Authorization'",
+        "method.response.header.Access-Control-Allow-Origin": "'*'",
+        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+       },
+       "StatusCode": "204"
+      }
+     ],
+     "RequestTemplates": {
+      "application/json": "{ statusCode: 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "ResponseParameters": {
+       "method.response.header.Access-Control-Allow-Headers": true,
+       "method.response.header.Access-Control-Allow-Origin": true,
+       "method.response.header.Access-Control-Allow-Methods": true
+      },
+      "StatusCode": "204"
+     }
+    ],
+    "ResourceId": {
+     "Ref": "BiopsApidashboarddashboardIddefinition34482726"
+    },
+    "RestApiId": {
+     "Ref": "BiopsApi34CDA1E6"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BiopsStack/BiopsApi/Default/dashboard/{dashboardId}/definition/OPTIONS/Resource"
+   }
+  },
+  "BiopsApidashboarddashboardIddefinitionGETApiPermissionBiopsStackBiopsApi81984D03GETdashboarddashboardIddefinition134CBB07": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "QuickSightInfoFunction2F5BD5C8",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-east-1:038198578763:",
+       {
+        "Ref": "BiopsApi34CDA1E6"
+       },
+       "/",
+       {
+        "Ref": "BiopsApiDeploymentStageprod2CA11D6C"
+       },
+       "/GET/dashboard/*/definition"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BiopsStack/BiopsApi/Default/dashboard/{dashboardId}/definition/GET/ApiPermission.BiopsStackBiopsApi81984D03.GET..dashboard.{dashboardId}.definition"
+   }
+  },
+  "BiopsApidashboarddashboardIddefinitionGETApiPermissionTestBiopsStackBiopsApi81984D03GETdashboarddashboardIddefinitionDBADC54D": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "QuickSightInfoFunction2F5BD5C8",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-east-1:038198578763:",
+       {
+        "Ref": "BiopsApi34CDA1E6"
+       },
+       "/test-invoke-stage/GET/dashboard/*/definition"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BiopsStack/BiopsApi/Default/dashboard/{dashboardId}/definition/GET/ApiPermission.Test.BiopsStackBiopsApi81984D03.GET..dashboard.{dashboardId}.definition"
+   }
+  },
+  "BiopsApidashboarddashboardIddefinitionGET2CE09A81": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "CUSTOM",
+    "AuthorizerId": {
+     "Ref": "BiopsLambdaAuthorizer8C91D92E"
+    },
+    "HttpMethod": "GET",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":apigateway:us-east-1:lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "QuickSightInfoFunction2F5BD5C8",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "BiopsApidashboarddashboardIddefinition34482726"
+    },
+    "RestApiId": {
+     "Ref": "BiopsApi34CDA1E6"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BiopsStack/BiopsApi/Default/dashboard/{dashboardId}/definition/GET/Resource"
+   }
+  },
+  "BiopsApidashboarddashboardIddatasetsD80FC282": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Ref": "BiopsApidashboarddashboardId1A42829A"
+    },
+    "PathPart": "datasets",
+    "RestApiId": {
+     "Ref": "BiopsApi34CDA1E6"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BiopsStack/BiopsApi/Default/dashboard/{dashboardId}/datasets/Resource"
+   }
+  },
+  "BiopsApidashboarddashboardIddatasetsOPTIONSEC841BE5": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "ApiKeyRequired": false,
+    "AuthorizationType": "NONE",
+    "HttpMethod": "OPTIONS",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "ResponseParameters": {
+        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,Authorization'",
+        "method.response.header.Access-Control-Allow-Origin": "'*'",
+        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+       },
+       "StatusCode": "204"
+      }
+     ],
+     "RequestTemplates": {
+      "application/json": "{ statusCode: 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "ResponseParameters": {
+       "method.response.header.Access-Control-Allow-Headers": true,
+       "method.response.header.Access-Control-Allow-Origin": true,
+       "method.response.header.Access-Control-Allow-Methods": true
+      },
+      "StatusCode": "204"
+     }
+    ],
+    "ResourceId": {
+     "Ref": "BiopsApidashboarddashboardIddatasetsD80FC282"
+    },
+    "RestApiId": {
+     "Ref": "BiopsApi34CDA1E6"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BiopsStack/BiopsApi/Default/dashboard/{dashboardId}/datasets/OPTIONS/Resource"
+   }
+  },
+  "BiopsApidashboarddashboardIddatasetsGETApiPermissionBiopsStackBiopsApi81984D03GETdashboarddashboardIddatasetsB060D765": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "QuickSightInfoFunction2F5BD5C8",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-east-1:038198578763:",
+       {
+        "Ref": "BiopsApi34CDA1E6"
+       },
+       "/",
+       {
+        "Ref": "BiopsApiDeploymentStageprod2CA11D6C"
+       },
+       "/GET/dashboard/*/datasets"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BiopsStack/BiopsApi/Default/dashboard/{dashboardId}/datasets/GET/ApiPermission.BiopsStackBiopsApi81984D03.GET..dashboard.{dashboardId}.datasets"
+   }
+  },
+  "BiopsApidashboarddashboardIddatasetsGETApiPermissionTestBiopsStackBiopsApi81984D03GETdashboarddashboardIddatasetsDCB60A59": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "QuickSightInfoFunction2F5BD5C8",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-east-1:038198578763:",
+       {
+        "Ref": "BiopsApi34CDA1E6"
+       },
+       "/test-invoke-stage/GET/dashboard/*/datasets"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BiopsStack/BiopsApi/Default/dashboard/{dashboardId}/datasets/GET/ApiPermission.Test.BiopsStackBiopsApi81984D03.GET..dashboard.{dashboardId}.datasets"
+   }
+  },
+  "BiopsApidashboarddashboardIddatasetsGET4D4DD1FC": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "CUSTOM",
+    "AuthorizerId": {
+     "Ref": "BiopsLambdaAuthorizer8C91D92E"
+    },
+    "HttpMethod": "GET",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":apigateway:us-east-1:lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "QuickSightInfoFunction2F5BD5C8",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "BiopsApidashboarddashboardIddatasetsD80FC282"
+    },
+    "RestApiId": {
+     "Ref": "BiopsApi34CDA1E6"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BiopsStack/BiopsApi/Default/dashboard/{dashboardId}/datasets/GET/Resource"
+   }
+  },
+  "BiopsApidashboarddashboardIdpermissions29FAEB37": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Ref": "BiopsApidashboarddashboardId1A42829A"
+    },
+    "PathPart": "permissions",
+    "RestApiId": {
+     "Ref": "BiopsApi34CDA1E6"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BiopsStack/BiopsApi/Default/dashboard/{dashboardId}/permissions/Resource"
+   }
+  },
+  "BiopsApidashboarddashboardIdpermissionsOPTIONSCE2EAB1D": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "ApiKeyRequired": false,
+    "AuthorizationType": "NONE",
+    "HttpMethod": "OPTIONS",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "ResponseParameters": {
+        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,Authorization'",
+        "method.response.header.Access-Control-Allow-Origin": "'*'",
+        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+       },
+       "StatusCode": "204"
+      }
+     ],
+     "RequestTemplates": {
+      "application/json": "{ statusCode: 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "ResponseParameters": {
+       "method.response.header.Access-Control-Allow-Headers": true,
+       "method.response.header.Access-Control-Allow-Origin": true,
+       "method.response.header.Access-Control-Allow-Methods": true
+      },
+      "StatusCode": "204"
+     }
+    ],
+    "ResourceId": {
+     "Ref": "BiopsApidashboarddashboardIdpermissions29FAEB37"
+    },
+    "RestApiId": {
+     "Ref": "BiopsApi34CDA1E6"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BiopsStack/BiopsApi/Default/dashboard/{dashboardId}/permissions/OPTIONS/Resource"
+   }
+  },
+  "BiopsApidashboarddashboardIdpermissionsGETApiPermissionBiopsStackBiopsApi81984D03GETdashboarddashboardIdpermissions36251C55": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "QuickSightInfoFunction2F5BD5C8",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-east-1:038198578763:",
+       {
+        "Ref": "BiopsApi34CDA1E6"
+       },
+       "/",
+       {
+        "Ref": "BiopsApiDeploymentStageprod2CA11D6C"
+       },
+       "/GET/dashboard/*/permissions"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BiopsStack/BiopsApi/Default/dashboard/{dashboardId}/permissions/GET/ApiPermission.BiopsStackBiopsApi81984D03.GET..dashboard.{dashboardId}.permissions"
+   }
+  },
+  "BiopsApidashboarddashboardIdpermissionsGETApiPermissionTestBiopsStackBiopsApi81984D03GETdashboarddashboardIdpermissions9FAA70B9": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "QuickSightInfoFunction2F5BD5C8",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-east-1:038198578763:",
+       {
+        "Ref": "BiopsApi34CDA1E6"
+       },
+       "/test-invoke-stage/GET/dashboard/*/permissions"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BiopsStack/BiopsApi/Default/dashboard/{dashboardId}/permissions/GET/ApiPermission.Test.BiopsStackBiopsApi81984D03.GET..dashboard.{dashboardId}.permissions"
+   }
+  },
+  "BiopsApidashboarddashboardIdpermissionsGET328F9CD6": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "CUSTOM",
+    "AuthorizerId": {
+     "Ref": "BiopsLambdaAuthorizer8C91D92E"
+    },
+    "HttpMethod": "GET",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":apigateway:us-east-1:lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "QuickSightInfoFunction2F5BD5C8",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "BiopsApidashboarddashboardIdpermissions29FAEB37"
+    },
+    "RestApiId": {
+     "Ref": "BiopsApi34CDA1E6"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BiopsStack/BiopsApi/Default/dashboard/{dashboardId}/permissions/GET/Resource"
+   }
+  },
+  "BiopsApidataset8EF3CBEF": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Fn::GetAtt": [
+      "BiopsApi34CDA1E6",
+      "RootResourceId"
+     ]
+    },
+    "PathPart": "dataset",
+    "RestApiId": {
+     "Ref": "BiopsApi34CDA1E6"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BiopsStack/BiopsApi/Default/dataset/Resource"
+   }
+  },
+  "BiopsApidatasetOPTIONS28B576A1": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "ApiKeyRequired": false,
+    "AuthorizationType": "NONE",
+    "HttpMethod": "OPTIONS",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "ResponseParameters": {
+        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,Authorization'",
+        "method.response.header.Access-Control-Allow-Origin": "'*'",
+        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+       },
+       "StatusCode": "204"
+      }
+     ],
+     "RequestTemplates": {
+      "application/json": "{ statusCode: 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "ResponseParameters": {
+       "method.response.header.Access-Control-Allow-Headers": true,
+       "method.response.header.Access-Control-Allow-Origin": true,
+       "method.response.header.Access-Control-Allow-Methods": true
+      },
+      "StatusCode": "204"
+     }
+    ],
+    "ResourceId": {
+     "Ref": "BiopsApidataset8EF3CBEF"
+    },
+    "RestApiId": {
+     "Ref": "BiopsApi34CDA1E6"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BiopsStack/BiopsApi/Default/dataset/OPTIONS/Resource"
+   }
+  },
+  "BiopsApidatasetdatasetId017EEB58": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Ref": "BiopsApidataset8EF3CBEF"
+    },
+    "PathPart": "{datasetId}",
+    "RestApiId": {
+     "Ref": "BiopsApi34CDA1E6"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BiopsStack/BiopsApi/Default/dataset/{datasetId}/Resource"
+   }
+  },
+  "BiopsApidatasetdatasetIdOPTIONS090D3274": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "ApiKeyRequired": false,
+    "AuthorizationType": "NONE",
+    "HttpMethod": "OPTIONS",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "ResponseParameters": {
+        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,Authorization'",
+        "method.response.header.Access-Control-Allow-Origin": "'*'",
+        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+       },
+       "StatusCode": "204"
+      }
+     ],
+     "RequestTemplates": {
+      "application/json": "{ statusCode: 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "ResponseParameters": {
+       "method.response.header.Access-Control-Allow-Headers": true,
+       "method.response.header.Access-Control-Allow-Origin": true,
+       "method.response.header.Access-Control-Allow-Methods": true
+      },
+      "StatusCode": "204"
+     }
+    ],
+    "ResourceId": {
+     "Ref": "BiopsApidatasetdatasetId017EEB58"
+    },
+    "RestApiId": {
+     "Ref": "BiopsApi34CDA1E6"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BiopsStack/BiopsApi/Default/dataset/{datasetId}/OPTIONS/Resource"
+   }
+  },
+  "BiopsApidatasetdatasetIddefinition829B8D73": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Ref": "BiopsApidatasetdatasetId017EEB58"
+    },
+    "PathPart": "definition",
+    "RestApiId": {
+     "Ref": "BiopsApi34CDA1E6"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BiopsStack/BiopsApi/Default/dataset/{datasetId}/definition/Resource"
+   }
+  },
+  "BiopsApidatasetdatasetIddefinitionOPTIONS96A4D176": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "ApiKeyRequired": false,
+    "AuthorizationType": "NONE",
+    "HttpMethod": "OPTIONS",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "ResponseParameters": {
+        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,Authorization'",
+        "method.response.header.Access-Control-Allow-Origin": "'*'",
+        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+       },
+       "StatusCode": "204"
+      }
+     ],
+     "RequestTemplates": {
+      "application/json": "{ statusCode: 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "ResponseParameters": {
+       "method.response.header.Access-Control-Allow-Headers": true,
+       "method.response.header.Access-Control-Allow-Origin": true,
+       "method.response.header.Access-Control-Allow-Methods": true
+      },
+      "StatusCode": "204"
+     }
+    ],
+    "ResourceId": {
+     "Ref": "BiopsApidatasetdatasetIddefinition829B8D73"
+    },
+    "RestApiId": {
+     "Ref": "BiopsApi34CDA1E6"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BiopsStack/BiopsApi/Default/dataset/{datasetId}/definition/OPTIONS/Resource"
+   }
+  },
+  "BiopsApidatasetdatasetIddefinitionGETApiPermissionBiopsStackBiopsApi81984D03GETdatasetdatasetIddefinition2FD5274E": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "QuickSightInfoFunction2F5BD5C8",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-east-1:038198578763:",
+       {
+        "Ref": "BiopsApi34CDA1E6"
+       },
+       "/",
+       {
+        "Ref": "BiopsApiDeploymentStageprod2CA11D6C"
+       },
+       "/GET/dataset/*/definition"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BiopsStack/BiopsApi/Default/dataset/{datasetId}/definition/GET/ApiPermission.BiopsStackBiopsApi81984D03.GET..dataset.{datasetId}.definition"
+   }
+  },
+  "BiopsApidatasetdatasetIddefinitionGETApiPermissionTestBiopsStackBiopsApi81984D03GETdatasetdatasetIddefinition99AE6705": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "QuickSightInfoFunction2F5BD5C8",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-east-1:038198578763:",
+       {
+        "Ref": "BiopsApi34CDA1E6"
+       },
+       "/test-invoke-stage/GET/dataset/*/definition"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BiopsStack/BiopsApi/Default/dataset/{datasetId}/definition/GET/ApiPermission.Test.BiopsStackBiopsApi81984D03.GET..dataset.{datasetId}.definition"
+   }
+  },
+  "BiopsApidatasetdatasetIddefinitionGETDC74E71B": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "CUSTOM",
+    "AuthorizerId": {
+     "Ref": "BiopsLambdaAuthorizer8C91D92E"
+    },
+    "HttpMethod": "GET",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":apigateway:us-east-1:lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "QuickSightInfoFunction2F5BD5C8",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "BiopsApidatasetdatasetIddefinition829B8D73"
+    },
+    "RestApiId": {
+     "Ref": "BiopsApi34CDA1E6"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BiopsStack/BiopsApi/Default/dataset/{datasetId}/definition/GET/Resource"
+   }
+  },
+  "BiopsApidatasetdatasetIddatasources932BAEE4": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Ref": "BiopsApidatasetdatasetId017EEB58"
+    },
+    "PathPart": "datasources",
+    "RestApiId": {
+     "Ref": "BiopsApi34CDA1E6"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BiopsStack/BiopsApi/Default/dataset/{datasetId}/datasources/Resource"
+   }
+  },
+  "BiopsApidatasetdatasetIddatasourcesOPTIONS61BAA449": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "ApiKeyRequired": false,
+    "AuthorizationType": "NONE",
+    "HttpMethod": "OPTIONS",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "ResponseParameters": {
+        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,Authorization'",
+        "method.response.header.Access-Control-Allow-Origin": "'*'",
+        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+       },
+       "StatusCode": "204"
+      }
+     ],
+     "RequestTemplates": {
+      "application/json": "{ statusCode: 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "ResponseParameters": {
+       "method.response.header.Access-Control-Allow-Headers": true,
+       "method.response.header.Access-Control-Allow-Origin": true,
+       "method.response.header.Access-Control-Allow-Methods": true
+      },
+      "StatusCode": "204"
+     }
+    ],
+    "ResourceId": {
+     "Ref": "BiopsApidatasetdatasetIddatasources932BAEE4"
+    },
+    "RestApiId": {
+     "Ref": "BiopsApi34CDA1E6"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BiopsStack/BiopsApi/Default/dataset/{datasetId}/datasources/OPTIONS/Resource"
+   }
+  },
+  "BiopsApidatasetdatasetIddatasourcesGETApiPermissionBiopsStackBiopsApi81984D03GETdatasetdatasetIddatasources5C75E4C1": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "QuickSightInfoFunction2F5BD5C8",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-east-1:038198578763:",
+       {
+        "Ref": "BiopsApi34CDA1E6"
+       },
+       "/",
+       {
+        "Ref": "BiopsApiDeploymentStageprod2CA11D6C"
+       },
+       "/GET/dataset/*/datasources"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BiopsStack/BiopsApi/Default/dataset/{datasetId}/datasources/GET/ApiPermission.BiopsStackBiopsApi81984D03.GET..dataset.{datasetId}.datasources"
+   }
+  },
+  "BiopsApidatasetdatasetIddatasourcesGETApiPermissionTestBiopsStackBiopsApi81984D03GETdatasetdatasetIddatasources15C49B13": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "QuickSightInfoFunction2F5BD5C8",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-east-1:038198578763:",
+       {
+        "Ref": "BiopsApi34CDA1E6"
+       },
+       "/test-invoke-stage/GET/dataset/*/datasources"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BiopsStack/BiopsApi/Default/dataset/{datasetId}/datasources/GET/ApiPermission.Test.BiopsStackBiopsApi81984D03.GET..dataset.{datasetId}.datasources"
+   }
+  },
+  "BiopsApidatasetdatasetIddatasourcesGETBB411CB8": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "CUSTOM",
+    "AuthorizerId": {
+     "Ref": "BiopsLambdaAuthorizer8C91D92E"
+    },
+    "HttpMethod": "GET",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":apigateway:us-east-1:lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "QuickSightInfoFunction2F5BD5C8",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "BiopsApidatasetdatasetIddatasources932BAEE4"
+    },
+    "RestApiId": {
+     "Ref": "BiopsApi34CDA1E6"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BiopsStack/BiopsApi/Default/dataset/{datasetId}/datasources/GET/Resource"
+   }
+  },
+  "BiopsApidatasetdatasetIdpermissionsDDECB5C6": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Ref": "BiopsApidatasetdatasetId017EEB58"
+    },
+    "PathPart": "permissions",
+    "RestApiId": {
+     "Ref": "BiopsApi34CDA1E6"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BiopsStack/BiopsApi/Default/dataset/{datasetId}/permissions/Resource"
+   }
+  },
+  "BiopsApidatasetdatasetIdpermissionsOPTIONSA28F98B0": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "ApiKeyRequired": false,
+    "AuthorizationType": "NONE",
+    "HttpMethod": "OPTIONS",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "ResponseParameters": {
+        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,Authorization'",
+        "method.response.header.Access-Control-Allow-Origin": "'*'",
+        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+       },
+       "StatusCode": "204"
+      }
+     ],
+     "RequestTemplates": {
+      "application/json": "{ statusCode: 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "ResponseParameters": {
+       "method.response.header.Access-Control-Allow-Headers": true,
+       "method.response.header.Access-Control-Allow-Origin": true,
+       "method.response.header.Access-Control-Allow-Methods": true
+      },
+      "StatusCode": "204"
+     }
+    ],
+    "ResourceId": {
+     "Ref": "BiopsApidatasetdatasetIdpermissionsDDECB5C6"
+    },
+    "RestApiId": {
+     "Ref": "BiopsApi34CDA1E6"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BiopsStack/BiopsApi/Default/dataset/{datasetId}/permissions/OPTIONS/Resource"
+   }
+  },
+  "BiopsApidatasetdatasetIdpermissionsGETApiPermissionBiopsStackBiopsApi81984D03GETdatasetdatasetIdpermissions7268A11B": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "QuickSightInfoFunction2F5BD5C8",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-east-1:038198578763:",
+       {
+        "Ref": "BiopsApi34CDA1E6"
+       },
+       "/",
+       {
+        "Ref": "BiopsApiDeploymentStageprod2CA11D6C"
+       },
+       "/GET/dataset/*/permissions"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BiopsStack/BiopsApi/Default/dataset/{datasetId}/permissions/GET/ApiPermission.BiopsStackBiopsApi81984D03.GET..dataset.{datasetId}.permissions"
+   }
+  },
+  "BiopsApidatasetdatasetIdpermissionsGETApiPermissionTestBiopsStackBiopsApi81984D03GETdatasetdatasetIdpermissions6B395D96": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "QuickSightInfoFunction2F5BD5C8",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-east-1:038198578763:",
+       {
+        "Ref": "BiopsApi34CDA1E6"
+       },
+       "/test-invoke-stage/GET/dataset/*/permissions"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BiopsStack/BiopsApi/Default/dataset/{datasetId}/permissions/GET/ApiPermission.Test.BiopsStackBiopsApi81984D03.GET..dataset.{datasetId}.permissions"
+   }
+  },
+  "BiopsApidatasetdatasetIdpermissionsGET2A96F111": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "CUSTOM",
+    "AuthorizerId": {
+     "Ref": "BiopsLambdaAuthorizer8C91D92E"
+    },
+    "HttpMethod": "GET",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":apigateway:us-east-1:lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "QuickSightInfoFunction2F5BD5C8",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "BiopsApidatasetdatasetIdpermissionsDDECB5C6"
+    },
+    "RestApiId": {
+     "Ref": "BiopsApi34CDA1E6"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BiopsStack/BiopsApi/Default/dataset/{datasetId}/permissions/GET/Resource"
+   }
+  },
+  "BiopsApiusers29C0E1F1": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Fn::GetAtt": [
+      "BiopsApi34CDA1E6",
+      "RootResourceId"
+     ]
+    },
+    "PathPart": "users",
+    "RestApiId": {
+     "Ref": "BiopsApi34CDA1E6"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BiopsStack/BiopsApi/Default/users/Resource"
+   }
+  },
+  "BiopsApiusersOPTIONS4BE616B3": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "ApiKeyRequired": false,
+    "AuthorizationType": "NONE",
+    "HttpMethod": "OPTIONS",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "ResponseParameters": {
+        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,Authorization'",
+        "method.response.header.Access-Control-Allow-Origin": "'*'",
+        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+       },
+       "StatusCode": "204"
+      }
+     ],
+     "RequestTemplates": {
+      "application/json": "{ statusCode: 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "ResponseParameters": {
+       "method.response.header.Access-Control-Allow-Headers": true,
+       "method.response.header.Access-Control-Allow-Origin": true,
+       "method.response.header.Access-Control-Allow-Methods": true
+      },
+      "StatusCode": "204"
+     }
+    ],
+    "ResourceId": {
+     "Ref": "BiopsApiusers29C0E1F1"
+    },
+    "RestApiId": {
+     "Ref": "BiopsApi34CDA1E6"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BiopsStack/BiopsApi/Default/users/OPTIONS/Resource"
+   }
+  },
+  "BiopsApiusersGETApiPermissionBiopsStackBiopsApi81984D03GETusersB93BC4CD": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "QuickSightInfoFunction2F5BD5C8",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-east-1:038198578763:",
+       {
+        "Ref": "BiopsApi34CDA1E6"
+       },
+       "/",
+       {
+        "Ref": "BiopsApiDeploymentStageprod2CA11D6C"
+       },
+       "/GET/users"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BiopsStack/BiopsApi/Default/users/GET/ApiPermission.BiopsStackBiopsApi81984D03.GET..users"
+   }
+  },
+  "BiopsApiusersGETApiPermissionTestBiopsStackBiopsApi81984D03GETusersD6A0955C": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "QuickSightInfoFunction2F5BD5C8",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-east-1:038198578763:",
+       {
+        "Ref": "BiopsApi34CDA1E6"
+       },
+       "/test-invoke-stage/GET/users"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BiopsStack/BiopsApi/Default/users/GET/ApiPermission.Test.BiopsStackBiopsApi81984D03.GET..users"
+   }
+  },
+  "BiopsApiusersGET6CA48250": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "CUSTOM",
+    "AuthorizerId": {
+     "Ref": "BiopsLambdaAuthorizer8C91D92E"
+    },
+    "HttpMethod": "GET",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":apigateway:us-east-1:lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "QuickSightInfoFunction2F5BD5C8",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "BiopsApiusers29C0E1F1"
+    },
+    "RestApiId": {
+     "Ref": "BiopsApi34CDA1E6"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BiopsStack/BiopsApi/Default/users/GET/Resource"
    }
   },
   "AssetBucket1D025086": {
@@ -2364,7 +4164,7 @@
   "CDKMetadata": {
    "Type": "AWS::CDK::Metadata",
    "Properties": {
-    "Analytics": "v2:deflate64:H4sIAAAAAAAA/21Sy3LCMAz8Fu7GvKb3Ap2e2mmGPq6McASo+JGxnTKpJ/9eOzGQdnrSSitrV0rmfD6/42E6grMbi/I0lrTj4dWDOLFY2gZhDpq84eHdoS2MkWy911d8AQ9GAekhlSuXdC0JtR829JWWlY0GZcqo+gY7iamlAy2ToHYl8PAEDdoPtI5MJ/Erf6y18JkY4gKtIpdaWuYWW3AOvePLFGLOw6oWJ/QrcMh6mB5l1IfCSBLNrdznLSNQPGxMbzXFlkFFB/B4hoaHdX+wy5puWfujsfSNNvUPsg06v6yom3KDSyFMHS/1gJU0jcpHG2Tx2xw66R7Ep6a2ArtNnjFOLxOZ0YXNIh2OdlUlaZ+8Rr2q6la0oMWxbW8vulMlDdKH1PFS+6qOZmrnjfpv7h+qsOaLSrTJWMumY5DVEfh0dJ//tEmK2UkmQzJzdVI0cQU9WfDZnM9mo09HNLbxNKSQb/r4A+OMVD2+AgAA"
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/21Sy3LCMAz8Fu6OeU3vBTo9tdMMfVwZ4QhQ40fGdsqkmfx77cRA2ulJK63kXSlZ8MXijrezCZxdJooyk7Tn7asHUbJQ2rXCHDV5w9t3hzY3RrLNQV/xBTwYBaTHVKpc0o0k1H7cMFQ6VjQalCmC6hvsJcaWHnRMgtoXwNsnaNB+oHVkeolf+WOthU/EGOdoFbnY0jG33IFz6B1fxRBy3q5rUaJfg0M2wDiU0BByI0k0t/KQd4xA8XZrBqsxdgwqOoLHMzRhC1OiXtX+ZCx9o41No2yLzq8q6kdvcCWEqcN5HrCSplHpUqMsfJBjrzeAMGpqK7C3/4zh9SKSCV3YJNLj4FFVkg7BYNSrqn4vC1qcuu420d8napA+xo6X2ld1MFM7b9R/7/6hcmu+qEAbjXVsloGsTsBnk/v0e01jTE4S2UYzVyd5E1bQ0yWfL/h8Pvl0RJkNpyGFfDvEHye71iezAgAA"
    },
    "Metadata": {
     "aws:cdk:path": "BiopsStack/CDKMetadata/Default"
