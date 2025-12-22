@@ -1,0 +1,371 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Parameters:
+  ScriptBucketName:
+    Type: String
+    Default: admin-console-cfn-dataprepare-code
+    Description: S3 bucket name containing Glue job scripts
+Resources:
+  QuickSuiteAdmin:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub QuickSuiteAdmin-${AWS::AccountId}
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - glue.amazonaws.com
+                - cloudformation.amazonaws.com
+                - firehose.amazonaws.com
+                - streams.metrics.cloudwatch.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Policies:
+        - PolicyName: !Sub Quick-Suite-Admin-${AWS::AccountId}
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Action:
+                  - iam:Get*
+                  - iam:List*
+                  - iam:Create*
+                  - iam:Update*
+                  - iam:PassRole
+                  - quicksight:*
+                  - glue:*
+                  - s3:*
+                  - sts:AssumeRole
+                  - cloudwatch:*
+                  - logs:*
+                  - firehose:PutRecord
+                  - firehose:PutRecordBatch
+                Resource: '*'
+                Effect: Allow
+  etljobadminsuiteassetsaccess:
+    Type: AWS::Glue::Job
+    Properties:
+      Command:
+        Name: glueetl
+        PythonVersion: '3'
+        ScriptLocation: !Sub s3://${ScriptBucketName}/glue/scripts/2025/admin_suite_user_info_access_manage.py
+      DefaultArguments:
+        '--AWS_REGION': !Sub ${AWS::Region}
+        '--S3_OUTPUT_PATH': !Sub s3://admin-suite-${AWS::AccountId}/monitoring/quicksight/assets_access
+      GlueVersion: '5.0'
+      ExecutionProperty:
+        MaxConcurrentRuns: 1
+      MaxRetries: 0
+      Name: admin_suite_user_info_access_manage
+      Role: !GetAtt QuickSuiteAdmin.Arn
+      Timeout: 120
+      WorkerType: G.1X
+      NumberOfWorkers: 2
+    DependsOn:
+      - adminsuites3
+    Metadata:
+      AWS::CloudFormation::Designer:
+        id: c4462e36-ef27-43d6-a0df-01246a77b117
+  etljobadminsuiteassetsmetadata:
+    Type: AWS::Glue::Job
+    Properties:
+      Command:
+        Name: glueetl
+        PythonVersion: '3'
+        ScriptLocation: !Sub s3://${ScriptBucketName}/glue/scripts/2025/admin_suite_dataset.py
+      DefaultArguments:
+        '--AWS_REGION': !Sub ${AWS::Region}
+        '--S3_OUTPUT_PATH': !Sub s3://admin-suite-${AWS::AccountId}/monitoring/quicksight/dataset
+      GlueVersion: '5.0'
+      ExecutionProperty:
+        MaxConcurrentRuns: 1
+      MaxRetries: 0
+      Name: admin_suite_dataset
+      Role: !GetAtt QuickSuiteAdmin.Arn
+      Timeout: 120
+      WorkerType: G.1X
+      NumberOfWorkers: 2
+    DependsOn:
+      - adminsuites3
+  etljobadminsuitefolderassets:
+    Type: AWS::Glue::Job
+    Properties:
+      Command:
+        Name: glueetl
+        PythonVersion: '3'
+        ScriptLocation: !Sub s3://${ScriptBucketName}/glue/scripts/2025/admin_suite_folder.py
+      DefaultArguments:
+        '--AWS_REGION': !Sub ${AWS::Region}
+        '--S3_OUTPUT_PATH': !Sub s3://admin-suite-${AWS::AccountId}/monitoring/quicksight/folder_assets
+      GlueVersion: '5.0'
+      ExecutionProperty:
+        MaxConcurrentRuns: 1
+      MaxRetries: 0
+      Name: admin_suite_folder
+      Role: !GetAtt QuickSuiteAdmin.Arn
+      Timeout: 120
+      WorkerType: G.1X
+      NumberOfWorkers: 2
+    DependsOn:
+      - adminsuites3
+
+  etljobadminsuiteqmetadata:
+    Type: AWS::Glue::Job
+    Properties:
+      Command:
+        Name: glueetl
+        PythonVersion: '3'
+        ScriptLocation: !Sub s3://${ScriptBucketName}/glue/scripts/2025/admin_suite_q.py
+      DefaultArguments:
+        '--AWS_REGION': !Sub ${AWS::Region}
+        '--AWS_ACCOUNT_ID': !Sub ${AWS::AccountId}
+        '--S3_OUTPUT_PATH': !Sub s3://admin-suite-${AWS::AccountId}/monitoring/quicksight/q_md
+      GlueVersion: '5.0'
+      ExecutionProperty:
+        MaxConcurrentRuns: 1
+      MaxRetries: 0
+      Name: admin_suite_q
+      Role: !GetAtt QuickSuiteAdmin.Arn
+      Timeout: 120
+      WorkerType: G.1X
+      NumberOfWorkers: 2
+    DependsOn:
+      - adminsuites3
+
+  etljobadminsuitedatasourceproperties:
+    Type: AWS::Glue::Job
+    Properties:
+      Command:
+        Name: glueetl
+        PythonVersion: '3'
+        ScriptLocation: !Sub s3://${ScriptBucketName}/glue/scripts/2025/admin_suite_datasource.py
+      DefaultArguments:
+        '--AWS_REGION': !Sub ${AWS::Region}
+        '--QUICKSIGHT_IDENTITY_REGION': !Sub ${AWS::Region}
+        '--S3_OUTPUT_PATH': !Sub s3://admin-suite-${AWS::AccountId}/monitoring/quicksight/datasource_property
+      GlueVersion: '5.0'
+      ExecutionProperty:
+        MaxConcurrentRuns: 1
+      MaxRetries: 0
+      Name: admin_suite_datasource
+      Role: !GetAtt QuickSuiteAdmin.Arn
+      Timeout: 120
+      WorkerType: G.1X
+      NumberOfWorkers: 2
+    DependsOn:
+      - adminsuites3
+  etljobadminsuiteassetsaccessschedule:
+    Type: AWS::Glue::Trigger
+    Properties:
+      Type: SCHEDULED
+      Description: Glue Trigger to run admin_suite_user_info_access_manage glue job daily
+      Schedule: cron(0 2 * * ? *)
+      Actions:
+        - JobName: admin_suite_user_info_access_manage
+      Name: etl-job-admin-suite-assets-access-daily
+      StartOnCreation: true
+  etljobadminsuiteassetsmetadataschedule:
+    Type: AWS::Glue::Trigger
+    Properties:
+      Type: SCHEDULED
+      Description: Glue Trigger to run admin_suite_dataset glue job daily
+      Schedule: cron(15 2 * * ? *)
+      Actions:
+        - JobName: admin_suite_dataset
+      Name: etl-job-admin-suite-assets-metadata-daily
+      StartOnCreation: true
+  etljobadminsuitefolderassetsschedule:
+    Type: AWS::Glue::Trigger
+    Properties:
+      Type: SCHEDULED
+      Description: Glue Trigger to run admin_suite_folder job daily
+      Schedule: cron(30 2 * * ? *)
+      Actions:
+        - JobName: admin_suite_folder
+      Name: etl-job-admin-suite-folder-assets-daily
+      StartOnCreation: true
+  etljobadminsuiteqmetadataschedule:
+    Type: AWS::Glue::Trigger
+    Properties:
+      Type: SCHEDULED
+      Description: Glue Trigger to run admin_suite_q glue job daily
+      Schedule: cron(45 2 * * ? *)
+      Actions:
+        - JobName: admin_suite_q
+      Name: etl-job-admin-suite-q-metadata-daily
+      StartOnCreation: true
+
+
+  etljobadminsuitedatasourcepropertieschedule:
+    Type: AWS::Glue::Trigger
+    Properties:
+      Type: SCHEDULED
+      Description: Glue Trigger to run admin_suite_datasource glue job daily
+      Schedule: cron(5 3 * * ? *)
+      Actions:
+        - JobName: admin_suite_datasource
+      Name: etl-job-admin-suite-datasource-properties-daily
+      StartOnCreation: true
+  adminsuites3:
+    Type: AWS::S3::Bucket
+    Properties:
+      AccessControl: Private
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketName: !Join
+        - ''
+        - - admin-suite-
+          - !Ref AWS::AccountId
+
+
+  FirehoseDeliveryStreamcwqsds:
+    Type: AWS::KinesisFirehose::DeliveryStream
+    Properties:
+      DeliveryStreamName: !Sub MetricStreams-cw-qs-ds-${AWS::AccountId}
+      DeliveryStreamType: DirectPut
+      S3DestinationConfiguration:
+        BucketARN: !GetAtt adminsuites3.Arn
+        Prefix: cloudwatch/cw-qs-ds/
+        RoleARN: !GetAtt QuickSuiteAdmin.Arn
+    DependsOn:
+      - QuickSuiteAdmin
+  FirehoseDeliveryStreamcwqsdashvisual:
+    Type: AWS::KinesisFirehose::DeliveryStream
+    Properties:
+      DeliveryStreamName: !Sub MetricStreams-cw-qs-dash-visual-${AWS::AccountId}
+      DeliveryStreamType: DirectPut
+      S3DestinationConfiguration:
+        BucketARN: !GetAtt adminsuites3.Arn
+        Prefix: cloudwatch/cw-qs-dash-visual/
+        RoleARN: !GetAtt QuickSuiteAdmin.Arn
+    DependsOn:
+      - QuickSuiteAdmin
+  FirehoseDeliveryStreamcwqsspice:
+    Type: AWS::KinesisFirehose::DeliveryStream
+    Properties:
+      DeliveryStreamName: !Sub MetricStreams-cw-qs-spice-${AWS::AccountId}
+      DeliveryStreamType: DirectPut
+      S3DestinationConfiguration:
+        BucketARN: !GetAtt adminsuites3.Arn
+        Prefix: cloudwatch/cw-qs-spice/
+        RoleARN: !GetAtt QuickSuiteAdmin.Arn
+    DependsOn:
+      - QuickSuiteAdmin
+  FirehoseDeliveryStreamcwqsqindex:
+    Type: AWS::KinesisFirehose::DeliveryStream
+    Properties:
+      DeliveryStreamName: !Sub MetricStreams-cw-qs-qindex-${AWS::AccountId}
+      DeliveryStreamType: DirectPut
+      S3DestinationConfiguration:
+        BucketARN: !GetAtt adminsuites3.Arn
+        Prefix: cloudwatch/cw-qs-qindex/
+        RoleARN: !GetAtt QuickSuiteAdmin.Arn
+    DependsOn:
+      - QuickSuiteAdmin
+  FirehoseDeliveryStreamcwqsqaction:
+    Type: AWS::KinesisFirehose::DeliveryStream
+    Properties:
+      DeliveryStreamName: !Sub MetricStreams-cw-qs-qaction-${AWS::AccountId}
+      DeliveryStreamType: DirectPut
+      S3DestinationConfiguration:
+        BucketARN: !GetAtt adminsuites3.Arn
+        Prefix: cloudwatch/cw-qs-qaction/
+        RoleARN: !GetAtt QuickSuiteAdmin.Arn
+    DependsOn:
+      - QuickSuiteAdmin
+  CloudWatchMetricStreamDS:
+    Type: AWS::CloudWatch::MetricStream
+    Properties:
+      Name: cw-qs-ds
+      FirehoseArn: !GetAtt FirehoseDeliveryStreamcwqsds.Arn
+      RoleArn: !GetAtt QuickSuiteAdmin.Arn
+      OutputFormat: json
+      IncludeFilters:
+        - Namespace: AWS/QuickSight
+          MetricNames:
+            - IngestionRowCount
+            - IngestionLatency
+            - IngestionInvocationCount
+            - IngestionErrorCount
+  CloudWatchMetricStreamDashVisual:
+    Type: AWS::CloudWatch::MetricStream
+    Properties:
+      Name: cw-qs-dash-visual
+      FirehoseArn: !GetAtt FirehoseDeliveryStreamcwqsdashvisual.Arn
+      RoleArn: !GetAtt QuickSuiteAdmin.Arn
+      OutputFormat: json
+      IncludeFilters:
+        - Namespace: AWS/QuickSight
+          MetricNames:
+            - VisualLoadTime
+            - DashboardViewLoadTime
+            - DashboardViewCount
+            - VisualLoadErrorCount
+  CloudWatchMetricStreamSPICE:
+    Type: AWS::CloudWatch::MetricStream
+    Properties:
+      Name: cw-qs-spice
+      FirehoseArn: !GetAtt FirehoseDeliveryStreamcwqsspice.Arn
+      RoleArn: !GetAtt QuickSuiteAdmin.Arn
+      OutputFormat: json
+      IncludeFilters:
+        - Namespace: AWS/QuickSight
+          MetricNames:
+            - SPICECapacityLimitInMB
+            - SPICECapacityConsumedInMB
+  CloudWatchMetricStreamQIndex:
+    Type: AWS::CloudWatch::MetricStream
+    Properties:
+      Name: cw-qs-qindex
+      FirehoseArn: !GetAtt FirehoseDeliveryStreamcwqsqindex.Arn
+      RoleArn: !GetAtt QuickSuiteAdmin.Arn
+      OutputFormat: json
+      IncludeFilters:
+        - Namespace: AWS/QuickSight
+          MetricNames:
+            - QuickIndexDocumentCount
+            - QuickIndexExtractedTextSize
+  CloudWatchMetricStreamQAction:
+    Type: AWS::CloudWatch::MetricStream
+    Properties:
+      Name: cw-qs-qaction
+      FirehoseArn: !GetAtt FirehoseDeliveryStreamcwqsqaction.Arn
+      RoleArn: !GetAtt QuickSuiteAdmin.Arn
+      OutputFormat: json
+      IncludeFilters:
+        - Namespace: AWS/QuickSight
+          MetricNames:
+            - ActionInvocationError
+            - ActionInvocationCount
+Outputs:
+  groupmembership:
+    Description: The s3 location of group_membership.csv for you to utilize in next
+      Athena tables creation stack
+    Value: !Sub s3://admin-suite-${AWS::AccountId}/monitoring/quicksight/group_membership
+  objectaccess:
+    Description: The s3 location of object_access.csv for you to utilize in next
+      Athena tables creation stack
+    Value: !Sub s3://admin-suite-${AWS::AccountId}/monitoring/quicksight/object_access
+  folderassets:
+    Description: The s3 location of folder_assets.csv for you to utilize in next
+      Athena tables creation stack
+    Value: !Sub s3://admin-suite-${AWS::AccountId}/monitoring/quicksight/folder_assets/folder_assets.csv
+  folderlk:
+    Description: The s3 location of folder_lk.csv for you to utilize in next Athena
+      tables creation stack
+    Value: !Sub s3://admin-suite-${AWS::AccountId}/monitoring/quicksight/folder_lk/folder_lk.csv
+  folderpath:
+    Description: The s3 location of folder_path.csv for you to utilize in next
+      Athena tables creation stack
+    Value: !Sub s3://admin-suite-${AWS::AccountId}/monitoring/quicksight/folder_path/folder_path.csv
+  datasetsproperties:
+    Description: The s3 location of datasets_properties.csv for you to utilize in next
+      Athena tables creation stack
+    Value: !Sub s3://admin-suite-${AWS::AccountId}/monitoring/quicksight/datasets_properties/datasets_properties.csv
+  datasourceproperty:
+    Description: The s3 location of datasource_property.csv for you to utilize in next
+      Athena tables creation stack
+    Value: !Sub s3://admin-suite-${AWS::AccountId}/monitoring/quicksight/datasource_property/datasource_property.csv

@@ -1,0 +1,292 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'CloudWatch Vended Logs for QuickSight Chat and Feedback Logs'
+
+Resources:
+  # Glue Tables
+  ChatLogTable:
+    Type: AWS::Glue::Table
+    Properties:
+      CatalogId: !Ref AWS::AccountId
+      DatabaseName: quicksight_monitoring
+      TableInput:
+        Name: qs_chat_log
+        TableType: EXTERNAL_TABLE
+        StorageDescriptor:
+          Columns:
+            - Name: user_arn
+              Type: string
+              Comment: from deserializer
+            - Name: user_type
+              Type: string
+              Comment: from deserializer
+            - Name: status_code
+              Type: string
+              Comment: from deserializer
+            - Name: conversation_id
+              Type: string
+              Comment: from deserializer
+            - Name: system_message_id
+              Type: string
+              Comment: from deserializer
+            - Name: message_scope
+              Type: string
+              Comment: from deserializer
+            - Name: user_message_id
+              Type: string
+              Comment: from deserializer
+            - Name: user_message
+              Type: string
+              Comment: from deserializer
+            - Name: agent_id
+              Type: string
+              Comment: from deserializer
+            - Name: flow_id
+              Type: string
+              Comment: from deserializer
+            - Name: system_text_message
+              Type: string
+              Comment: from deserializer
+            - Name: user_selected_resources
+              Type: array<struct<resourceid:string,resourcetype:string>>
+              Comment: from deserializer
+            - Name: action_connectors
+              Type: array<struct<actionconnectorid:string>>
+              Comment: from deserializer
+            - Name: cited_resource
+              Type: array<struct<citedresourcetype:string,citedresourceid:string,citedresourcename:string>>
+              Comment: from deserializer
+            - Name: file_attachment
+              Type: array<string>
+              Comment: from deserializer
+            - Name: resource_arn
+              Type: string
+              Comment: from deserializer
+            - Name: event_timestamp
+              Type: bigint
+              Comment: from deserializer
+            - Name: logtype
+              Type: string
+              Comment: from deserializer
+            - Name: accountid
+              Type: string
+              Comment: from deserializer
+          Location: !Sub s3://admin-suite-${AWS::AccountId}/monitoring/quicksight/cw-vended-log/chat-log/AWSLogs/${AWS::AccountId}/quicksuitelogs/
+          InputFormat: org.apache.hadoop.mapred.TextInputFormat
+          OutputFormat: org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat
+          SerdeInfo:
+            SerializationLibrary: org.openx.data.jsonserde.JsonSerDe
+            Parameters:
+              paths: accountId,action_connectors,agent_id,cited_resource,conversation_id,event_timestamp,file_attachment,flow_id,logType,message_scope,resource_arn,status_code,system_message_id,system_text_message,user_arn,user_message,user_message_id,user_selected_resources,user_type
+        PartitionKeys:
+          - Name: region
+            Type: string
+          - Name: account_id
+            Type: string
+          - Name: year
+            Type: string
+          - Name: month
+            Type: string
+          - Name: day
+            Type: string
+          - Name: hour
+            Type: string
+        Parameters:
+          projection.enabled: 'true'
+          projection.region.type: enum
+          projection.region.values: us-east-1,us-east-2,us-west-2
+          projection.account_id.type: enum
+          projection.account_id.values: !Ref AWS::AccountId
+          projection.year.type: integer
+          projection.year.range: '2024,2030'
+          projection.month.type: integer
+          projection.month.range: '01,12'
+          projection.month.digits: '2'
+          projection.day.type: integer
+          projection.day.range: '01,31'
+          projection.day.digits: '2'
+          projection.hour.type: integer
+          projection.hour.range: '00,23'
+          projection.hour.digits: '2'
+          storage.location.template: !Sub s3://admin-suite-${AWS::AccountId}/monitoring/quicksight/cw-vended-log/chat-log/AWSLogs/${AWS::AccountId}/quicksuitelogs/${region}/${account_id}/${year}/${month}/${day}/${hour}/
+          classification: json
+          compressionType: gzip
+          partition_filtering.enabled: 'true'
+          typeOfData: file
+
+  FeedbackLogTable:
+    Type: AWS::Glue::Table
+    Properties:
+      CatalogId: !Ref AWS::AccountId
+      DatabaseName: quicksight_monitoring
+      TableInput:
+        Name: qs_feedback_log
+        TableType: EXTERNAL_TABLE
+        StorageDescriptor:
+          Columns:
+            - Name: user_arn
+              Type: string
+              Comment: Amazon QuickSight user ARN who provided feedback
+            - Name: user_type
+              Type: string
+              Comment: QuickSight user type (ADMIN_PRO, AUTHOR_PRO, etc.)
+            - Name: status_code
+              Type: string
+              Comment: Status of the feedback event delivery
+            - Name: conversation_id
+              Type: string
+              Comment: Unique identifier of the conversation
+            - Name: research_id
+              Type: string
+              Comment: Unique identifier of the research session
+            - Name: system_message_id
+              Type: string
+              Comment: System generated message identifier
+            - Name: user_message_id
+              Type: string
+              Comment: User message identifier being rated
+            - Name: feedback_type
+              Type: string
+              Comment: Type of feedback provided (thumbs up/down, rating)
+            - Name: feedback_reason
+              Type: string
+              Comment: Reason or category for the feedback
+            - Name: rating
+              Type: string
+              Comment: Numerical or categorical rating provided
+            - Name: resource_arn
+              Type: string
+              Comment: QuickSight resource ARN associated with feedback
+            - Name: event_timestamp
+              Type: bigint
+              Comment: Timestamp when feedback was provided (epoch ms)
+            - Name: logtype
+              Type: string
+              Comment: Type of log entry (Feedback)
+            - Name: accountid
+              Type: string
+              Comment: AWS account ID where feedback occurred
+          Location: !Sub s3://admin-suite-${AWS::AccountId}/monitoring/quicksight/cw-vended-log/feedback-log/AWSLogs/${AWS::AccountId}/quicksuitelogs/
+          InputFormat: org.apache.hadoop.mapred.TextInputFormat
+          OutputFormat: org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat
+          SerdeInfo:
+            SerializationLibrary: org.openx.data.jsonserde.JsonSerDe
+            Parameters:
+              paths: accountId,conversation_id,event_timestamp,feedback_reason,feedback_type,logType,rating,research_id,resource_arn,status_code,system_message_id,user_arn,user_message_id,user_type
+        PartitionKeys:
+          - Name: region
+            Type: string
+          - Name: account_id
+            Type: string
+          - Name: year
+            Type: string
+          - Name: month
+            Type: string
+          - Name: day
+            Type: string
+          - Name: hour
+            Type: string
+        Parameters:
+          projection.enabled: 'true'
+          projection.region.type: enum
+          projection.region.values: us-east-1,us-east-2,us-west-2
+          projection.account_id.type: enum
+          projection.account_id.values: !Ref AWS::AccountId
+          projection.year.type: integer
+          projection.year.range: '2024,2030'
+          projection.month.type: integer
+          projection.month.range: '01,12'
+          projection.month.digits: '2'
+          projection.day.type: integer
+          projection.day.range: '01,31'
+          projection.day.digits: '2'
+          projection.hour.type: integer
+          projection.hour.range: '00,23'
+          projection.hour.digits: '2'
+          storage.location.template: !Sub s3://admin-suite-${AWS::AccountId}/monitoring/quicksight/cw-vended-log/feedback-log/AWSLogs/${AWS::AccountId}/quicksuitelogs/${region}/${account_id}/${year}/${month}/${day}/${hour}/
+          classification: json
+          compressionType: gzip
+          partition_filtering.enabled: 'true'
+          typeOfData: file
+
+  # CloudWatch Log Groups
+  ChatLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: qs-chat-log-group
+      LogGroupClass: STANDARD
+      RetentionInDays: 30
+
+  FeedbackLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: qs-feedback-log-group
+      LogGroupClass: STANDARD
+      RetentionInDays: 30
+
+  # Delivery Sources
+  ChatLogDeliverySource:
+    Type: AWS::Logs::DeliverySource
+    Properties:
+      Name: qs-chat-log
+      ResourceArn: !Sub arn:aws:quicksight:${AWS::Region}:${AWS::AccountId}:account/${AWS::AccountId}
+      LogType: CHAT_LOGS
+
+  FeedbackLogDeliverySource:
+    Type: AWS::Logs::DeliverySource
+    Properties:
+      Name: qs-feedback-log
+      ResourceArn: !Sub arn:aws:quicksight:${AWS::Region}:${AWS::AccountId}:account/${AWS::AccountId}
+      LogType: FEEDBACK_LOGS
+
+  # Delivery Destinations
+  ChatLogS3Destination:
+    Type: AWS::Logs::DeliveryDestination
+    Properties:
+      Name: qs-chat-log-s3
+      DeliveryDestinationType: S3
+      DeliveryDestinationConfiguration:
+        DestinationResourceArn: !Sub arn:aws:s3:::admin-suite-${AWS::AccountId}/monitoring/quicksight/cw-vended-log/chat-log/
+
+  FeedbackLogS3Destination:
+    Type: AWS::Logs::DeliveryDestination
+    Properties:
+      Name: qs-feedback-log-s3
+      DeliveryDestinationType: S3
+      DeliveryDestinationConfiguration:
+        DestinationResourceArn: !Sub arn:aws:s3:::admin-suite-${AWS::AccountId}/monitoring/quicksight/cw-vended-log/feedback-log/
+
+  # Deliveries
+  ChatLogDelivery:
+    Type: AWS::Logs::Delivery
+    Properties:
+      DeliverySourceName: !Ref ChatLogDeliverySource
+      DeliveryDestinationArn: !GetAtt ChatLogS3Destination.Arn
+    DependsOn:
+      - ChatLogDeliverySource
+      - ChatLogS3Destination
+
+  FeedbackLogDelivery:
+    Type: AWS::Logs::Delivery
+    Properties:
+      DeliverySourceName: !Ref FeedbackLogDeliverySource
+      DeliveryDestinationArn: !GetAtt FeedbackLogS3Destination.Arn
+    DependsOn:
+      - FeedbackLogDeliverySource
+      - FeedbackLogS3Destination
+
+Outputs:
+  ChatLogS3Location:
+    Description: S3 location for QuickSight chat logs
+    Value: !Sub s3://admin-suite-${AWS::AccountId}/monitoring/quicksight/cw-vended-log/chat-log/
+
+  FeedbackLogS3Location:
+    Description: S3 location for QuickSight feedback logs
+    Value: !Sub s3://admin-suite-${AWS::AccountId}/monitoring/quicksight/cw-vended-log/feedback-log/
+
+  ChatLogGroupArn:
+    Description: ARN of the chat log group
+    Value: !GetAtt ChatLogGroup.Arn
+
+  FeedbackLogGroupArn:
+    Description: ARN of the feedback log group
+    Value: !GetAtt FeedbackLogGroup.Arn
