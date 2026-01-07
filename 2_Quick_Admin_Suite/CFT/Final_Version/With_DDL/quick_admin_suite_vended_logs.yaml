@@ -7,7 +7,7 @@ Resources:
     Type: AWS::Glue::Table
     Properties:
       CatalogId: !Ref AWS::AccountId
-      DatabaseName: quicksight_monitoring
+      DatabaseName: admin-console-2025
       TableInput:
         Name: qs_chat_log
         TableType: EXTERNAL_TABLE
@@ -107,7 +107,13 @@ Resources:
           projection.hour.type: integer
           projection.hour.range: '00,23'
           projection.hour.digits: '2'
-          storage.location.template: !Sub s3://admin-suite-${AWS::AccountId}/monitoring/quicksight/cw-vended-log/chat-log/AWSLogs/${AWS::AccountId}/quicksuitelogs/${region}/${account_id}/${year}/${month}/${day}/${hour}/
+          storage.location.template: !Join
+            - ''
+            - - 's3://admin-suite-'
+              - !Ref AWS::AccountId
+              - '/monitoring/quicksight/cw-vended-log/chat-log/AWSLogs/'
+              - !Ref AWS::AccountId
+              - '/quicksuitelogs/${region}/${account_id}/${year}/${month}/${day}/${hour}/'
           classification: json
           compressionType: gzip
           partition_filtering.enabled: 'true'
@@ -117,7 +123,7 @@ Resources:
     Type: AWS::Glue::Table
     Properties:
       CatalogId: !Ref AWS::AccountId
-      DatabaseName: quicksight_monitoring
+      DatabaseName: admin-console-2025
       TableInput:
         Name: qs_feedback_log
         TableType: EXTERNAL_TABLE
@@ -202,7 +208,13 @@ Resources:
           projection.hour.type: integer
           projection.hour.range: '00,23'
           projection.hour.digits: '2'
-          storage.location.template: !Sub s3://admin-suite-${AWS::AccountId}/monitoring/quicksight/cw-vended-log/feedback-log/AWSLogs/${AWS::AccountId}/quicksuitelogs/${region}/${account_id}/${year}/${month}/${day}/${hour}/
+          storage.location.template: !Join
+            - ''
+            - - 's3://admin-suite-'
+              - !Ref AWS::AccountId
+              - '/monitoring/quicksight/cw-vended-log/feedback-log/AWSLogs/'
+              - !Ref AWS::AccountId
+              - '/quicksuitelogs/${region}/${account_id}/${year}/${month}/${day}/${hour}/'
           classification: json
           compressionType: gzip
           partition_filtering.enabled: 'true'
@@ -243,17 +255,13 @@ Resources:
     Type: AWS::Logs::DeliveryDestination
     Properties:
       Name: qs-chat-log-s3
-      DeliveryDestinationType: S3
-      DeliveryDestinationConfiguration:
-        DestinationResourceArn: !Sub arn:aws:s3:::admin-suite-${AWS::AccountId}/monitoring/quicksight/cw-vended-log/chat-log/
+      DestinationResourceArn: !Sub arn:aws:s3:::admin-suite-${AWS::AccountId}/monitoring/quicksight/cw-vended-log/chat-log/
 
   FeedbackLogS3Destination:
     Type: AWS::Logs::DeliveryDestination
     Properties:
       Name: qs-feedback-log-s3
-      DeliveryDestinationType: S3
-      DeliveryDestinationConfiguration:
-        DestinationResourceArn: !Sub arn:aws:s3:::admin-suite-${AWS::AccountId}/monitoring/quicksight/cw-vended-log/feedback-log/
+      DestinationResourceArn: !Sub arn:aws:s3:::admin-suite-${AWS::AccountId}/monitoring/quicksight/cw-vended-log/feedback-log/
 
   # Deliveries
   ChatLogDelivery:

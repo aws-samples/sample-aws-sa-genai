@@ -58,9 +58,9 @@ Resources:
       MaxRetries: 0
       Name: admin_suite_user_info_access_manage
       Role: !GetAtt QuickSuiteAdmin.Arn
-      Timeout: 360
-      WorkerType: G.2X
-      NumberOfWorkers: 5
+      Timeout: 240
+      WorkerType: G.1X
+      NumberOfWorkers: 2
     DependsOn:
       - adminsuites3
     Metadata:

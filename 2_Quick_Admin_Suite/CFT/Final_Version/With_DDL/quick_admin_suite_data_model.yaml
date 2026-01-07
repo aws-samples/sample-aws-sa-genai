@@ -919,7 +919,7 @@ Resources:
               Type: string
             - Comment: SPICE metrics have no dimensions
               Name: dimensions
-              Type: struct<>
+              Type: string
             - Comment: Metric timestamp in epoch milliseconds
               Name: timestamp
               Type: bigint

@@ -305,8 +305,9 @@ if __name__ == "__main__":
 
                     # Process failed ingestions
                     elif IngestionStatus == 'FAILED':
-                        ErrorInfoType = response1['Ingestions'][0]['ErrorInfo']['Type']
-                        ErrorInfoMessage = response1['Ingestions'][0]['ErrorInfo'].get('Message', '')
+                        error_info = response1['Ingestions'][0].get('ErrorInfo', {})
+                        ErrorInfoType = error_info.get('Type', 'UnknownError')
+                        ErrorInfoMessage = error_info.get('Message', '')
                         error_msg = ErrorInfoMessage[0:50] + '-Please refer dataset refresh summary for complete error' if len(ErrorInfoMessage) <= 100 else "Please refer dataset refresh summary for complete error"
                         
                         datasets_properties.append([region, DataSetId, Name, LastUpdatedTime, ImportMode, ConsumedSpiceCapacityInBytes, 

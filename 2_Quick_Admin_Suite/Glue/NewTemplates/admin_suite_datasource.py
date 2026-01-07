@@ -128,8 +128,17 @@ while True:
                             [aws_region,'Not-found', DataSourceid, dsname, 'Not-found', DataSetId, datasetLastUpdatedTime,datasetCreatedTime])
                     
      # Handle exceptions for unsupported dataset types                   
+     except botocore.exceptions.ClientError as error:
+              if error.response['Error']['Code'] == 'InvalidParameterValueException' and 'File source type is not supported' in str(error):
+                dsname = dataset['Name']
+                datasetLastUpdatedTime = dataset['LastUpdatedTime']
+                datasetCreatedTime = dataset['CreatedTime']
+                datasourcedependent.append(
+                 [aws_region,'N/A', 'N/A', dsname, 'File type', DataSetId, datasetLastUpdatedTime,datasetCreatedTime])
+              else:
+                raise error
      except Exception as e:
-              if str(e).find('data set type is not supported'):
+              if str(e).find('data set type is not supported') != -1:
                 pass
                 token = None
                 # Handle file-type datasets

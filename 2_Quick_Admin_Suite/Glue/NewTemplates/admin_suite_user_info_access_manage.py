@@ -14,8 +14,10 @@ from awsglue.context import GlueContext
 from pyspark.context import SparkContext
 from awsglue.job import Job
 import botocore
+from concurrent.futures import ThreadPoolExecutor, as_completed
+import threading
 
-def call_with_backoff(api_func: Callable, max_retries: int = 8, **kwargs):
+def call_with_backoff(api_func: Callable, max_retries: int = 10, **kwargs):
     """Call a boto3 API with exponential backoff + jitter for throttling."""
     for attempt in range(max_retries):
         try:
@@ -23,7 +25,7 @@ def call_with_backoff(api_func: Callable, max_retries: int = 8, **kwargs):
         except botocore.exceptions.ClientError as e:
             code = e.response['Error']['Code']
             if code == 'ThrottlingException':
-                delay = min(2 ** attempt + random.random(), 30)
+                delay = min((2 ** attempt) + random.uniform(0, 1), 60)
                 print(f"Throttled on {api_func.__name__}, sleeping {delay:.1f}s (attempt {attempt + 1}/{max_retries})")
                 time.sleep(delay)
             else:
@@ -397,7 +399,234 @@ def describe_data_source_permissions(account_id, DataSourceId, aws_region):
         DataSourceId=DataSourceId
     )
     return res
-#end-access control related describe functions
+def process_dashboard_permissions(dashboard):
+    """Process permissions for a single dashboard"""
+    try:
+        response = call_with_backoff(lambda: describe_dashboard_permissions(account_id, dashboard['DashboardId'], glue_aws_region))
+        permissions = response['Permissions']
+        results = []
+        
+        for principal in permissions:
+            actions = '|'.join(principal['Actions'])
+            arn = principal['Principal']
+            principal_parts = principal['Principal'].split("/")
+            ptype = principal_parts[0].split(":")[-1]
+            additional_info = principal_parts[1] if len(principal_parts) > 1 else ""
+            
+            if len(principal_parts)==4:
+                principal_name = principal_parts[2]+'/'+principal_parts[3]
+            elif len(principal_parts)==3:
+                principal_name = principal_parts[2]
+            else:
+                principal_name = principal_parts[1] if len(principal_parts) > 1 else ""
+            
+            results.append([account_id, glue_aws_region, 'dashboard', dashboard['Name'], 
+                          dashboard['DashboardId'], ptype, principal_name, arn, additional_info, actions])
+        return results
+    except Exception as e:
+        print(f"Error processing dashboard {dashboard['DashboardId']}: {e}")
+        return []
+
+def process_dataset_permissions(dataset):
+    """Process permissions for a single dataset"""
+    if dataset['Name'] in ['Business Review', 'People Overview', 'Sales Pipeline', 'Web and Social Media Analytics']:
+        return []
+    
+    try:
+        response = call_with_backoff(lambda: describe_data_set_permissions(account_id, dataset['DataSetId'], glue_aws_region))
+        permissions = response['Permissions']
+        results = []
+        
+        for principal in permissions:
+            actions = '|'.join(principal['Actions'])
+            arn = principal['Principal']
+            principal_parts = principal['Principal'].split("/")
+            ptype = principal_parts[0].split(":")[-1]
+            additional_info = principal_parts[-2] if len(principal_parts) > 2 else ""
+            
+            if len(principal_parts)==4:
+                principal_name = principal_parts[2]+'/'+principal_parts[3]
+            elif len(principal_parts)==3:
+                principal_name = principal_parts[2]
+            else:
+                principal_name = principal_parts[1] if len(principal_parts) > 1 else ""
+            
+            results.append([account_id, glue_aws_region, 'dataset', dataset['Name'], 
+                          dataset['DataSetId'], ptype, principal_name, arn, additional_info, actions])
+        return results
+    except Exception as e:
+        print(f"Error processing dataset {dataset['DataSetId']}: {e}")
+        return []
+
+def process_datasource_permissions(datasource):
+    """Process permissions for a single datasource"""
+    if datasource['Name'] in ['Business Review', 'People Overview', 'Sales Pipeline', 'Web and Social Media Analytics']:
+        return []
+    
+    if 'DataSourceParameters' not in datasource:
+        return []
+    
+    try:
+        response = call_with_backoff(lambda: describe_data_source_permissions(account_id, datasource['DataSourceId'], glue_aws_region))
+        permissions = response['Permissions']
+        results = []
+        
+        for principal in permissions:
+            actions = '|'.join(principal['Actions'])
+            arn = principal['Principal']
+            principal_parts = principal['Principal'].split("/")
+            ptype = principal_parts[0].split(":")[-1]
+            additional_info = principal_parts[-2] if len(principal_parts) > 2 else ""
+            
+            if len(principal_parts)==4:
+                principal_name = principal_parts[2]+'/'+principal_parts[3]
+            elif len(principal_parts)==3:
+                principal_name = principal_parts[2]
+            else:
+                principal_name = principal_parts[1] if len(principal_parts) > 1 else ""
+            
+            results.append([account_id, glue_aws_region, 'data_source', datasource['Name'], 
+                          datasource['DataSourceId'], ptype, principal_name, arn, additional_info, actions])
+        return results
+    except Exception as e:
+        print(f"Error processing datasource {datasource['DataSourceId']}: {e}")
+        return []
+
+def process_analysis_permissions(analysis):
+    """Process permissions for a single analysis"""
+    if analysis['Status'] == 'DELETED':
+        return []
+    
+    try:
+        response = call_with_backoff(lambda: describe_analysis_permissions(account_id, analysis['AnalysisId'], glue_aws_region))
+        permissions = response['Permissions']
+        results = []
+        
+        for principal in permissions:
+            actions = '|'.join(principal['Actions'])
+            arn = principal['Principal']
+            principal_parts = principal['Principal'].split("/")
+            ptype = principal_parts[0].split(":")[-1]
+            additional_info = principal_parts[-2] if len(principal_parts) > 2 else ""
+            
+            if len(principal_parts)==4:
+                principal_name = principal_parts[2]+'/'+principal_parts[3]
+            elif len(principal_parts)==3:
+                principal_name = principal_parts[2]
+            else:
+                principal_name = principal_parts[1] if len(principal_parts) > 1 else ""
+            
+            results.append([account_id, glue_aws_region, 'analysis', analysis['Name'], 
+                          analysis['AnalysisId'], ptype, principal_name, arn, additional_info, actions])
+        return results
+    except Exception as e:
+        print(f"Error processing analysis {analysis['AnalysisId']}: {e}")
+        return []
+
+def process_theme_permissions(theme):
+    """Process permissions for a single theme"""
+    if theme['ThemeId'] in ['SEASIDE', 'CLASSIC', 'MIDNIGHT', 'RAINIER', 'AQUASCAPE']:
+        return []
+    
+    try:
+        response = call_with_backoff(lambda: describe_theme_permissions(account_id, theme['ThemeId'], glue_aws_region))
+        permissions = response['Permissions']
+        results = []
+        
+        for principal in permissions:
+            actions = '|'.join(principal['Actions'])
+            arn = principal['Principal']
+            principal_parts = principal['Principal'].split("/")
+            ptype = principal_parts[0].split(":")[-1]
+            additional_info = principal_parts[-2] if len(principal_parts) > 2 else ""
+            
+            if len(principal_parts)==4:
+                principal_name = principal_parts[2]+'/'+principal_parts[3]
+            elif len(principal_parts)==3:
+                principal_name = principal_parts[2]
+            else:
+                principal_name = principal_parts[1] if len(principal_parts) > 1 else ""
+            
+            results.append([account_id, glue_aws_region, 'theme', theme['Name'], 
+                          theme['ThemeId'], ptype, principal_name, arn, additional_info, actions])
+        return results
+    except Exception as e:
+        print(f"Error processing theme {theme['ThemeId']}: {e}")
+        return []
+
+def process_user_groups(user_data):
+    """Process group memberships for a single user"""
+    account_id, ns, user = user_data
+    results = []
+    
+    if user['UserName'] == 'N/A':
+        return results
+    
+    try:
+        groups = list_user_groups(user['UserName'], account_id, aws_region, ns)
+        if len(groups) == 0:
+            results.append([account_id, ns, None, user['UserName'], user['Email'], user['Role'], user['IdentityType'], user['Arn']])
+        else:
+            for group in groups:
+                results.append([account_id, ns, group['GroupName'], user['UserName'], user['Email'], user['Role'], user['IdentityType'], user['Arn']])
+    except Exception as e:
+        print(f"Error processing user {user['UserName']}: {e}")
+    
+    return results
+
+def process_users_parallel(user_list, csv_path, batch_size=30, max_workers=2):
+    """Process users in parallel and write incrementally"""
+    csv_lock = threading.Lock()
+    
+    with open(csv_path, 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        
+        for i in range(0, len(user_list), batch_size):
+            batch = user_list[i:i+batch_size]
+            print(f"Processing user batch {i//batch_size + 1}/{(len(user_list)-1)//batch_size + 1}")
+            
+            with ThreadPoolExecutor(max_workers=max_workers) as executor:
+                futures = {executor.submit(process_user_groups, user_data): user_data for user_data in batch}
+                
+                for future in as_completed(futures):
+                    try:
+                        results = future.result()
+                        if results:
+                            with csv_lock:
+                                for row in results:
+                                    writer.writerow(row)
+                    except Exception as e:
+                        print(f"Error in user parallel processing: {e}")
+            
+            # Small delay between batches
+            time.sleep(1)
+
+def process_assets_parallel(assets, process_func, batch_size=20, max_workers=2):
+    """Process assets in parallel batches and write incrementally"""
+    csv_lock = threading.Lock()
+    
+    with open(path, 'a', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        
+        for i in range(0, len(assets), batch_size):
+            batch = assets[i:i+batch_size]
+            print(f"Processing batch {i//batch_size + 1}/{(len(assets)-1)//batch_size + 1}")
+            
+            with ThreadPoolExecutor(max_workers=max_workers) as executor:
+                futures = {executor.submit(process_func, asset): asset for asset in batch}
+                
+                for future in as_completed(futures):
+                    try:
+                        results = future.result()
+                        if results:
+                            with csv_lock:
+                                for row in results:
+                                    writer.writerow(row)
+                    except Exception as e:
+                        print(f"Error in parallel processing: {e}")
+            
+            # Add delay between batches to avoid throttling
+            time.sleep(2)
 
 if __name__ == "__main__":
     sts_client = boto3.client("sts", region_name=aws_region, config=default_botocore_config())
@@ -417,188 +646,81 @@ if __name__ == "__main__":
     path = os.path.join(tmpdir, local_file_name)
 
     lists = []
-    access = []
+    user_data_list = []
     namespaces = list_namespaces(account_id, aws_region)
+    
+    # Collect all users from all namespaces first
     for ns in namespaces:
-        users = []
         try:
-            ns = ns['Name']
-            users = list_users(account_id, aws_region, ns)
-        
+            ns_name = ns['Name']
+            users = list_users(account_id, aws_region, ns_name)
+            
+            for user in users:
+                user_data_list.append((account_id, ns_name, user))
+                
         except botocore.exceptions.ClientError as error:
             if error.response['Error']['Code'] == 'ResourceNotFoundException':
-                print(f"Account " + account_id + " is not signed up with QuickSight with namespace " + ns + " . Skipping this namespace.")
+                print(f"Account " + account_id + " is not signed up with QuickSight with namespace " + ns_name + " . Skipping this namespace.")
                 continue
         except Exception as e:
             print(e)
             continue
-
-        for user in users:
-            if user['UserName'] == 'N/A':
-                continue
-            try:
-                groups = list_user_groups(user['UserName'], account_id, aws_region, ns)
-                if len(groups) == 0:
-                    lists.append([account_id, ns, None, user['UserName'], user['Email'], user['Role'], user['IdentityType'], user['Arn']])
-                else:
-                    for group in groups:
-                        lists.append([account_id, ns, group['GroupName'], user['UserName'], user['Email'], user['Role'], user['IdentityType'], user['Arn']])
-            except Exception as e:
-                print(e)
-
-    print(len(lists))
-    #print(lists)
-
-    with open(path, 'w', newline='') as outfile:
-        writer = csv.writer(outfile)
-        for line in lists:
-            writer.writerow(line)
-    bucket.upload_file(path, key)
+    
+    print(f"Total users to process: {len(user_data_list)}")
+    
+    # Process users in parallel
+    try:
+        process_users_parallel(user_data_list, path)
+        print(f"User processing completed. File size: {os.path.getsize(path)} bytes")
+        bucket.upload_file(path, key)
+        print(f"Group membership CSV uploaded to {key}")
+    except Exception as e:
+        print(f"Error in user processing: {e}")
+        raise
 
     path = os.path.join(tmpdir, local_file_name2)
-    print(path)
-    dashboards = list_dashboards(account_id, glue_aws_region)
-
-    for dashboard in dashboards:
-        dashboardid = dashboard['DashboardId']
-
-        response = call_with_backoff(lambda: describe_dashboard_permissions(account_id, dashboardid, glue_aws_region))
-        permissions = response['Permissions']
-        for principal in permissions:
-            actions = '|'.join(principal['Actions'])
-            arn = principal['Principal']
-            principal = principal['Principal'].split("/")
-            ptype = principal[0].split(":")
-            ptype = ptype[-1]
-            additional_info = principal[1]
-            if len(principal)==4:
-                # This will handle user
-                principal = principal[2]+'/'+principal[3]
-            elif len(principal)==3:
-                # This will handle group
-                principal = principal[2]
-            else:
-                # This will handle namespace
-                principal = principal[1]
-
-            access.append(
-                [account_id, glue_aws_region, 'dashboard', dashboard['Name'], dashboardid, ptype, principal, arn, additional_info, actions])
-
-    datasets = list_datasets(account_id, glue_aws_region)
-
-    for dataset in datasets:
-        if dataset['Name'] not in ['Business Review', 'People Overview', 'Sales Pipeline',
-                                   'Web and Social Media Analytics']:
-            datasetid = dataset['DataSetId']
-
-            response = call_with_backoff(lambda: describe_data_set_permissions(account_id, datasetid, glue_aws_region))
-            permissions = response['Permissions']
-            for principal in permissions:
-                actions = '|'.join(principal['Actions'])
-                arn = principal['Principal']
-                principal = principal['Principal'].split("/")
-                ptype = principal[0].split(":")
-                ptype = ptype[-1]
-                additional_info = principal[-2]
-                if len(principal)==4:
-                    principal = principal[2]+'/'+principal[3]
-                elif len(principal)==3:
-                    principal = principal[2]
-                else:
-                    principal = principal[1]
-                
-                access.append(
-                    [account_id, glue_aws_region, 'dataset', dataset['Name'], datasetid, ptype, principal, arn, additional_info, actions])
-
-    datasources = list_datasources(account_id, glue_aws_region)
-
-    for datasource in datasources:
-        #print(datasource)
-        if datasource['Name'] not in ['Business Review', 'People Overview', 'Sales Pipeline',
-                                      'Web and Social Media Analytics']:
-            datasourceid = datasource['DataSourceId']
-            if 'DataSourceParameters' in datasource:
-                #print(datasourceid)
-                try:
-                    response = call_with_backoff(lambda: describe_data_source_permissions(account_id, datasourceid, glue_aws_region))
-                    #print(response)
-                    permissions = response['Permissions']
-                    #print(permissions)
-                    for principal in permissions:
-                        actions = '|'.join(principal['Actions'])
-                        arn = principal['Principal']
-                        principal = principal['Principal'].split("/")
-                        ptype = principal[0].split(":")
-                        ptype = ptype[-1]
-                        additional_info = principal[-2]
-                        if len(principal)==4:
-                            principal = principal[2]+'/'+principal[3]
-                        elif len(principal)==3:
-                            principal = principal[2]
-
-                        access.append([account_id, glue_aws_region, 'data_source', datasource['Name'], datasourceid, ptype, principal, arn,
-                                       additional_info, actions])
-                except Exception as e:
-                    print(e)
-
-    analyses = list_analyses(account_id, glue_aws_region)
-
-    for analysis in analyses:
-        if analysis['Status'] != 'DELETED':
-            analysisid = analysis['AnalysisId']
-
-            response = call_with_backoff(lambda: describe_analysis_permissions(account_id, analysisid, glue_aws_region))
-            permissions = response['Permissions']
-            for principal in permissions:
-                actions = '|'.join(principal['Actions'])
-                arn = principal['Principal']
-                principal = principal['Principal'].split("/")
-                ptype = principal[0].split(":")
-                ptype = ptype[-1]
-                additional_info = principal[-2]
-                if len(principal)==4:
-                    principal = principal[2]+'/'+principal[3]
-                elif len(principal)==3:
-                    principal = principal[2]
-                else:
-                    principal = principal[1]
-
-                access.append(
-                    [account_id, glue_aws_region, 'analysis', analysis['Name'], analysisid, ptype, principal, arn, additional_info, actions])
-
-    themes = list_themes(account_id, glue_aws_region)
-    for theme in themes:
-        if theme['ThemeId'] not in ['SEASIDE', 'CLASSIC', 'MIDNIGHT', 'RAINIER', 'AQUASCAPE']:
-            themeid = theme['ThemeId']
-            response = call_with_backoff(lambda: describe_theme_permissions(account_id, themeid, glue_aws_region))
-            permissions = response['Permissions']
-            for principal in permissions:
-                actions = '|'.join(principal['Actions'])
-                arn = principal['Principal']
-                principal = principal['Principal'].split("/")
-                ptype = principal[0].split(":")
-                ptype = ptype[-1]
-                additional_info = principal[-2]
-                if len(principal)==4:
-                    principal = principal[2]+'/'+principal[3]
-                elif len(principal)==3:
-                    principal = principal[2]
-                else:
-                    principal = principal[1]
-
-                access.append(
-                    [account_id, glue_aws_region, 'theme', theme['Name'], themeid, ptype, principal, arn, additional_info,
-                     actions])
-
-    print(access)
-    with open(path, 'w', newline='') as outfile:
-        writer = csv.writer(outfile)
-        for line in access:
-            writer.writerow(line)
-
-    # upload file from tmp to s3 key
-
-    bucket.upload_file(path, key2)
+    print(f"Starting asset processing. Second CSV path: {path}")
+    
+    # Create empty CSV file first
+    with open(path, 'w', newline='') as csvfile:
+        pass
+    
+    try:
+        # Process all asset types in parallel with reduced concurrency
+        print("Processing dashboards...")
+        dashboards = list_dashboards(account_id, glue_aws_region)
+        print(f"Found {len(dashboards)} dashboards")
+        process_assets_parallel(dashboards, process_dashboard_permissions)
+        
+        print("Processing datasets...")
+        datasets = list_datasets(account_id, glue_aws_region)
+        print(f"Found {len(datasets)} datasets")
+        process_assets_parallel(datasets, process_dataset_permissions)
+        
+        print("Processing datasources...")
+        datasources = list_datasources(account_id, glue_aws_region)
+        print(f"Found {len(datasources)} datasources")
+        process_assets_parallel(datasources, process_datasource_permissions)
+        
+        print("Processing analyses...")
+        analyses = list_analyses(account_id, glue_aws_region)
+        print(f"Found {len(analyses)} analyses")
+        process_assets_parallel(analyses, process_analysis_permissions)
+        
+        print("Processing themes...")
+        themes = list_themes(account_id, glue_aws_region)
+        print(f"Found {len(themes)} themes")
+        process_assets_parallel(themes, process_theme_permissions)
+        
+        print(f"Asset processing completed. File size: {os.path.getsize(path)} bytes")
+        
+        # upload file from tmp to s3 key
+        bucket.upload_file(path, key2)
+        print(f"Object access CSV uploaded to {key2}")
+        
+    except Exception as e:
+        print(f"Error in asset processing: {e}")
+        raise
     
     # Commit the job
     job.commit()
