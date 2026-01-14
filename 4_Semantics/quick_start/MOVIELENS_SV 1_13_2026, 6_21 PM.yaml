@@ -1,0 +1,281 @@
+name: MOVIES_SV
+description: this is the semantic view for our movies
+tables:
+  - name: MOVIES_DASHBOARD
+    description: This table stores information about movies, user ratings, and user interactions with the movies. It captures movie details such as title, release year, and genre, as well as user information including name, location, and contact details. The table also tracks user ratings and interactions with the movies, including the timestamp of the interaction and the type of interaction.
+    base_table:
+      database: MOVIES
+      schema: PUBLIC
+      table: MOVIES_DASHBOARD
+    dimensions:
+      - name: GENRE
+        description: The type of movie genre, such as action, comedy, drama, etc., that categorizes the movie's style, tone, and content.
+        expr: GENRE
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - Adventure
+          - Animation
+          - Children
+      - name: INTERACTION_TIMESTAMP
+        description: The timestamp when a user interacted with the movie, representing the number of seconds that have elapsed since January 1, 1970, at 00:00:00 UTC.
+        expr: INTERACTION_TIMESTAMP
+        data_type: NUMBER(38,0)
+        sample_values:
+          - '850925363'
+          - '925478621'
+          - '1615072864'
+      - name: INTERACTION_TYPE
+        description: The type of interaction a user had with a movie, either clicking on it or watching it.
+        expr: INTERACTION_TYPE
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - click
+          - watch
+      - name: MOVIE_ID
+        description: Unique identifier for each movie in the database.
+        expr: MOVIE_ID
+        data_type: NUMBER(38,0)
+        sample_values:
+          - '1'
+          - '2'
+          - '3'
+      - name: MOVIE_RELEASE_YEAR
+        description: The year in which the movie was released.
+        expr: MOVIE_RELEASE_YEAR
+        data_type: NUMBER(38,0)
+        sample_values:
+          - '1995'
+      - name: MOVIE_TITLE
+        description: The title of the movie.
+        expr: MOVIE_TITLE
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - 'Toy Story '
+          - 'Grumpier Old Men '
+          - 'Jumanji '
+      - name: USER_CITY
+        description: The city where the user is located.
+        expr: USER_CITY
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - Lake Brandonville
+          - St. Elizabeth
+          - Lindseyberg
+      - name: USER_COUNTRY
+        description: The country where the user is located.
+        expr: USER_COUNTRY
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - Australia
+          - USA
+      - name: USER_EMAIL
+        description: The email address of the user who interacted with the movie content.
+        expr: USER_EMAIL
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - Mary.Anderson@russell-contreras.com
+          - Pamela.Zimmerman@miller.org.au
+          - Scott.Williams@hensley.edu.au
+      - name: USER_FIRSTNAME
+        description: The first name of the user who interacted with the movie.
+        expr: USER_FIRSTNAME
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - Tracy
+          - Laurie
+          - Donna
+      - name: USER_ID
+        description: Unique identifier for the user who interacted with the movie.
+        expr: USER_ID
+        data_type: NUMBER(38,0)
+        sample_values:
+          - '327518'
+          - '76657'
+          - '252390'
+      - name: USER_LASTNAME
+        description: The last name of the user who interacted with the movie.
+        expr: USER_LASTNAME
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - Chaney
+          - Patterson
+          - Buchanan
+      - name: USER_PHONENUMBER
+        description: The phone number of the user who interacted with the movie content.
+        expr: USER_PHONENUMBER
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - +61.3.2925.6074
+          - 6234-6128
+          - (280)475-9552x00772
+      - name: USER_STATE
+        description: The state in which the user is located.
+        expr: USER_STATE
+        data_type: VARCHAR(16777216)
+        sample_values:
+          - WA
+          - ACT
+          - VIC
+    time_dimensions:
+      - name: RATING_TIMESTAMP
+        description: The date and time when a movie rating was recorded.
+        expr: RATING_TIMESTAMP
+        data_type: TIMESTAMP_NTZ(9)
+        sample_values:
+          - 2005-08-01T18:23:17.000+0000
+          - 2008-12-10T21:49:46.000+0000
+          - 2006-05-23T17:26:28.000+0000
+    facts:
+      - name: USER_RATING
+        description: Average rating given by users to a movie, on a scale of 1 to 5.
+        expr: USER_RATING
+        data_type: FLOAT
+        access_modifier: public_access
+        sample_values:
+          - '1.5'
+          - '2.5'
+          - '2'
+verified_queries:
+  - name: What is the highest rated movie?
+    question: What is the highest rated movie?
+    sql: |-
+      WITH movie_avg_rating AS (
+        SELECT
+          movie_id,
+          movie_title,
+          movie_release_year,
+          AVG(user_rating) AS avg_rating,
+          MIN(rating_timestamp) AS start_date,
+          MAX(rating_timestamp) AS end_date
+        FROM
+          movies_dashboard
+        WHERE
+          NOT user_rating IS NULL
+        GROUP BY
+          movie_id,
+          movie_title,
+          movie_release_year
+      )
+      SELECT
+        movie_title,
+        movie_release_year,
+        avg_rating,
+        start_date,
+        end_date
+      FROM
+        movie_avg_rating
+      ORDER BY
+        avg_rating DESC NULLS LAST
+      LIMIT
+        1
+    use_as_onboarding_question: true
+    verified_by: Mary Law
+    verified_at: 1768288254
+  - name: What is the average rating for the movie Toy Story?
+    question: What is the average rating for the movie Toy Story?
+    sql: |-
+      WITH movie_ratings AS (
+        SELECT
+          movie_title,
+          MIN(rating_timestamp) AS first_rating,
+          MAX(rating_timestamp) AS last_rating,
+          COUNT(rating_timestamp) AS num_ratings,
+          AVG(user_rating) AS avg_rating,
+          MIN(user_rating) AS min_rating,
+          MAX(user_rating) AS max_rating
+        FROM
+          movies_dashboard
+        WHERE
+          movie_title = 'Toy Story '
+          AND rating_timestamp <= CURRENT_DATE
+        GROUP BY
+          movie_title
+      )
+      SELECT
+        movie_title,
+        first_rating,
+        last_rating,
+        num_ratings,
+        avg_rating,
+        min_rating,
+        max_rating
+      FROM
+        movie_ratings
+    use_as_onboarding_question: false
+    verified_by: Mary Law
+    verified_at: 1768288272
+  - name: What is the highest average rating for adventure movies?
+    question: What is the highest average rating for adventure movies?
+    sql: |-
+      SELECT
+        genre,
+        MIN(rating_timestamp) AS start_date,
+        MAX(rating_timestamp) AS end_date,
+        AVG(user_rating) AS avg_rating
+      FROM
+        movies_dashboard
+      WHERE
+        genre = 'Adventure'
+      GROUP BY
+        genre
+      ORDER BY
+        avg_rating DESC NULLS LAST
+      LIMIT
+        1
+    use_as_onboarding_question: false
+    verified_by: Mary Law
+    verified_at: 1768288283
+  - name: Show the number of movies and average rating by genre
+    question: Show the number of movies and average rating by genre
+    sql: |-
+      SELECT
+        genre,
+        COUNT(DISTINCT movie_id) AS num_movies,
+        AVG(user_rating) AS avg_rating,
+        MIN(rating_timestamp) AS first_rating,
+        MAX(rating_timestamp) AS last_rating,
+        COUNT(rating_timestamp) AS total_ratings
+      FROM
+        movies_dashboard
+      WHERE
+        rating_timestamp <= CURRENT_DATE
+      GROUP BY
+        genre
+      ORDER BY
+        num_movies DESC NULLS LAST
+    use_as_onboarding_question: false
+    verified_by: Mary Law
+    verified_at: 1768288857
+  - name: Show me the count of interactions and average rating by country, ordered by interaction count descending
+    question: Show me the count of interactions and average rating by country, ordered by interaction count descending
+    sql: |-
+      WITH interaction_metrics AS (
+        SELECT
+          user_country,
+          COUNT(*) AS interaction_count,
+          AVG(user_rating) AS avg_rating,
+          MIN(rating_timestamp) AS earliest_rating,
+          MAX(rating_timestamp) AS latest_rating,
+          COUNT(DISTINCT user_id) AS unique_users
+        FROM
+          movies_dashboard
+        WHERE
+          rating_timestamp <= CURRENT_DATE
+        GROUP BY
+          user_country
+      )
+      SELECT
+        user_country,
+        interaction_count,
+        avg_rating,
+        earliest_rating,
+        latest_rating,
+        unique_users,
+        interaction_count / NULLIF(NULLIF(unique_users, 0), 0) AS interactions_per_user
+      FROM
+        interaction_metrics
+      ORDER BY
+        interaction_count DESC NULLS LAST
+    use_as_onboarding_question: false
+    verified_by: Mary Law
+    verified_at: 1768288872
