@@ -1,0 +1,26 @@
+
+
+**Privacy Policy**
+
+Last Updated: February 19, 2026
+
+This application ("quick_jira_3lo") is an internal integration used to connect AWS Quick Suite with Atlassian Jira Cloud.
+
+Data Collection
+This application accesses Jira data only as authorized by the user via OAuth 2.0. The data accessed may include project metadata, sprint information, issue data, and user profile information, depending on granted scopes.
+
+Data Usage
+The data retrieved is used solely for visualization and reporting purposes within AWS Quick Suite. No data is sold, shared with third parties, or used for marketing purposes.
+
+Data Storage
+Access tokens may be stored securely to enable ongoing integration functionality. All data handling follows AWS security best practices.
+
+Data Retention
+Data is retained only as necessary to support the integration.
+
+Contact
+For questions regarding this integration, please contact: [your-email@company.com](mailto:your-email@company.com)
+
+
+
+
