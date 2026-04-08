@@ -1,0 +1,1228 @@
+{
+  "DataSetId": "test-bmw-sv",
+  "Name": "test-bmw-sv",
+  "PhysicalTableMap": {
+    "dapp-deliveries": {
+      "RelationalTable": {
+        "DataSourceArn": "arn:aws:quicksight:us-east-1:905178920046:datasource/test-snowflake-datasource",
+        "Catalog": "BMW",
+        "Schema": "CONSULTANDBUY",
+        "Name": "DAPP_DELIVERIES",
+        "InputColumns": [
+          {
+            "Name": "ACCESSORIES_KEY",
+            "Type": "STRING"
+          },
+          {
+            "Name": "ACCESSORIES_QUANTITY",
+            "Type": "INTEGER"
+          },
+          {
+            "Name": "ACTUAL_HANDOVER_DATE",
+            "Type": "DATETIME"
+          },
+          {
+            "Name": "BRAND_RANGE",
+            "Type": "STRING"
+          },
+          {
+            "Name": "BUNO",
+            "Type": "INTEGER"
+          },
+          {
+            "Name": "BUSINESS_PARTNER_ID",
+            "Type": "INTEGER"
+          },
+          {
+            "Name": "CANCELLATION_REASON",
+            "Type": "STRING"
+          },
+          {
+            "Name": "COUNTRY",
+            "Type": "STRING"
+          },
+          {
+            "Name": "CUSTOMER_ID",
+            "Type": "STRING"
+          },
+          {
+            "Name": "CUSTOMER_PREFERRED_DATE",
+            "Type": "DATETIME"
+          },
+          {
+            "Name": "DEALER_ID",
+            "Type": "INTEGER"
+          },
+          {
+            "Name": "EVENT_TIMESTAMP",
+            "Type": "DATETIME"
+          },
+          {
+            "Name": "EVENT_TYPE",
+            "Type": "STRING"
+          },
+          {
+            "Name": "EXTERNAL_REFERENCE",
+            "Type": "INTEGER"
+          },
+          {
+            "Name": "GCID_KEEPER",
+            "Type": "STRING"
+          },
+          {
+            "Name": "GCID_OWNER",
+            "Type": "STRING"
+          },
+          {
+            "Name": "HANDOVER_ID",
+            "Type": "STRING"
+          },
+          {
+            "Name": "HANDOVER_NUMBER",
+            "Type": "STRING"
+          },
+          {
+            "Name": "IS_DIRECT_SALES",
+            "Type": "STRING"
+          },
+          {
+            "Name": "IVS_ORDER_NUMBER",
+            "Type": "INTEGER"
+          },
+          {
+            "Name": "LAST_MODIFIED_SYSTEM",
+            "Type": "STRING"
+          },
+          {
+            "Name": "MILEAGE",
+            "Type": "INTEGER"
+          },
+          {
+            "Name": "MILEAGE_UNIT",
+            "Type": "STRING"
+          },
+          {
+            "Name": "OFFER_ID",
+            "Type": "STRING"
+          },
+          {
+            "Name": "OFFER_NUMBER",
+            "Type": "INTEGER"
+          },
+          {
+            "Name": "OPPORTUNITY_ID",
+            "Type": "STRING"
+          },
+          {
+            "Name": "PAYMENT_METHOD",
+            "Type": "STRING"
+          },
+          {
+            "Name": "PLANNED_DATE",
+            "Type": "DATETIME"
+          },
+          {
+            "Name": "P_DATE",
+            "Type": "DATETIME"
+          },
+          {
+            "Name": "P_HOUR",
+            "Type": "INTEGER"
+          },
+          {
+            "Name": "REGISTRATION_OPT_IN",
+            "Type": "STRING"
+          },
+          {
+            "Name": "SALES_TYPE",
+            "Type": "STRING"
+          },
+          {
+            "Name": "STATUS",
+            "Type": "STRING"
+          },
+          {
+            "Name": "VAN",
+            "Type": "STRING"
+          },
+          {
+            "Name": "VEHICLE_AGMODELCODE",
+            "Type": "STRING"
+          },
+          {
+            "Name": "VEHICLE_BRAND",
+            "Type": "STRING"
+          },
+          {
+            "Name": "VEHICLE_MODEL",
+            "Type": "STRING"
+          }
+        ]
+      }
+    },
+    "ofcon-offers-contracts": {
+      "RelationalTable": {
+        "DataSourceArn": "arn:aws:quicksight:us-east-1:905178920046:datasource/test-snowflake-datasource",
+        "Catalog": "BMW",
+        "Schema": "CONSULTANDBUY",
+        "Name": "OFCON_OFFERS_CONTRACTS",
+        "InputColumns": [
+          {
+            "Name": "BUNO",
+            "Type": "INTEGER"
+          },
+          {
+            "Name": "CONTRACT_SIGNED_AT",
+            "Type": "DATETIME"
+          },
+          {
+            "Name": "COUNTRY",
+            "Type": "STRING"
+          },
+          {
+            "Name": "CREATED_AT",
+            "Type": "DATETIME"
+          },
+          {
+            "Name": "CURRENCY",
+            "Type": "STRING"
+          },
+          {
+            "Name": "CUSTOMER_ID",
+            "Type": "STRING"
+          },
+          {
+            "Name": "CUSTOMER_KEEPER_ID",
+            "Type": "STRING"
+          },
+          {
+            "Name": "CUSTOMER_OWNER_ID",
+            "Type": "STRING"
+          },
+          {
+            "Name": "CUSTOMER_ROLE",
+            "Type": "STRING"
+          },
+          {
+            "Name": "DEALER_ID",
+            "Type": "INTEGER"
+          },
+          {
+            "Name": "DEALER_NAME",
+            "Type": "STRING"
+          },
+          {
+            "Name": "DISCOUNT_TYPE",
+            "Type": "STRING"
+          },
+          {
+            "Name": "ESIGN_STATUS",
+            "Type": "STRING"
+          },
+          {
+            "Name": "EXTERNAL_LEASING_REF",
+            "Type": "INTEGER"
+          },
+          {
+            "Name": "GROSS_DISCOUNT",
+            "Type": "DECIMAL",
+            "SubType": "FLOAT"
+          },
+          {
+            "Name": "GROSS_DISCOUNT_PCT",
+            "Type": "DECIMAL",
+            "SubType": "FLOAT"
+          },
+          {
+            "Name": "GROSS_LIST_PRICE",
+            "Type": "INTEGER"
+          },
+          {
+            "Name": "GROSS_PRICE",
+            "Type": "DECIMAL",
+            "SubType": "FLOAT"
+          },
+          {
+            "Name": "HANDOVER_DATE",
+            "Type": "DATETIME"
+          },
+          {
+            "Name": "HAS_TEST_DRIVE",
+            "Type": "STRING"
+          },
+          {
+            "Name": "IS_DIRECT_SALES",
+            "Type": "STRING"
+          },
+          {
+            "Name": "IS_LEADING_OFFER",
+            "Type": "STRING"
+          },
+          {
+            "Name": "IS_ONLINE_OFFER",
+            "Type": "STRING"
+          },
+          {
+            "Name": "MODIFIED_AT",
+            "Type": "DATETIME"
+          },
+          {
+            "Name": "NET_LIST_PRICE",
+            "Type": "DECIMAL",
+            "SubType": "FLOAT"
+          },
+          {
+            "Name": "NET_PRICE",
+            "Type": "DECIMAL",
+            "SubType": "FLOAT"
+          },
+          {
+            "Name": "OFFER_ID",
+            "Type": "STRING"
+          },
+          {
+            "Name": "OFFER_NUMBER",
+            "Type": "INTEGER"
+          },
+          {
+            "Name": "OFFER_VERSION",
+            "Type": "INTEGER"
+          },
+          {
+            "Name": "OPPORTUNITY_ID",
+            "Type": "STRING"
+          },
+          {
+            "Name": "ORDER_NUMBER",
+            "Type": "INTEGER"
+          },
+          {
+            "Name": "ORDER_STATUS",
+            "Type": "INTEGER"
+          },
+          {
+            "Name": "PAYMENT_METHOD",
+            "Type": "STRING"
+          },
+          {
+            "Name": "P_DATE",
+            "Type": "DATETIME"
+          },
+          {
+            "Name": "P_HOUR",
+            "Type": "INTEGER"
+          },
+          {
+            "Name": "SALES_CONSULTANT_ID",
+            "Type": "STRING"
+          },
+          {
+            "Name": "STATUS",
+            "Type": "STRING"
+          },
+          {
+            "Name": "TERMS_FLAG",
+            "Type": "STRING"
+          },
+          {
+            "Name": "VAT_AMOUNT",
+            "Type": "DECIMAL",
+            "SubType": "FLOAT"
+          },
+          {
+            "Name": "VAT_RATE",
+            "Type": "DECIMAL",
+            "SubType": "FLOAT"
+          },
+          {
+            "Name": "VEHICLE_AGMODELCODE",
+            "Type": "STRING"
+          },
+          {
+            "Name": "VEHICLE_BRAND",
+            "Type": "STRING"
+          },
+          {
+            "Name": "VEHICLE_CATEGORY",
+            "Type": "STRING"
+          },
+          {
+            "Name": "VEHICLE_FUELTYPE",
+            "Type": "STRING"
+          },
+          {
+            "Name": "VEHICLE_MODEL",
+            "Type": "STRING"
+          },
+          {
+            "Name": "VEHICLE_MODELRANGE",
+            "Type": "STRING"
+          }
+        ]
+      }
+    },
+    "seaf-vehicle-searches": {
+      "RelationalTable": {
+        "DataSourceArn": "arn:aws:quicksight:us-east-1:905178920046:datasource/test-snowflake-datasource",
+        "Catalog": "BMW",
+        "Schema": "CONSULTANDBUY",
+        "Name": "SEAF_VEHICLE_SEARCHES",
+        "InputColumns": [
+          {
+            "Name": "CHANNEL",
+            "Type": "STRING"
+          },
+          {
+            "Name": "CONFIGURATION_ID",
+            "Type": "STRING"
+          },
+          {
+            "Name": "COUNTRY",
+            "Type": "STRING"
+          },
+          {
+            "Name": "CUSTOMER_ID",
+            "Type": "STRING"
+          },
+          {
+            "Name": "DEALER_ID",
+            "Type": "INTEGER"
+          },
+          {
+            "Name": "DEALER_NAME",
+            "Type": "STRING"
+          },
+          {
+            "Name": "DEVICE_TYPE",
+            "Type": "STRING"
+          },
+          {
+            "Name": "EVENT_ID",
+            "Type": "STRING"
+          },
+          {
+            "Name": "EVENT_TIMESTAMP",
+            "Type": "DATETIME"
+          },
+          {
+            "Name": "EVENT_TYPE",
+            "Type": "STRING"
+          },
+          {
+            "Name": "LANGUAGE",
+            "Type": "STRING"
+          },
+          {
+            "Name": "PAGE_URL",
+            "Type": "STRING"
+          },
+          {
+            "Name": "P_DATE",
+            "Type": "DATETIME"
+          },
+          {
+            "Name": "P_HOUR",
+            "Type": "INTEGER"
+          },
+          {
+            "Name": "REFERRER",
+            "Type": "STRING"
+          },
+          {
+            "Name": "SEARCH_FILTERS",
+            "Type": "STRING"
+          },
+          {
+            "Name": "SESSION_ID",
+            "Type": "STRING"
+          },
+          {
+            "Name": "VEHICLE_AGMODELCODE",
+            "Type": "STRING"
+          },
+          {
+            "Name": "VEHICLE_BASE_PRICE",
+            "Type": "INTEGER"
+          },
+          {
+            "Name": "VEHICLE_BRAND",
+            "Type": "STRING"
+          },
+          {
+            "Name": "VEHICLE_FUELTYPE",
+            "Type": "STRING"
+          },
+          {
+            "Name": "VEHICLE_MODEL",
+            "Type": "STRING"
+          },
+          {
+            "Name": "VEHICLE_MODELRANGE",
+            "Type": "STRING"
+          }
+        ]
+      }
+    },
+    "vbs-test-drives": {
+      "RelationalTable": {
+        "DataSourceArn": "arn:aws:quicksight:us-east-1:905178920046:datasource/test-snowflake-datasource",
+        "Catalog": "BMW",
+        "Schema": "CONSULTANDBUY",
+        "Name": "VBS_TEST_DRIVES",
+        "InputColumns": [
+          {
+            "Name": "ACTUAL_END_TIME",
+            "Type": "DATETIME"
+          },
+          {
+            "Name": "ACTUAL_START_TIME",
+            "Type": "DATETIME"
+          },
+          {
+            "Name": "BUNO",
+            "Type": "INTEGER"
+          },
+          {
+            "Name": "CANCELLATION_REASON",
+            "Type": "STRING"
+          },
+          {
+            "Name": "COUNTRY",
+            "Type": "STRING"
+          },
+          {
+            "Name": "CUSTOMER_ID",
+            "Type": "STRING"
+          },
+          {
+            "Name": "CUSTOMER_ROLE",
+            "Type": "STRING"
+          },
+          {
+            "Name": "DEALER_ID",
+            "Type": "INTEGER"
+          },
+          {
+            "Name": "DEALER_NAME",
+            "Type": "STRING"
+          },
+          {
+            "Name": "FEEDBACK_COMMENTS",
+            "Type": "STRING"
+          },
+          {
+            "Name": "FEEDBACK_RATING",
+            "Type": "INTEGER"
+          },
+          {
+            "Name": "LEAD_TO_OFFER",
+            "Type": "STRING"
+          },
+          {
+            "Name": "MILEAGE_END",
+            "Type": "INTEGER"
+          },
+          {
+            "Name": "MILEAGE_START",
+            "Type": "INTEGER"
+          },
+          {
+            "Name": "OPPORTUNITY_ID",
+            "Type": "STRING"
+          },
+          {
+            "Name": "P_DATE",
+            "Type": "DATETIME"
+          },
+          {
+            "Name": "P_HOUR",
+            "Type": "INTEGER"
+          },
+          {
+            "Name": "REQUEST_TIMESTAMP",
+            "Type": "DATETIME"
+          },
+          {
+            "Name": "SALES_CONSULTANT_ID",
+            "Type": "STRING"
+          },
+          {
+            "Name": "SCHEDULED_DATE",
+            "Type": "DATETIME"
+          },
+          {
+            "Name": "SESSION_ID",
+            "Type": "STRING"
+          },
+          {
+            "Name": "STATUS",
+            "Type": "STRING"
+          },
+          {
+            "Name": "TESTDRIVE_ID",
+            "Type": "STRING"
+          },
+          {
+            "Name": "VEHICLE_AGMODELCODE",
+            "Type": "STRING"
+          },
+          {
+            "Name": "VEHICLE_BRAND",
+            "Type": "STRING"
+          },
+          {
+            "Name": "VEHICLE_FUELTYPE",
+            "Type": "STRING"
+          },
+          {
+            "Name": "VEHICLE_MODEL",
+            "Type": "STRING"
+          },
+          {
+            "Name": "VEHICLE_MODELRANGE",
+            "Type": "STRING"
+          },
+          {
+            "Name": "VEHICLE_VIN",
+            "Type": "STRING"
+          }
+        ]
+      }
+    }
+  },
+  "LogicalTableMap": {
+    "dapp-deliveries": {
+      "Alias": "DAPP_DELIVERIES",
+      "Source": {
+        "PhysicalTableId": "dapp-deliveries"
+      },
+      "DataTransforms": [
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "BUNO",
+            "NewColumnName": "DAPP_DELIVERIES_BUNO"
+          }
+        },
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "CANCELLATION_REASON",
+            "NewColumnName": "DAPP_DELIVERIES_CANCELLATION_REASON"
+          }
+        },
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "COUNTRY",
+            "NewColumnName": "DAPP_DELIVERIES_COUNTRY"
+          }
+        },
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "CUSTOMER_ID",
+            "NewColumnName": "DAPP_DELIVERIES_CUSTOMER_ID"
+          }
+        },
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "DEALER_ID",
+            "NewColumnName": "DAPP_DELIVERIES_DEALER_ID"
+          }
+        },
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "EVENT_TYPE",
+            "NewColumnName": "DAPP_DELIVERIES_EVENT_TYPE"
+          }
+        },
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "IS_DIRECT_SALES",
+            "NewColumnName": "DAPP_DELIVERIES_IS_DIRECT_SALES"
+          }
+        },
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "OFFER_ID",
+            "NewColumnName": "DAPP_DELIVERIES_OFFER_ID"
+          }
+        },
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "OFFER_NUMBER",
+            "NewColumnName": "DAPP_DELIVERIES_OFFER_NUMBER"
+          }
+        },
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "OPPORTUNITY_ID",
+            "NewColumnName": "DAPP_DELIVERIES_OPPORTUNITY_ID"
+          }
+        },
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "P_HOUR",
+            "NewColumnName": "DAPP_DELIVERIES_P_HOUR"
+          }
+        },
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "PAYMENT_METHOD",
+            "NewColumnName": "DAPP_DELIVERIES_PAYMENT_METHOD"
+          }
+        },
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "STATUS",
+            "NewColumnName": "DAPP_DELIVERIES_STATUS"
+          }
+        },
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "VEHICLE_AGMODELCODE",
+            "NewColumnName": "DAPP_DELIVERIES_VEHICLE_AGMODELCODE"
+          }
+        },
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "VEHICLE_BRAND",
+            "NewColumnName": "DAPP_DELIVERIES_VEHICLE_BRAND"
+          }
+        },
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "VEHICLE_MODEL",
+            "NewColumnName": "DAPP_DELIVERIES_VEHICLE_MODEL"
+          }
+        },
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "EVENT_TIMESTAMP",
+            "NewColumnName": "DAPP_DELIVERIES_EVENT_TIMESTAMP"
+          }
+        },
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "P_DATE",
+            "NewColumnName": "DAPP_DELIVERIES_P_DATE"
+          }
+        }
+      ]
+    },
+    "ofcon-offers-contracts": {
+      "Alias": "OFCON_OFFERS_CONTRACTS",
+      "Source": {
+        "PhysicalTableId": "ofcon-offers-contracts"
+      },
+      "DataTransforms": [
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "BUNO",
+            "NewColumnName": "OFCON_OFFERS_CONTRACTS_BUNO"
+          }
+        },
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "COUNTRY",
+            "NewColumnName": "OFCON_OFFERS_CONTRACTS_COUNTRY"
+          }
+        },
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "CUSTOMER_ID",
+            "NewColumnName": "OFCON_OFFERS_CONTRACTS_CUSTOMER_ID"
+          }
+        },
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "CUSTOMER_ROLE",
+            "NewColumnName": "OFCON_OFFERS_CONTRACTS_CUSTOMER_ROLE"
+          }
+        },
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "DEALER_ID",
+            "NewColumnName": "OFCON_OFFERS_CONTRACTS_DEALER_ID"
+          }
+        },
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "DEALER_NAME",
+            "NewColumnName": "OFCON_OFFERS_CONTRACTS_DEALER_NAME"
+          }
+        },
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "IS_DIRECT_SALES",
+            "NewColumnName": "OFCON_OFFERS_CONTRACTS_IS_DIRECT_SALES"
+          }
+        },
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "OFFER_ID",
+            "NewColumnName": "OFCON_OFFERS_CONTRACTS_OFFER_ID"
+          }
+        },
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "OFFER_NUMBER",
+            "NewColumnName": "OFCON_OFFERS_CONTRACTS_OFFER_NUMBER"
+          }
+        },
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "OPPORTUNITY_ID",
+            "NewColumnName": "OFCON_OFFERS_CONTRACTS_OPPORTUNITY_ID"
+          }
+        },
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "P_HOUR",
+            "NewColumnName": "OFCON_OFFERS_CONTRACTS_P_HOUR"
+          }
+        },
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "PAYMENT_METHOD",
+            "NewColumnName": "OFCON_OFFERS_CONTRACTS_PAYMENT_METHOD"
+          }
+        },
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "SALES_CONSULTANT_ID",
+            "NewColumnName": "OFCON_OFFERS_CONTRACTS_SALES_CONSULTANT_ID"
+          }
+        },
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "STATUS",
+            "NewColumnName": "OFCON_OFFERS_CONTRACTS_STATUS"
+          }
+        },
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "VEHICLE_AGMODELCODE",
+            "NewColumnName": "OFCON_OFFERS_CONTRACTS_VEHICLE_AGMODELCODE"
+          }
+        },
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "VEHICLE_BRAND",
+            "NewColumnName": "OFCON_OFFERS_CONTRACTS_VEHICLE_BRAND"
+          }
+        },
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "VEHICLE_FUELTYPE",
+            "NewColumnName": "OFCON_OFFERS_CONTRACTS_VEHICLE_FUELTYPE"
+          }
+        },
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "VEHICLE_MODEL",
+            "NewColumnName": "OFCON_OFFERS_CONTRACTS_VEHICLE_MODEL"
+          }
+        },
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "VEHICLE_MODELRANGE",
+            "NewColumnName": "OFCON_OFFERS_CONTRACTS_VEHICLE_MODELRANGE"
+          }
+        },
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "P_DATE",
+            "NewColumnName": "OFCON_OFFERS_CONTRACTS_P_DATE"
+          }
+        }
+      ]
+    },
+    "seaf-vehicle-searches": {
+      "Alias": "SEAF_VEHICLE_SEARCHES",
+      "Source": {
+        "PhysicalTableId": "seaf-vehicle-searches"
+      },
+      "DataTransforms": [
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "COUNTRY",
+            "NewColumnName": "SEAF_VEHICLE_SEARCHES_COUNTRY"
+          }
+        },
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "CUSTOMER_ID",
+            "NewColumnName": "SEAF_VEHICLE_SEARCHES_CUSTOMER_ID"
+          }
+        },
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "DEALER_ID",
+            "NewColumnName": "SEAF_VEHICLE_SEARCHES_DEALER_ID"
+          }
+        },
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "DEALER_NAME",
+            "NewColumnName": "SEAF_VEHICLE_SEARCHES_DEALER_NAME"
+          }
+        },
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "EVENT_TYPE",
+            "NewColumnName": "SEAF_VEHICLE_SEARCHES_EVENT_TYPE"
+          }
+        },
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "P_HOUR",
+            "NewColumnName": "SEAF_VEHICLE_SEARCHES_P_HOUR"
+          }
+        },
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "SESSION_ID",
+            "NewColumnName": "SEAF_VEHICLE_SEARCHES_SESSION_ID"
+          }
+        },
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "VEHICLE_AGMODELCODE",
+            "NewColumnName": "SEAF_VEHICLE_SEARCHES_VEHICLE_AGMODELCODE"
+          }
+        },
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "VEHICLE_BRAND",
+            "NewColumnName": "SEAF_VEHICLE_SEARCHES_VEHICLE_BRAND"
+          }
+        },
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "VEHICLE_FUELTYPE",
+            "NewColumnName": "SEAF_VEHICLE_SEARCHES_VEHICLE_FUELTYPE"
+          }
+        },
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "VEHICLE_MODEL",
+            "NewColumnName": "SEAF_VEHICLE_SEARCHES_VEHICLE_MODEL"
+          }
+        },
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "VEHICLE_MODELRANGE",
+            "NewColumnName": "SEAF_VEHICLE_SEARCHES_VEHICLE_MODELRANGE"
+          }
+        },
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "EVENT_TIMESTAMP",
+            "NewColumnName": "SEAF_VEHICLE_SEARCHES_EVENT_TIMESTAMP"
+          }
+        },
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "P_DATE",
+            "NewColumnName": "SEAF_VEHICLE_SEARCHES_P_DATE"
+          }
+        }
+      ]
+    },
+    "vbs-test-drives": {
+      "Alias": "VBS_TEST_DRIVES",
+      "Source": {
+        "PhysicalTableId": "vbs-test-drives"
+      },
+      "DataTransforms": [
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "BUNO",
+            "NewColumnName": "VBS_TEST_DRIVES_BUNO"
+          }
+        },
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "CANCELLATION_REASON",
+            "NewColumnName": "VBS_TEST_DRIVES_CANCELLATION_REASON"
+          }
+        },
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "COUNTRY",
+            "NewColumnName": "VBS_TEST_DRIVES_COUNTRY"
+          }
+        },
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "CUSTOMER_ID",
+            "NewColumnName": "VBS_TEST_DRIVES_CUSTOMER_ID"
+          }
+        },
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "CUSTOMER_ROLE",
+            "NewColumnName": "VBS_TEST_DRIVES_CUSTOMER_ROLE"
+          }
+        },
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "DEALER_ID",
+            "NewColumnName": "VBS_TEST_DRIVES_DEALER_ID"
+          }
+        },
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "DEALER_NAME",
+            "NewColumnName": "VBS_TEST_DRIVES_DEALER_NAME"
+          }
+        },
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "OPPORTUNITY_ID",
+            "NewColumnName": "VBS_TEST_DRIVES_OPPORTUNITY_ID"
+          }
+        },
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "P_HOUR",
+            "NewColumnName": "VBS_TEST_DRIVES_P_HOUR"
+          }
+        },
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "SALES_CONSULTANT_ID",
+            "NewColumnName": "VBS_TEST_DRIVES_SALES_CONSULTANT_ID"
+          }
+        },
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "SESSION_ID",
+            "NewColumnName": "VBS_TEST_DRIVES_SESSION_ID"
+          }
+        },
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "STATUS",
+            "NewColumnName": "VBS_TEST_DRIVES_STATUS"
+          }
+        },
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "VEHICLE_AGMODELCODE",
+            "NewColumnName": "VBS_TEST_DRIVES_VEHICLE_AGMODELCODE"
+          }
+        },
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "VEHICLE_BRAND",
+            "NewColumnName": "VBS_TEST_DRIVES_VEHICLE_BRAND"
+          }
+        },
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "VEHICLE_FUELTYPE",
+            "NewColumnName": "VBS_TEST_DRIVES_VEHICLE_FUELTYPE"
+          }
+        },
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "VEHICLE_MODEL",
+            "NewColumnName": "VBS_TEST_DRIVES_VEHICLE_MODEL"
+          }
+        },
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "VEHICLE_MODELRANGE",
+            "NewColumnName": "VBS_TEST_DRIVES_VEHICLE_MODELRANGE"
+          }
+        },
+        {
+          "RenameColumnOperation": {
+            "ColumnName": "P_DATE",
+            "NewColumnName": "VBS_TEST_DRIVES_P_DATE"
+          }
+        }
+      ]
+    },
+    "join-1": {
+      "Alias": "join-1",
+      "Source": {
+        "JoinInstruction": {
+          "LeftOperand": "seaf-vehicle-searches",
+          "RightOperand": "vbs-test-drives",
+          "Type": "OUTER",
+          "OnClause": "{SEAF_VEHICLE_SEARCHES_SESSION_ID} = {VBS_TEST_DRIVES_SESSION_ID}"
+        }
+      }
+    },
+    "join-2": {
+      "Alias": "join-2",
+      "Source": {
+        "JoinInstruction": {
+          "LeftOperand": "join-1",
+          "RightOperand": "ofcon-offers-contracts",
+          "Type": "OUTER",
+          "OnClause": "{VBS_TEST_DRIVES_OPPORTUNITY_ID} = {OFCON_OFFERS_CONTRACTS_OPPORTUNITY_ID}"
+        }
+      }
+    },
+    "join-3": {
+      "Alias": "join-3",
+      "Source": {
+        "JoinInstruction": {
+          "LeftOperand": "join-2",
+          "RightOperand": "dapp-deliveries",
+          "Type": "OUTER",
+          "OnClause": "{OFCON_OFFERS_CONTRACTS_OFFER_ID} = {DAPP_DELIVERIES_OFFER_ID}"
+        }
+      },
+      "DataTransforms": [
+        {
+          "ProjectOperation": {
+            "ProjectedColumns": [
+              "ACCESSORIES_KEY",
+              "ACCESSORIES_QUANTITY",
+              "BRAND_RANGE",
+              "DAPP_DELIVERIES_BUNO",
+              "BUSINESS_PARTNER_ID",
+              "DAPP_DELIVERIES_CANCELLATION_REASON",
+              "DAPP_DELIVERIES_COUNTRY",
+              "DAPP_DELIVERIES_CUSTOMER_ID",
+              "DAPP_DELIVERIES_DEALER_ID",
+              "DAPP_DELIVERIES_EVENT_TYPE",
+              "EXTERNAL_REFERENCE",
+              "GCID_KEEPER",
+              "GCID_OWNER",
+              "HANDOVER_ID",
+              "HANDOVER_NUMBER",
+              "DAPP_DELIVERIES_IS_DIRECT_SALES",
+              "IVS_ORDER_NUMBER",
+              "LAST_MODIFIED_SYSTEM",
+              "MILEAGE_UNIT",
+              "DAPP_DELIVERIES_OFFER_ID",
+              "DAPP_DELIVERIES_OFFER_NUMBER",
+              "DAPP_DELIVERIES_OPPORTUNITY_ID",
+              "DAPP_DELIVERIES_P_HOUR",
+              "DAPP_DELIVERIES_PAYMENT_METHOD",
+              "REGISTRATION_OPT_IN",
+              "SALES_TYPE",
+              "DAPP_DELIVERIES_STATUS",
+              "VAN",
+              "DAPP_DELIVERIES_VEHICLE_AGMODELCODE",
+              "DAPP_DELIVERIES_VEHICLE_BRAND",
+              "DAPP_DELIVERIES_VEHICLE_MODEL",
+              "ACTUAL_HANDOVER_DATE",
+              "CUSTOMER_PREFERRED_DATE",
+              "DAPP_DELIVERIES_EVENT_TIMESTAMP",
+              "DAPP_DELIVERIES_P_DATE",
+              "PLANNED_DATE",
+              "OFCON_OFFERS_CONTRACTS_BUNO",
+              "OFCON_OFFERS_CONTRACTS_COUNTRY",
+              "CURRENCY",
+              "OFCON_OFFERS_CONTRACTS_CUSTOMER_ID",
+              "CUSTOMER_KEEPER_ID",
+              "CUSTOMER_OWNER_ID",
+              "OFCON_OFFERS_CONTRACTS_CUSTOMER_ROLE",
+              "OFCON_OFFERS_CONTRACTS_DEALER_ID",
+              "OFCON_OFFERS_CONTRACTS_DEALER_NAME",
+              "DISCOUNT_TYPE",
+              "ESIGN_STATUS",
+              "EXTERNAL_LEASING_REF",
+              "HAS_TEST_DRIVE",
+              "OFCON_OFFERS_CONTRACTS_IS_DIRECT_SALES",
+              "IS_LEADING_OFFER",
+              "IS_ONLINE_OFFER",
+              "OFCON_OFFERS_CONTRACTS_OFFER_ID",
+              "OFCON_OFFERS_CONTRACTS_OFFER_NUMBER",
+              "OFFER_VERSION",
+              "OFCON_OFFERS_CONTRACTS_OPPORTUNITY_ID",
+              "ORDER_NUMBER",
+              "ORDER_STATUS",
+              "OFCON_OFFERS_CONTRACTS_P_HOUR",
+              "OFCON_OFFERS_CONTRACTS_PAYMENT_METHOD",
+              "OFCON_OFFERS_CONTRACTS_SALES_CONSULTANT_ID",
+              "OFCON_OFFERS_CONTRACTS_STATUS",
+              "TERMS_FLAG",
+              "OFCON_OFFERS_CONTRACTS_VEHICLE_AGMODELCODE",
+              "OFCON_OFFERS_CONTRACTS_VEHICLE_BRAND",
+              "VEHICLE_CATEGORY",
+              "OFCON_OFFERS_CONTRACTS_VEHICLE_FUELTYPE",
+              "OFCON_OFFERS_CONTRACTS_VEHICLE_MODEL",
+              "OFCON_OFFERS_CONTRACTS_VEHICLE_MODELRANGE",
+              "CONTRACT_SIGNED_AT",
+              "CREATED_AT",
+              "HANDOVER_DATE",
+              "MODIFIED_AT",
+              "OFCON_OFFERS_CONTRACTS_P_DATE",
+              "CHANNEL",
+              "CONFIGURATION_ID",
+              "SEAF_VEHICLE_SEARCHES_COUNTRY",
+              "SEAF_VEHICLE_SEARCHES_CUSTOMER_ID",
+              "SEAF_VEHICLE_SEARCHES_DEALER_ID",
+              "SEAF_VEHICLE_SEARCHES_DEALER_NAME",
+              "DEVICE_TYPE",
+              "EVENT_ID",
+              "SEAF_VEHICLE_SEARCHES_EVENT_TYPE",
+              "LANGUAGE",
+              "SEAF_VEHICLE_SEARCHES_P_HOUR",
+              "PAGE_URL",
+              "REFERRER",
+              "SEARCH_FILTERS",
+              "SEAF_VEHICLE_SEARCHES_SESSION_ID",
+              "SEAF_VEHICLE_SEARCHES_VEHICLE_AGMODELCODE",
+              "VEHICLE_BASE_PRICE",
+              "SEAF_VEHICLE_SEARCHES_VEHICLE_BRAND",
+              "SEAF_VEHICLE_SEARCHES_VEHICLE_FUELTYPE",
+              "SEAF_VEHICLE_SEARCHES_VEHICLE_MODEL",
+              "SEAF_VEHICLE_SEARCHES_VEHICLE_MODELRANGE",
+              "SEAF_VEHICLE_SEARCHES_EVENT_TIMESTAMP",
+              "SEAF_VEHICLE_SEARCHES_P_DATE",
+              "VBS_TEST_DRIVES_BUNO",
+              "VBS_TEST_DRIVES_CANCELLATION_REASON",
+              "VBS_TEST_DRIVES_COUNTRY",
+              "VBS_TEST_DRIVES_CUSTOMER_ID",
+              "VBS_TEST_DRIVES_CUSTOMER_ROLE",
+              "VBS_TEST_DRIVES_DEALER_ID",
+              "VBS_TEST_DRIVES_DEALER_NAME",
+              "FEEDBACK_COMMENTS",
+              "FEEDBACK_RATING",
+              "LEAD_TO_OFFER",
+              "MILEAGE_END",
+              "MILEAGE_START",
+              "VBS_TEST_DRIVES_OPPORTUNITY_ID",
+              "VBS_TEST_DRIVES_P_HOUR",
+              "VBS_TEST_DRIVES_SALES_CONSULTANT_ID",
+              "VBS_TEST_DRIVES_SESSION_ID",
+              "VBS_TEST_DRIVES_STATUS",
+              "TESTDRIVE_ID",
+              "VBS_TEST_DRIVES_VEHICLE_AGMODELCODE",
+              "VBS_TEST_DRIVES_VEHICLE_BRAND",
+              "VBS_TEST_DRIVES_VEHICLE_FUELTYPE",
+              "VBS_TEST_DRIVES_VEHICLE_MODEL",
+              "VBS_TEST_DRIVES_VEHICLE_MODELRANGE",
+              "VEHICLE_VIN",
+              "ACTUAL_END_TIME",
+              "ACTUAL_START_TIME",
+              "VBS_TEST_DRIVES_P_DATE",
+              "REQUEST_TIMESTAMP",
+              "SCHEDULED_DATE",
+              "MILEAGE",
+              "GROSS_DISCOUNT",
+              "GROSS_DISCOUNT_PCT",
+              "GROSS_LIST_PRICE",
+              "GROSS_PRICE",
+              "NET_LIST_PRICE",
+              "NET_PRICE",
+              "VAT_AMOUNT",
+              "VAT_RATE"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "ImportMode": "SPICE",
+  "DataSetUsageConfiguration": {
+    "DisableUseAsDirectQuerySource": false,
+    "DisableUseAsImportedSource": false
+  }
+}

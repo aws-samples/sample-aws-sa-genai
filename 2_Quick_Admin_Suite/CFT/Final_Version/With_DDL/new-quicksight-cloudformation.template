@@ -1,0 +1,3803 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "CFN for admin-console-2025 QS Objects",
+    "Parameters": {
+        "adminarn": {
+            "Type": "String",
+            "MinLength": 1,
+            "Description": "Enter arn of your quicksight admin. for exmple: arn:aws:quicksight:us-east-1:accountid:user/default/admin"
+        }
+    },
+    "Resources": {
+        "AdminConsoleDashboardLoad2025": {
+            "Type": "AWS::QuickSight::DataSet",
+            "DependsOn": [
+                "qsdatasource"
+            ],
+            "Properties": {
+                "AwsAccountId": {
+                    "Fn::Sub": "${AWS::AccountId}"
+                },
+                "DataSetId": {
+                    "Fn::Sub": "Admin-Console-Dashboard-Load-2025-${AWS::AccountId}"
+                },
+                "Name": "Admin-Console-Dashboard-Load-2025",
+                "Permissions": [
+                    {
+                        "Principal": {
+                            "Ref": "adminarn"
+                        },
+                        "Actions": [
+                            "quicksight:UpdateDataSetPermissions",
+                            "quicksight:DescribeDataSet",
+                            "quicksight:DescribeDataSetPermissions",
+                            "quicksight:PassDataSet",
+                            "quicksight:DescribeIngestion",
+                            "quicksight:ListIngestions",
+                            "quicksight:UpdateDataSet",
+                            "quicksight:DeleteDataSet",
+                            "quicksight:CreateIngestion",
+                            "quicksight:CancelIngestion"
+                        ]
+                    }
+                ],
+                "PhysicalTableMap": {
+                    "e60bec59-c6d9-46df-b44c-f0871aba2e15": {
+                        "CustomSql": {
+                            "DataSourceArn": {
+                                "Fn::GetAtt": [
+                                    "qsdatasource",
+                                    "Arn"
+                                ]
+                            },
+                            "Name": "cw_qs_dash_visual_pivot",
+                            "SqlQuery": "SELECT\r\n  p.*,\r\n  d.dashboard_name\r\nFROM \"admin-console-2025\".\"cw_qs_dash_visual_pivot\" AS p\r\nLEFT JOIN (\r\n  SELECT\r\n    aws_region,\r\n    dashboardid,\r\n    MIN(dashboard_name) AS dashboard_name  -- pick one name per (region, dashboard)\r\n  FROM \"admin-console-2025\".\"datasets_info\"\r\n  WHERE dashboardid IS NOT NULL AND dashboardid <> ''\r\n  GROUP BY aws_region, dashboardid\r\n) AS d\r\n  ON d.dashboardid = p.dashboardid\r\n AND d.aws_region  = p.region",
+                            "Columns": [
+                                {
+                                    "Name": "timestamp",
+                                    "Type": "INTEGER"
+                                },
+                                {
+                                    "Name": "account_id",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "region",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "dashboardid",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "sheetid",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "visualid",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "DashboardViewCount",
+                                    "Type": "INTEGER"
+                                },
+                                {
+                                    "Name": "DashboardViewCount_Unit",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "DashboardViewLoadTime",
+                                    "Type": "DECIMAL"
+                                },
+                                {
+                                    "Name": "DashboardViewLoadTime_Unit",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "VisualLoadTime",
+                                    "Type": "DECIMAL"
+                                },
+                                {
+                                    "Name": "VisualLoadTime_Unit",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "VisualLoadErrorCount",
+                                    "Type": "INTEGER"
+                                },
+                                {
+                                    "Name": "VisualLoadErrorCount_Unit",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "dashboard_name",
+                                    "Type": "STRING"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "LogicalTableMap": {
+                    "def83dc5-0912-45c1-9fe3-ff4602d60cb0": {
+                        "Alias": "cw_qs_dash_visual_pivot",
+                        "DataTransforms": [
+                            {
+                                "TagColumnOperation": {
+                                    "ColumnName": "region",
+                                    "Tags": [
+                                        {
+                                            "ColumnGeographicRole": "STATE"
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "ProjectOperation": {
+                                    "ProjectedColumns": [
+                                        "timestamp",
+                                        "account_id",
+                                        "region",
+                                        "dashboardid",
+                                        "sheetid",
+                                        "visualid",
+                                        "DashboardViewCount",
+                                        "DashboardViewCount_Unit",
+                                        "DashboardViewLoadTime",
+                                        "DashboardViewLoadTime_Unit",
+                                        "VisualLoadTime",
+                                        "VisualLoadTime_Unit",
+                                        "VisualLoadErrorCount",
+                                        "VisualLoadErrorCount_Unit",
+                                        "dashboard_name"
+                                    ]
+                                }
+                            }
+                        ],
+                        "Source": {
+                            "PhysicalTableId": "e60bec59-c6d9-46df-b44c-f0871aba2e15"
+                        }
+                    }
+                },
+                "ImportMode": "DIRECT_QUERY",
+                "FieldFolders": {},
+                "DataSetUsageConfiguration": {
+                    "DisableUseAsDirectQuerySource": false,
+                    "DisableUseAsImportedSource": false
+                },
+                "DataSetRefreshProperties": {
+                    "FailureConfiguration": {
+                        "EmailAlert": {
+                            "AlertStatus": "DISABLED"
+                        }
+                    }
+                }
+            }
+        },
+        "AdminConsoleAiEvents2025": {
+            "Type": "AWS::QuickSight::DataSet",
+            "DependsOn": [
+                "qsdatasource"
+            ],
+            "Properties": {
+                "AwsAccountId": {
+                    "Fn::Sub": "${AWS::AccountId}"
+                },
+                "DataSetId": {
+                    "Fn::Sub": "Admin-Console-ai-events-2025-${AWS::AccountId}"
+                },
+                "Name": "Admin-Console-ai-events-2025",
+                "Permissions": [
+                    {
+                        "Principal": {
+                            "Ref": "adminarn"
+                        },
+                        "Actions": [
+                            "quicksight:UpdateDataSetPermissions",
+                            "quicksight:DescribeDataSet",
+                            "quicksight:DescribeDataSetPermissions",
+                            "quicksight:PassDataSet",
+                            "quicksight:DescribeIngestion",
+                            "quicksight:ListIngestions",
+                            "quicksight:UpdateDataSet",
+                            "quicksight:DeleteDataSet",
+                            "quicksight:CreateIngestion",
+                            "quicksight:CancelIngestion"
+                        ]
+                    }
+                ],
+                "PhysicalTableMap": {
+                    "2bc95305-5471-4a6c-bf51-aa63371f86b4": {
+                        "CustomSql": {
+                            "DataSourceArn": {
+                                "Fn::GetAtt": [
+                                    "qsdatasource",
+                                    "Arn"
+                                ]
+                            },
+                            "Name": "Admin-Console-ai-events-2025",
+                            "SqlQuery": "SELECT *\nFROM\n  awsdatacatalog.\"admin-console-2025\".cloudtrail_logs_pp\nWHERE ((eventsource = 'quicksight.amazonaws.com') AND (parse_datetime(eventtime, 'yyyy-MM-dd''T''HH:mm:ss''Z') >= (current_timestamp - INTERVAL  '40' DAY)) AND regexp_like(eventname, '(Flow|Research|Document|Agent|Action|Space|Automation|Conversation|Chat|KnowledgeBase|Workflow)'))",
+                            "Columns": [
+                                {
+                                    "Name": "eventversion",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "useridentity",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "eventtime",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "eventsource",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "eventname",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "awsregion",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "sourceipaddress",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "useragent",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "errorcode",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "errormessage",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "requestparameters",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "responseelements",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "additionaleventdata",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "requestid",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "eventid",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "eventtype",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "apiversion",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "readonly",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "recipientaccountid",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "serviceeventdetails",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "sharedeventid",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "vpcendpointid",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "region",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "timestamp",
+                                    "Type": "STRING"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "LogicalTableMap": {
+                    "323678b9-b2c1-4471-85e6-582ff55d5990": {
+                        "Alias": "Admin-Console-ai-events-2025",
+                        "DataTransforms": [
+                            {
+                                "TagColumnOperation": {
+                                    "ColumnName": "region",
+                                    "Tags": [
+                                        {
+                                            "ColumnGeographicRole": "STATE"
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "ProjectOperation": {
+                                    "ProjectedColumns": [
+                                        "eventversion",
+                                        "useridentity",
+                                        "eventtime",
+                                        "eventsource",
+                                        "eventname",
+                                        "awsregion",
+                                        "sourceipaddress",
+                                        "useragent",
+                                        "errorcode",
+                                        "errormessage",
+                                        "requestparameters",
+                                        "responseelements",
+                                        "additionaleventdata",
+                                        "requestid",
+                                        "eventid",
+                                        "eventtype",
+                                        "apiversion",
+                                        "readonly",
+                                        "recipientaccountid",
+                                        "serviceeventdetails",
+                                        "sharedeventid",
+                                        "vpcendpointid",
+                                        "region",
+                                        "timestamp"
+                                    ]
+                                }
+                            }
+                        ],
+                        "Source": {
+                            "PhysicalTableId": "2bc95305-5471-4a6c-bf51-aa63371f86b4"
+                        }
+                    }
+                },
+                "ImportMode": "SPICE",
+                "FieldFolders": {},
+                "DataSetUsageConfiguration": {
+                    "DisableUseAsDirectQuerySource": false,
+                    "DisableUseAsImportedSource": false
+                },
+                "DataSetRefreshProperties": {
+                    "FailureConfiguration": {
+                        "EmailAlert": {
+                            "AlertStatus": "DISABLED"
+                        }
+                    }
+                }
+            }
+        },
+        "AdminConsoleQindexView": {
+            "Type": "AWS::QuickSight::DataSet",
+            "DependsOn": [
+                "qsdatasource"
+            ],
+            "Properties": {
+                "AwsAccountId": {
+                    "Fn::Sub": "${AWS::AccountId}"
+                },
+                "DataSetId": {
+                    "Fn::Sub": "Admin-Console-Qindex-View-${AWS::AccountId}"
+                },
+                "Name": "Admin-Console-Qindex-View",
+                "Permissions": [
+                    {
+                        "Principal": {
+                            "Ref": "adminarn"
+                        },
+                        "Actions": [
+                            "quicksight:UpdateDataSetPermissions",
+                            "quicksight:DescribeDataSet",
+                            "quicksight:DescribeDataSetPermissions",
+                            "quicksight:PassDataSet",
+                            "quicksight:DescribeIngestion",
+                            "quicksight:ListIngestions",
+                            "quicksight:UpdateDataSet",
+                            "quicksight:DeleteDataSet",
+                            "quicksight:CreateIngestion",
+                            "quicksight:CancelIngestion"
+                        ]
+                    }
+                ],
+                "PhysicalTableMap": {
+                    "41e0583f-b449-48c6-aaeb-00084e253bd6": {
+                        "RelationalTable": {
+                            "DataSourceArn": {
+                                "Fn::GetAtt": [
+                                    "qsdatasource",
+                                    "Arn"
+                                ]
+                            },
+                            "Catalog": "AwsDataCatalog",
+                            "Schema": "admin-console-2025",
+                            "Name": "cw_qs_qindex_pivot",
+                            "InputColumns": [
+                                {
+                                    "Name": "timestamp",
+                                    "Type": "INTEGER"
+                                },
+                                {
+                                    "Name": "account_id",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "region",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "quickinstanceid",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "quickindexdocumentcount",
+                                    "Type": "INTEGER"
+                                },
+                                {
+                                    "Name": "quickindexdocumentcount_unit",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "quickindexextractedtextsize",
+                                    "Type": "DECIMAL"
+                                },
+                                {
+                                    "Name": "quickindexextractedtextsize_unit",
+                                    "Type": "STRING"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "LogicalTableMap": {
+                    "94de4f44-17b8-4b27-b7ca-c028f3bed259": {
+                        "Alias": "cw_qs_qindex_pivot",
+                        "DataTransforms": [
+                            {
+                                "CastColumnTypeOperation": {
+                                    "ColumnName": "timestamp",
+                                    "NewColumnType": "DATETIME"
+                                }
+                            },
+                            {
+                                "TagColumnOperation": {
+                                    "ColumnName": "region",
+                                    "Tags": [
+                                        {
+                                            "ColumnGeographicRole": "STATE"
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "ProjectOperation": {
+                                    "ProjectedColumns": [
+                                        "timestamp",
+                                        "account_id",
+                                        "region",
+                                        "quickinstanceid",
+                                        "quickindexdocumentcount",
+                                        "quickindexdocumentcount_unit",
+                                        "quickindexextractedtextsize",
+                                        "quickindexextractedtextsize_unit"
+                                    ]
+                                }
+                            }
+                        ],
+                        "Source": {
+                            "PhysicalTableId": "41e0583f-b449-48c6-aaeb-00084e253bd6"
+                        }
+                    }
+                },
+                "ImportMode": "DIRECT_QUERY",
+                "FieldFolders": {},
+                "DataSetUsageConfiguration": {
+                    "DisableUseAsDirectQuerySource": false,
+                    "DisableUseAsImportedSource": false
+                },
+                "DataSetRefreshProperties": {
+                    "FailureConfiguration": {
+                        "EmailAlert": {
+                            "AlertStatus": "DISABLED"
+                        }
+                    }
+                }
+            }
+        },
+        "AdminConsoleFolderContents2025": {
+            "Type": "AWS::QuickSight::DataSet",
+            "DependsOn": [
+                "qsdatasource"
+            ],
+            "Properties": {
+                "AwsAccountId": {
+                    "Fn::Sub": "${AWS::AccountId}"
+                },
+                "DataSetId": {
+                    "Fn::Sub": "Admin-Console-Folder-Contents-2025-${AWS::AccountId}"
+                },
+                "Name": "Admin-Console-Folder-Contents-2025",
+                "Permissions": [
+                    {
+                        "Principal": {
+                            "Ref": "adminarn"
+                        },
+                        "Actions": [
+                            "quicksight:UpdateDataSetPermissions",
+                            "quicksight:DescribeDataSet",
+                            "quicksight:DescribeDataSetPermissions",
+                            "quicksight:PassDataSet",
+                            "quicksight:DescribeIngestion",
+                            "quicksight:ListIngestions",
+                            "quicksight:UpdateDataSet",
+                            "quicksight:DeleteDataSet",
+                            "quicksight:CreateIngestion",
+                            "quicksight:CancelIngestion"
+                        ]
+                    }
+                ],
+                "PhysicalTableMap": {
+                    "folder-contents-physical": {
+                        "CustomSql": {
+                            "DataSourceArn": {
+                                "Fn::GetAtt": [
+                                    "qsdatasource",
+                                    "Arn"
+                                ]
+                            },
+                            "Name": "folder_contents",
+                            "SqlQuery": "select fa.folder_id, fp.folder_name,fp.folder_path, oa.* from \"admin-console-2025\".folder_assets as fa \njoin \"admin-console-2025\".object_access as oa on fa.member_id=oa.object_id\njoin \"admin-console-2025\".folder_path as fp on fa.folder_id=fp.folder_id",
+                            "Columns": [
+                                {
+                                    "Name": "folder_id",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "folder_name",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "folder_path",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "account_id",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "aws_region",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "object_type",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "object_name",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "object_id",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "principal_name",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "arn",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "namespace",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "permissions",
+                                    "Type": "STRING"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "LogicalTableMap": {
+                    "folder-contents-logic": {
+                        "Alias": "folder_contents",
+                        "Source": {
+                            "PhysicalTableId": "folder-contents-physical"
+                        }
+                    }
+                },
+                "ImportMode": "SPICE",
+                "FieldFolders": {},
+                "DataSetUsageConfiguration": {
+                    "DisableUseAsDirectQuerySource": false,
+                    "DisableUseAsImportedSource": false
+                },
+                "DataSetRefreshProperties": {
+                    "FailureConfiguration": {
+                        "EmailAlert": {
+                            "AlertStatus": "DISABLED"
+                        }
+                    }
+                }
+            }
+        },
+        "AdminConsoleGroupMembership2025": {
+            "Type": "AWS::QuickSight::DataSet",
+            "DependsOn": [
+                "qsdatasource"
+            ],
+            "Properties": {
+                "AwsAccountId": {
+                    "Fn::Sub": "${AWS::AccountId}"
+                },
+                "DataSetId": {
+                    "Fn::Sub": "Admin-Console-Group-Membership-2025-${AWS::AccountId}"
+                },
+                "Name": "Admin-Console-Group-Membership-2025",
+                "Permissions": [
+                    {
+                        "Principal": {
+                            "Ref": "adminarn"
+                        },
+                        "Actions": [
+                            "quicksight:UpdateDataSetPermissions",
+                            "quicksight:DescribeDataSet",
+                            "quicksight:DescribeDataSetPermissions",
+                            "quicksight:PassDataSet",
+                            "quicksight:DescribeIngestion",
+                            "quicksight:ListIngestions",
+                            "quicksight:UpdateDataSet",
+                            "quicksight:DeleteDataSet",
+                            "quicksight:CreateIngestion",
+                            "quicksight:CancelIngestion"
+                        ]
+                    }
+                ],
+                "PhysicalTableMap": {
+                    "Admin-Console-Group-Membership-physical": {
+                        "CustomSql": {
+                            "DataSourceArn": {
+                                "Fn::GetAtt": [
+                                    "qsdatasource",
+                                    "Arn"
+                                ]
+                            },
+                            "Name": "group_membership",
+                            "SqlQuery": "select * from \"admin-console-2025\".group_membership",
+                            "Columns": [
+                                {
+                                    "Name": "account_id",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "namespace",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "group",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "user",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "email",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "role",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "identity_type",
+                                    "Type": "STRING"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "LogicalTableMap": {
+                    "Admin-Console-Group-Membership-logic": {
+                        "Alias": "group_membership",
+                        "DataTransforms": [
+                            {
+                                "ProjectOperation": {
+                                    "ProjectedColumns": [
+                                        "account_id",
+                                        "namespace",
+                                        "group",
+                                        "user",
+                                        "email",
+                                        "role",
+                                        "identity_type"
+                                    ]
+                                }
+                            }
+                        ],
+                        "Source": {
+                            "PhysicalTableId": "Admin-Console-Group-Membership-physical"
+                        }
+                    }
+                },
+                "ImportMode": "SPICE",
+                "FieldFolders": {},
+                "DataSetUsageConfiguration": {
+                    "DisableUseAsDirectQuerySource": false,
+                    "DisableUseAsImportedSource": false
+                },
+                "DataSetRefreshProperties": {
+                    "FailureConfiguration": {
+                        "EmailAlert": {
+                            "AlertStatus": "DISABLED"
+                        }
+                    }
+                }
+            }
+        },
+        "AdminConsoleCrud2025": {
+            "Type": "AWS::QuickSight::DataSet",
+            "DependsOn": [
+                "qsdatasource"
+            ],
+            "Properties": {
+                "AwsAccountId": {
+                    "Fn::Sub": "${AWS::AccountId}"
+                },
+                "DataSetId": {
+                    "Fn::Sub": "Admin-Console-CRUD-2025-${AWS::AccountId}"
+                },
+                "Name": "Admin-Console-CRUD-2025",
+                "Permissions": [
+                    {
+                        "Principal": {
+                            "Ref": "adminarn"
+                        },
+                        "Actions": [
+                            "quicksight:UpdateDataSetPermissions",
+                            "quicksight:DescribeDataSet",
+                            "quicksight:DescribeDataSetPermissions",
+                            "quicksight:PassDataSet",
+                            "quicksight:DescribeIngestion",
+                            "quicksight:ListIngestions",
+                            "quicksight:UpdateDataSet",
+                            "quicksight:DeleteDataSet",
+                            "quicksight:CreateIngestion",
+                            "quicksight:CancelIngestion"
+                        ]
+                    }
+                ],
+                "PhysicalTableMap": {
+                    "db085a33-bcda-408b-ac30-37ad7eb2c94e": {
+                        "CustomSql": {
+                            "DataSourceArn": {
+                                "Fn::GetAtt": [
+                                    "qsdatasource",
+                                    "Arn"
+                                ]
+                            },
+                            "Name": "New custom SQL",
+                            "SqlQuery": "SELECT\r\n  -- view key fields\r\n  q.eventversion,\r\n  q.eventtime,\r\n  q.eventsource,\r\n  q.eventname,\r\n  q.awsregion,\r\n  q.sourceipaddress,\r\n  q.useragent,\r\n  q.errorcode,\r\n  q.errormessage,\r\n  q.requestparameters,\r\n  q.responseelements,\r\n  q.additionaleventdata,\r\n  q.requestid,\r\n  q.eventid,\r\n  q.eventtype,\r\n  q.apiversion,\r\n  q.readonly,\r\n  q.recipientaccountid,\r\n  q.serviceeventdetails,\r\n  q.sharedeventid,\r\n  q.vpcendpointid,\r\n  q.region,\r\n  q.timestamp,\r\n\r\n  -- flattened useridentity (struct)\r\n  q.useridentity.type                                         AS useridentity_type,\r\n  q.useridentity.principalid                                  AS useridentity_principalid,\r\n  q.useridentity.arn                                          AS useridentity_arn,\r\n  q.useridentity.accountid                                    AS useridentity_accountid,\r\n  q.useridentity.invokedby                                    AS useridentity_invokedby,\r\n  q.useridentity.accesskeyid                                  AS useridentity_accesskeyid,\r\n  q.useridentity.username                                     AS useridentity_username,\r\n\r\n  -- useridentity.sessioncontext.attributes\r\n  q.useridentity.sessioncontext.attributes.mfaauthenticated   AS useridentity_mfa_authenticated,\r\n  q.useridentity.sessioncontext.attributes.creationdate       AS useridentity_session_creationdate,\r\n\r\n  -- useridentity.sessioncontext.sessionissuer\r\n  q.useridentity.sessioncontext.sessionissuer.type            AS sessionissuer_type,\r\n  q.useridentity.sessioncontext.sessionissuer.principalid     AS sessionissuer_principalid,\r\n  q.useridentity.sessioncontext.sessionissuer.arn             AS sessionissuer_arn,\r\n  q.useridentity.sessioncontext.sessionissuer.accountid       AS sessionissuer_accountid,\r\n  q.useridentity.sessioncontext.sessionissuer.username        AS sessionissuer_username,\r\n\r\n  -- flattened resources (array<struct<arn,accountid,type>>)\r\n  r_ordinal                                                   AS resource_index,\r\n  r.arn                                                       AS resource_arn,\r\n  r.accountid                                                 AS resource_accountid,\r\n  r.type                                                      AS resource_type\r\n\r\nFROM \"admin-console-2025\".quicksight_crud_events AS q\r\nLEFT JOIN UNNEST(q.resources)\r\n     WITH ORDINALITY AS t(r, r_ordinal) ON TRUE",
+                            "Columns": [
+                                {
+                                    "Name": "eventversion",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "eventtime",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "eventsource",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "eventname",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "awsregion",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "sourceipaddress",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "useragent",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "errorcode",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "errormessage",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "requestparameters",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "responseelements",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "additionaleventdata",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "requestid",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "eventid",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "eventtype",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "apiversion",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "readonly",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "recipientaccountid",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "serviceeventdetails",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "sharedeventid",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "vpcendpointid",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "region",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "timestamp",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "useridentity_type",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "useridentity_principalid",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "useridentity_arn",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "useridentity_accountid",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "useridentity_invokedby",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "useridentity_accesskeyid",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "useridentity_username",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "useridentity_mfa_authenticated",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "useridentity_session_creationdate",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "sessionissuer_type",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "sessionissuer_principalid",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "sessionissuer_arn",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "sessionissuer_accountid",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "sessionissuer_username",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "resource_index",
+                                    "Type": "INTEGER"
+                                },
+                                {
+                                    "Name": "resource_arn",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "resource_accountid",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "resource_type",
+                                    "Type": "STRING"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "LogicalTableMap": {
+                    "6304b9a7-2db0-4faf-9b54-f80d41a6a111": {
+                        "Alias": "New custom SQL",
+                        "DataTransforms": [
+                            {
+                                "CastColumnTypeOperation": {
+                                    "ColumnName": "eventtime",
+                                    "NewColumnType": "DATETIME",
+                                    "Format": "yyyy-MM-dd'T'HH:mm:ss'Z'"
+                                }
+                            },
+                            {
+                                "TagColumnOperation": {
+                                    "ColumnName": "region",
+                                    "Tags": [
+                                        {
+                                            "ColumnGeographicRole": "STATE"
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "ProjectOperation": {
+                                    "ProjectedColumns": [
+                                        "eventversion",
+                                        "eventtime",
+                                        "eventsource",
+                                        "eventname",
+                                        "awsregion",
+                                        "sourceipaddress",
+                                        "useragent",
+                                        "errorcode",
+                                        "errormessage",
+                                        "requestparameters",
+                                        "responseelements",
+                                        "additionaleventdata",
+                                        "requestid",
+                                        "eventid",
+                                        "eventtype",
+                                        "apiversion",
+                                        "readonly",
+                                        "recipientaccountid",
+                                        "serviceeventdetails",
+                                        "sharedeventid",
+                                        "vpcendpointid",
+                                        "region",
+                                        "timestamp",
+                                        "useridentity_type",
+                                        "useridentity_principalid",
+                                        "useridentity_arn",
+                                        "useridentity_accountid",
+                                        "useridentity_invokedby",
+                                        "useridentity_accesskeyid",
+                                        "useridentity_username",
+                                        "useridentity_mfa_authenticated",
+                                        "useridentity_session_creationdate",
+                                        "sessionissuer_type",
+                                        "sessionissuer_principalid",
+                                        "sessionissuer_arn",
+                                        "sessionissuer_accountid",
+                                        "sessionissuer_username",
+                                        "resource_index",
+                                        "resource_arn",
+                                        "resource_accountid",
+                                        "resource_type"
+                                    ]
+                                }
+                            }
+                        ],
+                        "Source": {
+                            "PhysicalTableId": "db085a33-bcda-408b-ac30-37ad7eb2c94e"
+                        }
+                    }
+                },
+                "ImportMode": "SPICE",
+                "FieldFolders": {},
+                "DataSetUsageConfiguration": {
+                    "DisableUseAsDirectQuerySource": false,
+                    "DisableUseAsImportedSource": false
+                },
+                "DataSetRefreshProperties": {
+                    "FailureConfiguration": {
+                        "EmailAlert": {
+                            "AlertStatus": "DISABLED"
+                        }
+                    }
+                }
+            }
+        },
+        "AdminConsoleFeatureCategory2025": {
+            "Type": "AWS::QuickSight::DataSet",
+            "DependsOn": [
+                "qsdatasource"
+            ],
+            "Properties": {
+                "AwsAccountId": {
+                    "Fn::Sub": "${AWS::AccountId}"
+                },
+                "DataSetId": {
+                    "Fn::Sub": "Admin-Console-Feature-Category-2025-${AWS::AccountId}"
+                },
+                "Name": "Admin-Console-Feature-Category-2025",
+                "Permissions": [
+                    {
+                        "Principal": {
+                            "Ref": "adminarn"
+                        },
+                        "Actions": [
+                            "quicksight:UpdateDataSetPermissions",
+                            "quicksight:DescribeDataSet",
+                            "quicksight:DescribeDataSetPermissions",
+                            "quicksight:PassDataSet",
+                            "quicksight:DescribeIngestion",
+                            "quicksight:ListIngestions",
+                            "quicksight:UpdateDataSet",
+                            "quicksight:DeleteDataSet",
+                            "quicksight:CreateIngestion",
+                            "quicksight:CancelIngestion"
+                        ]
+                    }
+                ],
+                "PhysicalTableMap": {
+                    "03236699-07b7-4200-8c8c-81683c81c306": {
+                        "CustomSql": {
+                            "DataSourceArn": {
+                                "Fn::GetAtt": [
+                                    "qsdatasource",
+                                    "Arn"
+                                ]
+                            },
+                            "Name": "Admin-Console-Feature-Category-2025",
+                            "SqlQuery": "SELECT \n    CASE\n        WHEN regexp_like(eventname, 'Flow') THEN 'Flow'\n        WHEN regexp_like(eventname, 'Research') THEN 'Research'\n        WHEN regexp_like(eventname, '(Document|KnowledgeBase)') THEN 'KnowledgeBase'\n        WHEN regexp_like(eventname, 'Agent') THEN 'Agent'\n        WHEN regexp_like(eventname, 'Action') THEN 'Action'\n        WHEN regexp_like(eventname, 'Space') THEN 'Space'\n        WHEN regexp_like(eventname, 'Automation') THEN 'Automation'\n        WHEN regexp_like(eventname, '(Chat|Conversation)') THEN 'Chat'\n        WHEN regexp_like(eventname, 'Workflow') THEN 'Workflow'\n        ELSE 'Other'\n    END AS event_category,\n    \"date_parse\"(\"eventtime\", '%Y-%m-%dT%H:%i:%sZ') AS event_ts,\n    \"useridentity\".\"arn\" \"user_arn\",\n\t\t\t\t\tCOALESCE(\n\t\t\t\t\t\t\"useridentity\".\"username\",\n\t\t\t\t\t\t\"concat\"(\n\t\t\t\t\t\t\t\"split_part\"(\"useridentity\".\"arn\", '/', 2),\n\t\t\t\t\t\t\t'/',\n\t\t\t\t\t\t\t\"split_part\"(\"useridentity\".\"arn\", '/', 3)\n\t\t\t\t\t\t)\n\t\t\t\t\t) \"user_name\",\n    *\nFROM awsdatacatalog.\"admin-console-2025\".cloudtrail_logs_pp\nWHERE eventsource = 'quicksight.amazonaws.com'\n  AND parse_datetime(eventtime, 'yyyy-MM-dd''T''HH:mm:ss''Z')\n      >= current_timestamp - INTERVAL '40' DAY\nORDER BY event_category",
+                            "Columns": [
+                                {
+                                    "Name": "event_category",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "event_ts",
+                                    "Type": "DATETIME"
+                                },
+                                {
+                                    "Name": "user_arn",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "user_name",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "eventversion",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "useridentity",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "eventtime",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "eventsource",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "eventname",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "awsregion",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "sourceipaddress",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "useragent",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "errorcode",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "errormessage",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "requestparameters",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "responseelements",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "additionaleventdata",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "requestid",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "eventid",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "eventtype",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "apiversion",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "readonly",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "recipientaccountid",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "serviceeventdetails",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "sharedeventid",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "vpcendpointid",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "region",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "timestamp",
+                                    "Type": "STRING"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "LogicalTableMap": {
+                    "3f7b5202-6a54-4c3e-b5d2-337d657ca1fa": {
+                        "Alias": "Admin-Console-Feature-Category-2025",
+                        "DataTransforms": [
+                            {
+                                "TagColumnOperation": {
+                                    "ColumnName": "region",
+                                    "Tags": [
+                                        {
+                                            "ColumnGeographicRole": "STATE"
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "ProjectOperation": {
+                                    "ProjectedColumns": [
+                                        "event_category",
+                                        "event_ts",
+                                        "user_arn",
+                                        "user_name",
+                                        "eventversion",
+                                        "useridentity",
+                                        "eventtime",
+                                        "eventsource",
+                                        "eventname",
+                                        "awsregion",
+                                        "sourceipaddress",
+                                        "useragent",
+                                        "errorcode",
+                                        "errormessage",
+                                        "requestparameters",
+                                        "responseelements",
+                                        "additionaleventdata",
+                                        "requestid",
+                                        "eventid",
+                                        "eventtype",
+                                        "apiversion",
+                                        "readonly",
+                                        "recipientaccountid",
+                                        "serviceeventdetails",
+                                        "sharedeventid",
+                                        "vpcendpointid",
+                                        "region",
+                                        "timestamp"
+                                    ]
+                                }
+                            }
+                        ],
+                        "Source": {
+                            "PhysicalTableId": "03236699-07b7-4200-8c8c-81683c81c306"
+                        }
+                    }
+                },
+                "ImportMode": "SPICE",
+                "FieldFolders": {},
+                "DataSetUsageConfiguration": {
+                    "DisableUseAsDirectQuerySource": false,
+                    "DisableUseAsImportedSource": false
+                },
+                "DataSetRefreshProperties": {
+                    "FailureConfiguration": {
+                        "EmailAlert": {
+                            "AlertStatus": "DISABLED"
+                        }
+                    }
+                }
+            }
+        },
+        "AdminConsoleQInformations2025": {
+            "Type": "AWS::QuickSight::DataSet",
+            "DependsOn": [
+                "qsdatasource"
+            ],
+            "Properties": {
+                "AwsAccountId": {
+                    "Fn::Sub": "${AWS::AccountId}"
+                },
+                "DataSetId": {
+                    "Fn::Sub": "Admin-Console-Q-Informations-2025-${AWS::AccountId}"
+                },
+                "Name": "Admin-Console-Q-Informations-2025",
+                "Permissions": [
+                    {
+                        "Principal": {
+                            "Ref": "adminarn"
+                        },
+                        "Actions": [
+                            "quicksight:UpdateDataSetPermissions",
+                            "quicksight:DescribeDataSet",
+                            "quicksight:DescribeDataSetPermissions",
+                            "quicksight:PassDataSet",
+                            "quicksight:DescribeIngestion",
+                            "quicksight:ListIngestions",
+                            "quicksight:UpdateDataSet",
+                            "quicksight:DeleteDataSet",
+                            "quicksight:CreateIngestion",
+                            "quicksight:CancelIngestion"
+                        ]
+                    }
+                ],
+                "PhysicalTableMap": {
+                    "q-object-access-physical": {
+                        "RelationalTable": {
+                            "DataSourceArn": {
+                                "Fn::GetAtt": [
+                                    "qsdatasource",
+                                    "Arn"
+                                ]
+                            },
+                            "Catalog": "AwsDataCatalog",
+                            "Schema": "admin-console-2025",
+                            "Name": "q_object_access",
+                            "InputColumns": [
+                                {
+                                    "Name": "account_id",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "aws_region",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "object_type",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "object_name",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "object_id",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "principal_type",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "principal_name",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "arn",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "namespace",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "permissions",
+                                    "Type": "STRING"
+                                }
+                            ]
+                        }
+                    },
+                    "q-topic-info-physical": {
+                        "RelationalTable": {
+                            "DataSourceArn": {
+                                "Fn::GetAtt": [
+                                    "qsdatasource",
+                                    "Arn"
+                                ]
+                            },
+                            "Catalog": "AwsDataCatalog",
+                            "Schema": "admin-console-2025",
+                            "Name": "q_topic_info",
+                            "InputColumns": [
+                                {
+                                    "Name": "topic_id",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "topic_name",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "dataset_arn",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "dataset_name",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "description",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "user_experience_version",
+                                    "Type": "STRING"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "LogicalTableMap": {
+                    "q-informations-joined": {
+                        "Alias": "q_informations",
+                        "Source": {
+                            "JoinInstruction": {
+                                "LeftOperand": "q-object-access-logic",
+                                "RightOperand": "q-topic-info-logic",
+                                "Type": "OUTER",
+                                "OnClause": "{object_id} = {topic_id}"
+                            }
+                        }
+                    },
+                    "q-object-access-logic": {
+                        "Alias": "q_object_access",
+                        "Source": {
+                            "PhysicalTableId": "q-object-access-physical"
+                        }
+                    },
+                    "q-topic-info-logic": {
+                        "Alias": "q_topic_info",
+                        "Source": {
+                            "PhysicalTableId": "q-topic-info-physical"
+                        }
+                    }
+                },
+                "ImportMode": "SPICE",
+                "FieldFolders": {},
+                "DataSetUsageConfiguration": {
+                    "DisableUseAsDirectQuerySource": false,
+                    "DisableUseAsImportedSource": false
+                },
+                "DataSetRefreshProperties": {
+                    "FailureConfiguration": {
+                        "EmailAlert": {
+                            "AlertStatus": "DISABLED"
+                        }
+                    }
+                }
+            }
+        },
+        "AdminConsoleDatasetInfo2025": {
+            "Type": "AWS::QuickSight::DataSet",
+            "DependsOn": [
+                "qsdatasource"
+            ],
+            "Properties": {
+                "AwsAccountId": {
+                    "Fn::Sub": "${AWS::AccountId}"
+                },
+                "DataSetId": {
+                    "Fn::Sub": "Admin-Console-dataset-info-2025-${AWS::AccountId}"
+                },
+                "Name": "Admin-Console-dataset-info-2025",
+                "Permissions": [
+                    {
+                        "Principal": {
+                            "Ref": "adminarn"
+                        },
+                        "Actions": [
+                            "quicksight:UpdateDataSetPermissions",
+                            "quicksight:DescribeDataSet",
+                            "quicksight:DescribeDataSetPermissions",
+                            "quicksight:PassDataSet",
+                            "quicksight:DescribeIngestion",
+                            "quicksight:ListIngestions",
+                            "quicksight:UpdateDataSet",
+                            "quicksight:DeleteDataSet",
+                            "quicksight:CreateIngestion",
+                            "quicksight:CancelIngestion"
+                        ]
+                    }
+                ],
+                "PhysicalTableMap": {
+                    "Admin-Console-dataset-info-physical": {
+                        "CustomSql": {
+                            "DataSourceArn": {
+                                "Fn::GetAtt": [
+                                    "qsdatasource",
+                                    "Arn"
+                                ]
+                            },
+                            "Name": "Admin-Console-dataset-info",
+                            "SqlQuery": "SELECT * \nFROM \"admin-console-2025\".datasets_info i \njoin \"admin-console-2025\".data_dict d\non i.dataset_id = d.datasetid",
+                            "Columns": [
+                                {
+                                    "Name": "aws_region",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "dashboard_name",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "dashboardid",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "analysis",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "analysis_id",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "dataset_name",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "dataset_id",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "lastupdatedtime",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "data_source_name",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "data_source_id",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "catalog",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "sqlname/schema",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "sqlquery/table_name",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "datasetname",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "datasetid",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "columnname",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "columntype",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "columndesc",
+                                    "Type": "STRING"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "LogicalTableMap": {
+                    "Admin-Console-dataset-info-logic": {
+                        "Alias": "Admin-Console-dataset-info",
+                        "DataTransforms": [
+                            {
+                                "TagColumnOperation": {
+                                    "ColumnName": "aws_region",
+                                    "Tags": [
+                                        {
+                                            "ColumnGeographicRole": "STATE"
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "ProjectOperation": {
+                                    "ProjectedColumns": [
+                                        "aws_region",
+                                        "dashboard_name",
+                                        "dashboardid",
+                                        "analysis",
+                                        "analysis_id",
+                                        "dataset_name",
+                                        "dataset_id",
+                                        "lastupdatedtime",
+                                        "data_source_name",
+                                        "data_source_id",
+                                        "catalog",
+                                        "sqlname/schema",
+                                        "sqlquery/table_name",
+                                        "datasetname",
+                                        "datasetid",
+                                        "columnname",
+                                        "columntype",
+                                        "columndesc"
+                                    ]
+                                }
+                            }
+                        ],
+                        "Source": {
+                            "PhysicalTableId": "Admin-Console-dataset-info-physical"
+                        }
+                    }
+                },
+                "ImportMode": "SPICE",
+                "FieldFolders": {},
+                "DataSetUsageConfiguration": {
+                    "DisableUseAsDirectQuerySource": false,
+                    "DisableUseAsImportedSource": false
+                },
+                "DataSetRefreshProperties": {
+                    "FailureConfiguration": {
+                        "EmailAlert": {
+                            "AlertStatus": "DISABLED"
+                        }
+                    }
+                }
+            }
+        },
+        "AdminConsoleDatasetsView": {
+            "Type": "AWS::QuickSight::DataSet",
+            "DependsOn": [
+                "qsdatasource"
+            ],
+            "Properties": {
+                "AwsAccountId": {
+                    "Fn::Sub": "${AWS::AccountId}"
+                },
+                "DataSetId": {
+                    "Fn::Sub": "Admin-Console-Datasets-view-${AWS::AccountId}"
+                },
+                "Name": "Admin-Console-Datasets-view",
+                "Permissions": [
+                    {
+                        "Principal": {
+                            "Ref": "adminarn"
+                        },
+                        "Actions": [
+                            "quicksight:UpdateDataSetPermissions",
+                            "quicksight:DescribeDataSet",
+                            "quicksight:DescribeDataSetPermissions",
+                            "quicksight:PassDataSet",
+                            "quicksight:DescribeIngestion",
+                            "quicksight:ListIngestions",
+                            "quicksight:UpdateDataSet",
+                            "quicksight:DeleteDataSet",
+                            "quicksight:CreateIngestion",
+                            "quicksight:CancelIngestion"
+                        ]
+                    }
+                ],
+                "PhysicalTableMap": {
+                    "ef56d84e-e548-4259-9c15-5f575d73a64d": {
+                        "CustomSql": {
+                            "DataSourceArn": {
+                                "Fn::GetAtt": [
+                                    "qsdatasource",
+                                    "Arn"
+                                ]
+                            },
+                            "Name": "qs_ds_info_combined",
+                            "SqlQuery": "SELECT region, dataset_id, name, SUBSTRING(NULLIF(last_updated_time, ''), 1, 19) AS last_updated_time, import_mode, consumed_spice_capacity_bytes, rows_ingested, rows_dropped, SUBSTRING(NULLIF(refresh_triggered_time, ''), 1, 19) AS refresh_triggered_time, refresh_time_seconds, request_source, request_type, ingestion_status, error_info_type, error_info_message, is_file, data_source_name, data_source_id, catalog, \"sqlname/schema\", \"sqlquery/table_name\" FROM \"admin-console-2025\".\"qs_ds_info_combined\"",
+                            "Columns": [
+                                {
+                                    "Name": "region",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "dataset_id",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "name",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "last_updated_time",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "import_mode",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "consumed_spice_capacity_bytes",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "rows_ingested",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "rows_dropped",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "refresh_triggered_time",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "refresh_time_seconds",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "request_source",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "request_type",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "ingestion_status",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "error_info_type",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "error_info_message",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "is_file",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "data_source_name",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "data_source_id",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "catalog",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "sqlname/schema",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "sqlquery/table_name",
+                                    "Type": "STRING"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "LogicalTableMap": {
+                    "e0e93114-a5c4-4841-bb01-e0e56f27958f": {
+                        "Alias": "qs_ds_info_combined",
+                        "DataTransforms": [
+                            {
+                                "CastColumnTypeOperation": {
+                                    "ColumnName": "last_updated_time",
+                                    "NewColumnType": "DATETIME",
+                                    "Format": "yyyy-MM-dd HH:mm:ss"
+                                }
+                            },
+                            {
+                                "CastColumnTypeOperation": {
+                                    "ColumnName": "refresh_triggered_time",
+                                    "NewColumnType": "DATETIME",
+                                    "Format": "yyyy-MM-dd HH:mm:ss"
+                                }
+                            },
+                            {
+                                "TagColumnOperation": {
+                                    "ColumnName": "region",
+                                    "Tags": [
+                                        {
+                                            "ColumnGeographicRole": "STATE"
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "ProjectOperation": {
+                                    "ProjectedColumns": [
+                                        "region",
+                                        "dataset_id",
+                                        "name",
+                                        "last_updated_time",
+                                        "import_mode",
+                                        "consumed_spice_capacity_bytes",
+                                        "rows_ingested",
+                                        "rows_dropped",
+                                        "refresh_triggered_time",
+                                        "refresh_time_seconds",
+                                        "request_source",
+                                        "request_type",
+                                        "ingestion_status",
+                                        "error_info_type",
+                                        "error_info_message",
+                                        "is_file",
+                                        "data_source_name",
+                                        "data_source_id",
+                                        "catalog",
+                                        "sqlname/schema",
+                                        "sqlquery/table_name"
+                                    ]
+                                }
+                            }
+                        ],
+                        "Source": {
+                            "PhysicalTableId": "ef56d84e-e548-4259-9c15-5f575d73a64d"
+                        }
+                    }
+                },
+                "ImportMode": "SPICE",
+                "FieldFolders": {},
+                "DataSetUsageConfiguration": {
+                    "DisableUseAsDirectQuerySource": false,
+                    "DisableUseAsImportedSource": false
+                },
+                "DataSetRefreshProperties": {
+                    "FailureConfiguration": {
+                        "EmailAlert": {
+                            "AlertStatus": "DISABLED"
+                        }
+                    }
+                }
+            }
+        },
+        "AdminConsoleObjectAccess2025": {
+            "Type": "AWS::QuickSight::DataSet",
+            "DependsOn": [
+                "qsdatasource"
+            ],
+            "Properties": {
+                "AwsAccountId": {
+                    "Fn::Sub": "${AWS::AccountId}"
+                },
+                "DataSetId": {
+                    "Fn::Sub": "Admin-Console-Object-Access-2025-${AWS::AccountId}"
+                },
+                "Name": "Admin-Console-Object-Access-2025",
+                "Permissions": [
+                    {
+                        "Principal": {
+                            "Ref": "adminarn"
+                        },
+                        "Actions": [
+                            "quicksight:UpdateDataSetPermissions",
+                            "quicksight:DescribeDataSet",
+                            "quicksight:DescribeDataSetPermissions",
+                            "quicksight:PassDataSet",
+                            "quicksight:DescribeIngestion",
+                            "quicksight:ListIngestions",
+                            "quicksight:UpdateDataSet",
+                            "quicksight:DeleteDataSet",
+                            "quicksight:CreateIngestion",
+                            "quicksight:CancelIngestion"
+                        ]
+                    }
+                ],
+                "PhysicalTableMap": {
+                    "Admin-Console-Object-Access-physical": {
+                        "CustomSql": {
+                            "DataSourceArn": {
+                                "Fn::GetAtt": [
+                                    "qsdatasource",
+                                    "Arn"
+                                ]
+                            },
+                            "Name": "Admin-Console-Object-Access",
+                            "SqlQuery": "select o.account_id, o.aws_region, o.object_type, o.object_name, o.object_id, o.principal_type, o.principal_name,\no.permissions, g.namespace, g.account_id as user_aws_account_id,\ng.\"group\", g.\"user\", g.email, g.\"role\", g.identity_type from \"admin-console-2025\".object_access as o \nfull outer join\n\"admin-console-2025\".group_membership as g\non o.account_id=g.account_id AND o.principal_name=g.\"group\" AND o.namespace=g.namespace\nwhere o.principal_type in ('group')\nunion all\nselect o.account_id, o.aws_region, o.object_type, o.object_name, o.object_id, o.principal_type, o.principal_name,\no.permissions, g.namespace, g.account_id as user_aws_account_id,\ng.\"group\", g.\"user\", g.email, g.\"role\", g.identity_type\nfrom \"admin-console-2025\".object_access o\nfull outer join\n\"admin-console-2025\".group_membership g\non o.account_id=g.account_id AND o.principal_name=g.user AND o.namespace=g.namespace\nwhere o.principal_type in ('user')",
+                            "Columns": [
+                                {
+                                    "Name": "account_id",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "aws_region",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "object_type",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "object_name",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "object_id",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "principal_type",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "principal_name",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "permissions",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "namespace",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "user_aws_account_id",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "group",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "user",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "email",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "role",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "identity_type",
+                                    "Type": "STRING"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "LogicalTableMap": {
+                    "Admin-Console-Object-Access-logic": {
+                        "Alias": "Admin-Console-Object-Access",
+                        "DataTransforms": [
+                            {
+                                "TagColumnOperation": {
+                                    "ColumnName": "aws_region",
+                                    "Tags": [
+                                        {
+                                            "ColumnGeographicRole": "STATE"
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "ProjectOperation": {
+                                    "ProjectedColumns": [
+                                        "account_id",
+                                        "aws_region",
+                                        "object_type",
+                                        "object_name",
+                                        "object_id",
+                                        "principal_type",
+                                        "principal_name",
+                                        "permissions",
+                                        "namespace",
+                                        "user_aws_account_id",
+                                        "group",
+                                        "user",
+                                        "email",
+                                        "role",
+                                        "identity_type"
+                                    ]
+                                }
+                            }
+                        ],
+                        "Source": {
+                            "PhysicalTableId": "Admin-Console-Object-Access-physical"
+                        }
+                    }
+                },
+                "ImportMode": "SPICE",
+                "FieldFolders": {},
+                "DataSetUsageConfiguration": {
+                    "DisableUseAsDirectQuerySource": false,
+                    "DisableUseAsImportedSource": false
+                },
+                "DataSetRefreshProperties": {
+                    "FailureConfiguration": {
+                        "EmailAlert": {
+                            "AlertStatus": "DISABLED"
+                        }
+                    }
+                }
+            }
+        },
+        "AdminConsoleSpiceView": {
+            "Type": "AWS::QuickSight::DataSet",
+            "DependsOn": [
+                "qsdatasource"
+            ],
+            "Properties": {
+                "AwsAccountId": {
+                    "Fn::Sub": "${AWS::AccountId}"
+                },
+                "DataSetId": {
+                    "Fn::Sub": "Admin-Console-SPICE-View-${AWS::AccountId}"
+                },
+                "Name": "Admin-Console-SPICE-View",
+                "Permissions": [
+                    {
+                        "Principal": {
+                            "Ref": "adminarn"
+                        },
+                        "Actions": [
+                            "quicksight:UpdateDataSetPermissions",
+                            "quicksight:DescribeDataSet",
+                            "quicksight:DescribeDataSetPermissions",
+                            "quicksight:PassDataSet",
+                            "quicksight:DescribeIngestion",
+                            "quicksight:ListIngestions",
+                            "quicksight:UpdateDataSet",
+                            "quicksight:DeleteDataSet",
+                            "quicksight:CreateIngestion",
+                            "quicksight:CancelIngestion"
+                        ]
+                    }
+                ],
+                "PhysicalTableMap": {
+                    "18943bf2-343d-4c45-922d-c6f9a8525d91": {
+                        "RelationalTable": {
+                            "DataSourceArn": {
+                                "Fn::GetAtt": [
+                                    "qsdatasource",
+                                    "Arn"
+                                ]
+                            },
+                            "Catalog": "AwsDataCatalog",
+                            "Schema": "admin-console-2025",
+                            "Name": "cw_qs_spice_pivot",
+                            "InputColumns": [
+                                {
+                                    "Name": "timestamp",
+                                    "Type": "INTEGER"
+                                },
+                                {
+                                    "Name": "account_id",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "region",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "spicecapacitylimitinmb",
+                                    "Type": "DECIMAL"
+                                },
+                                {
+                                    "Name": "spicecapacitylimitinmb_unit",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "spicecapacityconsumedinmb",
+                                    "Type": "DECIMAL"
+                                },
+                                {
+                                    "Name": "spicecapacityconsumedinmb_unit",
+                                    "Type": "STRING"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "LogicalTableMap": {
+                    "f58f7fd3-2a57-4683-8622-9a4eb2240980": {
+                        "Alias": "cw_qs_spice_pivot",
+                        "DataTransforms": [
+                            {
+                                "CastColumnTypeOperation": {
+                                    "ColumnName": "timestamp",
+                                    "NewColumnType": "DATETIME"
+                                }
+                            },
+                            {
+                                "TagColumnOperation": {
+                                    "ColumnName": "region",
+                                    "Tags": [
+                                        {
+                                            "ColumnGeographicRole": "STATE"
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "ProjectOperation": {
+                                    "ProjectedColumns": [
+                                        "timestamp",
+                                        "account_id",
+                                        "region",
+                                        "spicecapacitylimitinmb",
+                                        "spicecapacitylimitinmb_unit",
+                                        "spicecapacityconsumedinmb",
+                                        "spicecapacityconsumedinmb_unit"
+                                    ]
+                                }
+                            }
+                        ],
+                        "Source": {
+                            "PhysicalTableId": "18943bf2-343d-4c45-922d-c6f9a8525d91"
+                        }
+                    }
+                },
+                "ImportMode": "DIRECT_QUERY",
+                "FieldFolders": {},
+                "DataSetUsageConfiguration": {
+                    "DisableUseAsDirectQuerySource": false,
+                    "DisableUseAsImportedSource": false
+                },
+                "DataSetRefreshProperties": {
+                    "FailureConfiguration": {
+                        "EmailAlert": {
+                            "AlertStatus": "DISABLED"
+                        }
+                    }
+                }
+            }
+        },
+        "AdminConsoleFolderPath2025": {
+            "Type": "AWS::QuickSight::DataSet",
+            "DependsOn": [
+                "qsdatasource"
+            ],
+            "Properties": {
+                "AwsAccountId": {
+                    "Fn::Sub": "${AWS::AccountId}"
+                },
+                "DataSetId": {
+                    "Fn::Sub": "Admin-Console-Folder-Path-2025-${AWS::AccountId}"
+                },
+                "Name": "Admin-Console-Folder-Path-2025",
+                "Permissions": [
+                    {
+                        "Principal": {
+                            "Ref": "adminarn"
+                        },
+                        "Actions": [
+                            "quicksight:UpdateDataSetPermissions",
+                            "quicksight:DescribeDataSet",
+                            "quicksight:DescribeDataSetPermissions",
+                            "quicksight:PassDataSet",
+                            "quicksight:DescribeIngestion",
+                            "quicksight:ListIngestions",
+                            "quicksight:UpdateDataSet",
+                            "quicksight:DeleteDataSet",
+                            "quicksight:CreateIngestion",
+                            "quicksight:CancelIngestion"
+                        ]
+                    }
+                ],
+                "PhysicalTableMap": {
+                    "folder-path-physical": {
+                        "CustomSql": {
+                            "DataSourceArn": {
+                                "Fn::GetAtt": [
+                                    "qsdatasource",
+                                    "Arn"
+                                ]
+                            },
+                            "Name": "folder_path",
+                            "SqlQuery": "select fa.folder_id, fa.aws_region, flk.account_id, fp.folder_name, fp.folder_path from \"admin-console-2025\".\"folder_assets\" as fa \nleft join \n \"admin-console-2025\".\"folder_lk\" as flk on fa.folder_id=flk.folder_id\nleft join  \"admin-console-2025\".\"folder_path\" as fp on fa.folder_id=fp.folder_id",
+                            "Columns": [
+                                {
+                                    "Name": "folder_id",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "aws_region",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "account_id",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "folder_name",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "folder_path",
+                                    "Type": "STRING"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "LogicalTableMap": {
+                    "folder-path-logic": {
+                        "Alias": "folder_path",
+                        "DataTransforms": [
+                            {
+                                "TagColumnOperation": {
+                                    "ColumnName": "aws_region",
+                                    "Tags": [
+                                        {
+                                            "ColumnGeographicRole": "STATE"
+                                        }
+                                    ]
+                                }
+                            }
+                        ],
+                        "Source": {
+                            "PhysicalTableId": "folder-path-physical"
+                        }
+                    }
+                },
+                "ImportMode": "SPICE",
+                "FieldFolders": {},
+                "DataSetUsageConfiguration": {
+                    "DisableUseAsDirectQuerySource": false,
+                    "DisableUseAsImportedSource": false
+                },
+                "DataSetRefreshProperties": {
+                    "FailureConfiguration": {
+                        "EmailAlert": {
+                            "AlertStatus": "DISABLED"
+                        }
+                    }
+                }
+            }
+        },
+        "AdminConsoleQuerydatabase2025": {
+            "Type": "AWS::QuickSight::DataSet",
+            "DependsOn": [
+                "qsdatasource"
+            ],
+            "Properties": {
+                "AwsAccountId": {
+                    "Fn::Sub": "${AWS::AccountId}"
+                },
+                "DataSetId": {
+                    "Fn::Sub": "Admin-Console-QueryDataBase-2025-${AWS::AccountId}"
+                },
+                "Name": "Admin-Console-QueryDataBase-2025",
+                "Permissions": [
+                    {
+                        "Principal": {
+                            "Ref": "adminarn"
+                        },
+                        "Actions": [
+                            "quicksight:UpdateDataSetPermissions",
+                            "quicksight:DescribeDataSet",
+                            "quicksight:DescribeDataSetPermissions",
+                            "quicksight:PassDataSet",
+                            "quicksight:DescribeIngestion",
+                            "quicksight:ListIngestions",
+                            "quicksight:UpdateDataSet",
+                            "quicksight:DeleteDataSet",
+                            "quicksight:CreateIngestion",
+                            "quicksight:CancelIngestion"
+                        ]
+                    }
+                ],
+                "PhysicalTableMap": {
+                    "78726ff6-fbdb-41e3-91fd-7ff58adaa5b0": {
+                        "CustomSql": {
+                            "DataSourceArn": {
+                                "Fn::GetAtt": [
+                                    "qsdatasource",
+                                    "Arn"
+                                ]
+                            },
+                            "Name": "Admin-Console-QueryDataBase-2025",
+                            "SqlQuery": "SELECT\n  -- Basic event fields\n  q.eventversion,\n  q.eventtime,\n  q.eventsource,\n  q.eventname,\n  q.awsregion,\n  q.sourceipaddress,\n  q.useragent,\n  q.errorcode,\n  q.errormessage,\n  q.requestparameters,\n  q.responseelements,\n  q.additionaleventdata,\n  q.requestid,\n  q.eventid,\n  q.eventtype,\n  q.apiversion,\n  q.readonly,\n  q.recipientaccountid,\n  q.serviceeventdetails,\n  q.sharedeventid,\n  q.vpcendpointid,\n  q.region,\n  q.timestamp,\n  q.datasourceid,\n  q.queryid,\n  q.dashboard_analysis,\n  q.datasetid,\n  q.datasetmode,\n\n  -- Flattened useridentity\n  q.useridentity.type AS useridentity_type,\n  q.useridentity.principalid AS useridentity_principalid,\n  q.useridentity.arn AS useridentity_arn,\n  q.useridentity.accountid AS useridentity_accountid,\n  q.useridentity.invokedby AS useridentity_invokedby,\n  q.useridentity.accesskeyid AS useridentity_accesskeyid,\n  q.useridentity.username AS useridentity_username,\n\n  -- Useridentity session context attributes\n  q.useridentity.sessioncontext.attributes.mfaauthenticated AS useridentity_mfa_authenticated,\n  q.useridentity.sessioncontext.attributes.creationdate AS useridentity_session_creationdate,\n\n  -- Useridentity session issuer\n  q.useridentity.sessioncontext.sessionissuer.type AS sessionissuer_type,\n  q.useridentity.sessioncontext.sessionissuer.principalid AS sessionissuer_principalid,\n  q.useridentity.sessioncontext.sessionissuer.arn AS sessionissuer_arn,\n  q.useridentity.sessioncontext.sessionissuer.accountid AS sessionissuer_accountid,\n  q.useridentity.sessioncontext.sessionissuer.username AS sessionissuer_username,\n\n  -- Flattened resources\n  r_ordinal AS resource_index,\n  r.arn AS resource_arn,\n  r.accountid AS resource_accountid,\n  r.type AS resource_type,\n  ds.datasource_id AS ds_datasource_id_from_join,\n  q.sim_datasource_id,\n  coalesce(json_extract_scalar(q.serviceeventdetails, '$.eventRequestDetails.databaseType'), ds.datasource_type) \n  AS databaseType\n\nFROM \n(select *, split_part(\n  datasourceid,\n  '/',\n  2\n) as sim_datasource_id \nfrom \"admin-console-2025\".quicksight_querydb_events) AS q\nLEFT JOIN \"admin-console-2025\".datasource_property AS ds on q.sim_datasource_id = ds.datasource_id\nLEFT JOIN UNNEST(q.resources)\n     WITH ORDINALITY AS t(r, r_ordinal) ON TRUE",
+                            "Columns": [
+                                {
+                                    "Name": "eventversion",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "eventtime",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "eventsource",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "eventname",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "awsregion",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "sourceipaddress",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "useragent",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "errorcode",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "errormessage",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "requestparameters",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "responseelements",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "additionaleventdata",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "requestid",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "eventid",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "eventtype",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "apiversion",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "readonly",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "recipientaccountid",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "serviceeventdetails",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "sharedeventid",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "vpcendpointid",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "region",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "timestamp",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "datasourceid",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "queryid",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "dashboard_analysis",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "datasetid",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "datasetmode",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "useridentity_type",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "useridentity_principalid",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "useridentity_arn",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "useridentity_accountid",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "useridentity_invokedby",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "useridentity_accesskeyid",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "useridentity_username",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "useridentity_mfa_authenticated",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "useridentity_session_creationdate",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "sessionissuer_type",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "sessionissuer_principalid",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "sessionissuer_arn",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "sessionissuer_accountid",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "sessionissuer_username",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "resource_index",
+                                    "Type": "INTEGER"
+                                },
+                                {
+                                    "Name": "resource_arn",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "resource_accountid",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "resource_type",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "ds_datasource_id_from_join",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "sim_datasource_id",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "databaseType",
+                                    "Type": "STRING"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "LogicalTableMap": {
+                    "b98d6ebc-5f1a-4159-bedf-e2a95dc5e1cd": {
+                        "Alias": "Admin-Console-QueryDataBase-2025",
+                        "DataTransforms": [
+                            {
+                                "CastColumnTypeOperation": {
+                                    "ColumnName": "eventtime",
+                                    "NewColumnType": "DATETIME",
+                                    "Format": "yyyy-MM-dd'T'HH:mm:ss'Z'"
+                                }
+                            },
+                            {
+                                "TagColumnOperation": {
+                                    "ColumnName": "region",
+                                    "Tags": [
+                                        {
+                                            "ColumnGeographicRole": "STATE"
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "ProjectOperation": {
+                                    "ProjectedColumns": [
+                                        "eventversion",
+                                        "eventtime",
+                                        "eventsource",
+                                        "eventname",
+                                        "awsregion",
+                                        "sourceipaddress",
+                                        "useragent",
+                                        "errorcode",
+                                        "errormessage",
+                                        "requestparameters",
+                                        "responseelements",
+                                        "additionaleventdata",
+                                        "requestid",
+                                        "eventid",
+                                        "eventtype",
+                                        "apiversion",
+                                        "readonly",
+                                        "recipientaccountid",
+                                        "serviceeventdetails",
+                                        "sharedeventid",
+                                        "vpcendpointid",
+                                        "region",
+                                        "timestamp",
+                                        "datasourceid",
+                                        "queryid",
+                                        "dashboard_analysis",
+                                        "datasetid",
+                                        "datasetmode",
+                                        "useridentity_type",
+                                        "useridentity_principalid",
+                                        "useridentity_arn",
+                                        "useridentity_accountid",
+                                        "useridentity_invokedby",
+                                        "useridentity_accesskeyid",
+                                        "useridentity_username",
+                                        "useridentity_mfa_authenticated",
+                                        "useridentity_session_creationdate",
+                                        "sessionissuer_type",
+                                        "sessionissuer_principalid",
+                                        "sessionissuer_arn",
+                                        "sessionissuer_accountid",
+                                        "sessionissuer_username",
+                                        "resource_index",
+                                        "resource_arn",
+                                        "resource_accountid",
+                                        "resource_type",
+                                        "ds_datasource_id_from_join",
+                                        "sim_datasource_id",
+                                        "databaseType"
+                                    ]
+                                }
+                            }
+                        ],
+                        "Source": {
+                            "PhysicalTableId": "78726ff6-fbdb-41e3-91fd-7ff58adaa5b0"
+                        }
+                    }
+                },
+                "ImportMode": "SPICE",
+                "FieldFolders": {},
+                "DataSetUsageConfiguration": {
+                    "DisableUseAsDirectQuerySource": false,
+                    "DisableUseAsImportedSource": false
+                },
+                "DataSetRefreshProperties": {
+                    "FailureConfiguration": {
+                        "EmailAlert": {
+                            "AlertStatus": "DISABLED"
+                        }
+                    }
+                }
+            }
+        },
+        "AdminConsoleFolderPermissions2025": {
+            "Type": "AWS::QuickSight::DataSet",
+            "DependsOn": [
+                "qsdatasource"
+            ],
+            "Properties": {
+                "AwsAccountId": {
+                    "Fn::Sub": "${AWS::AccountId}"
+                },
+                "DataSetId": {
+                    "Fn::Sub": "Admin-Console-Folder-Permissions-2025-${AWS::AccountId}"
+                },
+                "Name": "Admin-Console-Folder-Permissions-2025",
+                "Permissions": [
+                    {
+                        "Principal": {
+                            "Ref": "adminarn"
+                        },
+                        "Actions": [
+                            "quicksight:UpdateDataSetPermissions",
+                            "quicksight:DescribeDataSet",
+                            "quicksight:DescribeDataSetPermissions",
+                            "quicksight:PassDataSet",
+                            "quicksight:DescribeIngestion",
+                            "quicksight:ListIngestions",
+                            "quicksight:UpdateDataSet",
+                            "quicksight:DeleteDataSet",
+                            "quicksight:CreateIngestion",
+                            "quicksight:CancelIngestion"
+                        ]
+                    }
+                ],
+                "PhysicalTableMap": {
+                    "folder-permissions-physical": {
+                        "CustomSql": {
+                            "DataSourceArn": {
+                                "Fn::GetAtt": [
+                                    "qsdatasource",
+                                    "Arn"
+                                ]
+                            },
+                            "Name": "folder_permissions",
+                            "SqlQuery": "select * from \"admin-console-2025\".\"folder_lk\"",
+                            "Columns": [
+                                {
+                                    "Name": "account_id",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "aws_region",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "object_type",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "folder_name",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "folder_id",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "folder_arn",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "principal_type",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "principal_name",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "additional_info",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "actions",
+                                    "Type": "STRING"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "LogicalTableMap": {
+                    "folder-permissions-logic": {
+                        "Alias": "folder_permissions",
+                        "DataTransforms": [
+                            {
+                                "TagColumnOperation": {
+                                    "ColumnName": "aws_region",
+                                    "Tags": [
+                                        {
+                                            "ColumnGeographicRole": "STATE"
+                                        }
+                                    ]
+                                }
+                            }
+                        ],
+                        "Source": {
+                            "PhysicalTableId": "folder-permissions-physical"
+                        }
+                    }
+                },
+                "ImportMode": "SPICE",
+                "FieldFolders": {},
+                "DataSetUsageConfiguration": {
+                    "DisableUseAsDirectQuerySource": false,
+                    "DisableUseAsImportedSource": false
+                },
+                "DataSetRefreshProperties": {
+                    "FailureConfiguration": {
+                        "EmailAlert": {
+                            "AlertStatus": "DISABLED"
+                        }
+                    }
+                }
+            }
+        },
+        "AdminConsoleCfnMain2025": {
+            "Type": "AWS::QuickSight::DataSet",
+            "DependsOn": [
+                "qsdatasource"
+            ],
+            "Properties": {
+                "AwsAccountId": {
+                    "Fn::Sub": "${AWS::AccountId}"
+                },
+                "DataSetId": {
+                    "Fn::Sub": "Admin-Console-CFN-Main-2025-${AWS::AccountId}"
+                },
+                "Name": "Admin-Console-CFN-Main-2025",
+                "Permissions": [
+                    {
+                        "Principal": {
+                            "Ref": "adminarn"
+                        },
+                        "Actions": [
+                            "quicksight:UpdateDataSetPermissions",
+                            "quicksight:DescribeDataSet",
+                            "quicksight:DescribeDataSetPermissions",
+                            "quicksight:PassDataSet",
+                            "quicksight:DescribeIngestion",
+                            "quicksight:ListIngestions",
+                            "quicksight:UpdateDataSet",
+                            "quicksight:DeleteDataSet",
+                            "quicksight:CreateIngestion",
+                            "quicksight:CancelIngestion"
+                        ]
+                    }
+                ],
+                "PhysicalTableMap": {
+                    "Admin-Console-CFN-Main-physical": {
+                        "CustomSql": {
+                            "DataSourceArn": {
+                                "Fn::GetAtt": [
+                                    "qsdatasource",
+                                    "Arn"
+                                ]
+                            },
+                            "Name": "CFN-Main",
+                            "SqlQuery": "SELECT COALESCE(\"d\".\"accountid\", \"g\".\"account_id\") \"accountid\",\n\tCOALESCE(\"g\".\"user\", \"d\".\"user_name\") \"user_name\",\n\tCOALESCE(\"g\".\"user_arn\", \"d\".\"user_arn\") \"user_arn\",\n\t\"d\".\"awsregion\",\n\treplace(\"d\".\"dashboard_name\", '\"', '') \"dashboard_name\",\n\t\"d\".\"dashboardid\",\n\t\"d\".\"event_time\",\n\t\"dv1\".\"last_view_dashboard_time\",\n\t\"ev1\".\"last_event_time\",\n\t\"ev1\".\"first_event_time\",\n\t\"g\".\"namespace\",\n\t\"g\".\"group\",\n\t\"g\".\"email\",\n\t\"g\".\"role\",\n\tCOALESCE(\"g\".\"identity_type\", 'QUICKSIGHT') \"identity_type\",\n\t\"do1\".\"principal_name\" \"owner_viewer\",\n\t\"do1\".\"ownership\" \"ownership\"\nFROM (\n\t\t(\n\t\t\t(\n\t\t\t\tSELECT \"useridentity\".\"accountid\",\n\t\t\t\t\t\"useridentity\".\"type\",\n\t\t\t\t\t\"split_part\"(\n\t\t\t\t\t\t\"useridentity\".\"sessioncontext\".\"sessionissuer\".\"arn\",\n\t\t\t\t\t\t'/',\n\t\t\t\t\t\t2\n\t\t\t\t\t) \"assumed_role\",\n\t\t\t\t\t\"useridentity\".\"arn\" \"user_arn\",\n\t\t\t\t\tCOALESCE(\n\t\t\t\t\t\t\"useridentity\".\"username\",\n\t\t\t\t\t\t\"concat\"(\n\t\t\t\t\t\t\t\"split_part\"(\"useridentity\".\"arn\", '/', 2),\n\t\t\t\t\t\t\t'/',\n\t\t\t\t\t\t\t\"split_part\"(\"useridentity\".\"arn\", '/', 3)\n\t\t\t\t\t\t)\n\t\t\t\t\t) \"user_name\",\n\t\t\t\t\t\"awsregion\",\n\t\t\t\t\t\"split_part\"(\n\t\t\t\t\t\t\"split_part\"(\"serviceeventdetails\", 'dashboardName\":', 2),\n\t\t\t\t\t\t',',\n\t\t\t\t\t\t1\n\t\t\t\t\t) \"dashboard_name\",\n\t\t\t\t\t\"split_part\"(\n\t\t\t\t\t\t\"split_part\"(\n\t\t\t\t\t\t\t\"split_part\"(\n\t\t\t\t\t\t\t\t\"split_part\"(\"serviceeventdetails\", 'dashboardId\":', 2),\n\t\t\t\t\t\t\t\t',',\n\t\t\t\t\t\t\t\t1\n\t\t\t\t\t\t\t),\n\t\t\t\t\t\t\t'dashboard/',\n\t\t\t\t\t\t\t2\n\t\t\t\t\t\t),\n\t\t\t\t\t\t'\"}',\n\t\t\t\t\t\t1\n\t\t\t\t\t) \"dashboardId\",\n\t\t\t\t\t\"date_parse\"(\"eventtime\", '%Y-%m-%dT%H:%i:%sZ') \"event_time\"\n\t\t\t\tFROM \"admin-console-2025\".\"cloudtrail_logs_pp\"\n\t\t\t\tWHERE \"eventsource\" = 'quicksight.amazonaws.com'\n\t\t\t\t\tAND \"eventname\" = 'GetDashboard'\n\t\t\t\t\tAND (\n\t\t\t\t\t\t\"date_trunc\"('day', \"date_parse\"(\"timestamp\", '%Y/%m/%d')) > CAST((current_date - INTERVAL '99' DAY) AS date)\n\t\t\t\t\t)\n\t\t\t\tGROUP BY 1,\n\t\t\t\t\t2,\n\t\t\t\t\t3,\n\t\t\t\t\t4,\n\t\t\t\t\t5,\n\t\t\t\t\t6,\n\t\t\t\t\t7,\n\t\t\t\t\t8,\n\t\t\t\t\t9\n\t\t\t) d\n\t\t\tleft join (\n\t\t\t\tSELECT \"useridentity\".\"arn\" \"user_arn\",\n\t\t\t\t\tmax(\"date_parse\"(\"eventtime\", '%Y-%m-%dT%H:%i:%sZ')) \"last_view_dashboard_time\"\n\t\t\t\tFROM \"admin-console-2025\".\"cloudtrail_logs_pp\"\n\t\t\t\tWHERE \"eventsource\" = 'quicksight.amazonaws.com'\n\t\t\t\t\tAND \"eventname\" = 'GetDashboard'\n\t\t\t\t\tAND (\n\t\t\t\t\t\t\"date_trunc\"('day', \"date_parse\"(\"timestamp\", '%Y/%m/%d')) > CAST((current_date - INTERVAL '99' DAY) AS date)\n\t\t\t\t\t)\n\t\t\t\tGROUP BY 1\n\t\t\t) dv1 ON \"d\".\"user_arn\" = \"dv1\".\"user_arn\"\n\t\t\tleft join (\n\t\t\t\tSELECT \"useridentity\".\"arn\" \"user_arn\",\n\t\t\t\tmin(\"date_parse\"(\"eventtime\", '%Y-%m-%dT%H:%i:%sZ')) \"first_event_time\",\n\t\t\t\t\tmax(\"date_parse\"(\"eventtime\", '%Y-%m-%dT%H:%i:%sZ')) \"last_event_time\"\n\t\t\t\tFROM \"admin-console-2025\".\"cloudtrail_logs_pp\"\n\t\t\t\tWHERE \"eventsource\" = 'quicksight.amazonaws.com'\n\t\t\t\t\tAND (\n\t\t\t\t\t\t\"date_trunc\"('day', \"date_parse\"(\"timestamp\", '%Y/%m/%d')) > CAST((current_date - INTERVAL '99' DAY) AS date)\n\t\t\t\t\t)\n\t\t\t\tGROUP BY 1\n\t\t\t) ev1 on \"d\".\"user_arn\" = \"ev1\".\"user_arn\"\n\t\t\tFULL JOIN \"admin-console-2025\".group_membership g ON \"d\".\"user_arn\" = \"g\".\"user_arn\"\n\t\t\tOR (\n\t\t\t\t(\"d\".\"accountid\" = \"g\".\"account_id\")\n\t\t\t\tAND (\"d\".\"user_name\" = \"g\".\"user\")\n\t\t\t)\n\t\t)\n\t\tLEFT JOIN (\n\t\t\tSELECT \"account_id\",\n\t\t\t\t\"aws_region\",\n\t\t\t\t\"object_id\",\n\t\t\t\t\"object_name\",\n\t\t\t\t\"principal_type\",\n\t\t\t\t\"principal_name\",\n\t\t\t\t\"arn\",\n\t\t\t\t\"namespace\",\n\t\t\t\t(\n\t\t\t\t\tCASE\n\t\t\t\t\t\tWHEN (\"strpos\"(\"permissions\", 'Delete') <> 0) THEN 'Owner' ELSE 'Viewer'\n\t\t\t\t\tEND\n\t\t\t\t) \"Ownership\"\n\t\t\tFROM \"admin-console-2025\".object_access\n\t\t\tWHERE (\"object_type\" = 'dashboard')\n\t\t\t\tAND (\"principal_type\" in ('group', 'user'))\n\t\t\tGROUP BY 1,\n\t\t\t\t2,\n\t\t\t\t3,\n\t\t\t\t4,\n\t\t\t\t5,\n\t\t\t\t6,\n\t\t\t\t7,\n\t\t\t\t8,\n\t\t\t\t9\n\t\t) do1 ON \"d\".\"dashboardid\" = \"do1\".\"object_id\"\n\t\tAND \"do1\".\"arn\" = \"d\".\"user_arn\"\n\t\tOR (\n\t\t\t(\n\t\t\t\t(\n\t\t\t\t\t(\n\t\t\t\t\t\t(\"d\".\"accountid\" = \"do1\".\"account_id\")\n\t\t\t\t\t\tAND (\"d\".\"awsregion\" = \"do1\".\"aws_region\")\n\t\t\t\t\t)\n\t\t\t\t\tAND (\"d\".\"dashboardid\" = \"do1\".\"object_id\")\n\t\t\t\t)\n\t\t\t\tAND (\n\t\t\t\t\t\"do1\".\"principal_name\" = \"g\".\"group\"\n\t\t\t\t\tOR \"do1\".\"principal_name\" = \"d\".\"user_name\"\n\t\t\t\t)\n\t\t\t)\n\t\t\tAND \"do1\".\"namespace\" = \"g\".\"namespace\"\n\t\t)\n\t)\nGROUP BY 1,\n\t2,\n\t3,\n\t4,\n\t5,\n\t6,\n\t7,\n\t8,\n\t9,\n\t10,\n\t11,\n\t12,\n\t13,\n\t14,\n\t15,\n\t16,\n\t17",
+                            "Columns": [
+                                {
+                                    "Name": "accountid",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "user_name",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "user_arn",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "awsregion",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "dashboard_name",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "dashboardid",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "event_time",
+                                    "Type": "DATETIME"
+                                },
+                                {
+                                    "Name": "last_view_dashboard_time",
+                                    "Type": "DATETIME"
+                                },
+                                {
+                                    "Name": "last_event_time",
+                                    "Type": "DATETIME"
+                                },
+                                {
+                                    "Name": "first_event_time",
+                                    "Type": "DATETIME"
+                                },
+                                {
+                                    "Name": "namespace",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "group",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "email",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "role",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "identity_type",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "owner_viewer",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "ownership",
+                                    "Type": "STRING"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "LogicalTableMap": {
+                    "Admin-Console-CFN-Main-2025-logic": {
+                        "Alias": "CFN-Main",
+                        "DataTransforms": [
+                            {
+                                "ProjectOperation": {
+                                    "ProjectedColumns": [
+                                        "accountid",
+                                        "user_name",
+                                        "user_arn",
+                                        "awsregion",
+                                        "dashboard_name",
+                                        "dashboardid",
+                                        "event_time",
+                                        "last_view_dashboard_time",
+                                        "last_event_time",
+                                        "first_event_time",
+                                        "namespace",
+                                        "group",
+                                        "email",
+                                        "role",
+                                        "identity_type",
+                                        "owner_viewer",
+                                        "ownership"
+                                    ]
+                                }
+                            }
+                        ],
+                        "Source": {
+                            "PhysicalTableId": "Admin-Console-CFN-Main-physical"
+                        }
+                    }
+                },
+                "ImportMode": "SPICE",
+                "FieldFolders": {},
+                "DataSetUsageConfiguration": {
+                    "DisableUseAsDirectQuerySource": false,
+                    "DisableUseAsImportedSource": false
+                },
+                "DataSetRefreshProperties": {
+                    "FailureConfiguration": {
+                        "EmailAlert": {
+                            "AlertStatus": "ENABLED"
+                        }
+                    }
+                }
+            }
+        },
+        "AdminConsoleDatasourceProperties": {
+            "Type": "AWS::QuickSight::DataSet",
+            "DependsOn": [
+                "qsdatasource"
+            ],
+            "Properties": {
+                "AwsAccountId": {
+                    "Fn::Sub": "${AWS::AccountId}"
+                },
+                "DataSetId": {
+                    "Fn::Sub": "Admin-Console-Datasource_properties-${AWS::AccountId}"
+                },
+                "Name": "Admin-Console-Datasource_properties",
+                "Permissions": [
+                    {
+                        "Principal": {
+                            "Ref": "adminarn"
+                        },
+                        "Actions": [
+                            "quicksight:UpdateDataSetPermissions",
+                            "quicksight:DescribeDataSet",
+                            "quicksight:DescribeDataSetPermissions",
+                            "quicksight:PassDataSet",
+                            "quicksight:DescribeIngestion",
+                            "quicksight:ListIngestions",
+                            "quicksight:UpdateDataSet",
+                            "quicksight:DeleteDataSet",
+                            "quicksight:CreateIngestion",
+                            "quicksight:CancelIngestion"
+                        ]
+                    }
+                ],
+                "PhysicalTableMap": {
+                    "76d8810f-1b8b-47d2-88d7-eaf6f28245cb": {
+                        "CustomSql": {
+                            "DataSourceArn": {
+                                "Fn::GetAtt": [
+                                    "qsdatasource",
+                                    "Arn"
+                                ]
+                            },
+                            "Name": "datasource_property",
+                            "SqlQuery": "SELECT region, datasource_name, datasource_id, dataset_name, datasource_type, dataset_id, SUBSTRING(dataset_last_updated_time, 1, 19) AS dataset_last_updated_time, SUBSTRING(dataset_created_time, 1, 19) AS dataset_created_time FROM \"admin-console-2025\".\"datasource_property\"",
+                            "Columns": [
+                                {
+                                    "Name": "region",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "datasource_name",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "datasource_id",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "dataset_name",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "datasource_type",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "dataset_id",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "dataset_last_updated_time",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "dataset_created_time",
+                                    "Type": "STRING"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "LogicalTableMap": {
+                    "d6b8641a-7645-4a4b-aa66-0e1a699d1697": {
+                        "Alias": "datasource_property",
+                        "DataTransforms": [
+                            {
+                                "CastColumnTypeOperation": {
+                                    "ColumnName": "dataset_last_updated_time",
+                                    "NewColumnType": "DATETIME",
+                                    "Format": "yyyy-MM-dd HH:mm:ss"
+                                }
+                            },
+                            {
+                                "CastColumnTypeOperation": {
+                                    "ColumnName": "dataset_created_time",
+                                    "NewColumnType": "DATETIME",
+                                    "Format": "yyyy-MM-dd HH:mm:ss"
+                                }
+                            },
+                            {
+                                "TagColumnOperation": {
+                                    "ColumnName": "region",
+                                    "Tags": [
+                                        {
+                                            "ColumnGeographicRole": "STATE"
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "ProjectOperation": {
+                                    "ProjectedColumns": [
+                                        "region",
+                                        "datasource_name",
+                                        "datasource_id",
+                                        "dataset_name",
+                                        "datasource_type",
+                                        "dataset_id",
+                                        "dataset_last_updated_time",
+                                        "dataset_created_time"
+                                    ]
+                                }
+                            }
+                        ],
+                        "Source": {
+                            "PhysicalTableId": "76d8810f-1b8b-47d2-88d7-eaf6f28245cb"
+                        }
+                    }
+                },
+                "ImportMode": "SPICE",
+                "FieldFolders": {},
+                "DataSetUsageConfiguration": {
+                    "DisableUseAsDirectQuerySource": false,
+                    "DisableUseAsImportedSource": false
+                },
+                "DataSetRefreshProperties": {
+                    "FailureConfiguration": {
+                        "EmailAlert": {
+                            "AlertStatus": "DISABLED"
+                        }
+                    }
+                }
+            }
+        },
+        "AdminConsoleCur2025": {
+            "Type": "AWS::QuickSight::DataSet",
+            "DependsOn": [
+                "qsdatasource"
+            ],
+            "Properties": {
+                "AwsAccountId": {
+                    "Fn::Sub": "${AWS::AccountId}"
+                },
+                "DataSetId": {
+                    "Fn::Sub": "Admin-Console-CUR-2025-${AWS::AccountId}"
+                },
+                "Name": "Admin-Console-CUR-2025",
+                "Permissions": [
+                    {
+                        "Principal": {
+                            "Ref": "adminarn"
+                        },
+                        "Actions": [
+                            "quicksight:UpdateDataSetPermissions",
+                            "quicksight:DescribeDataSet",
+                            "quicksight:DescribeDataSetPermissions",
+                            "quicksight:PassDataSet",
+                            "quicksight:DescribeIngestion",
+                            "quicksight:ListIngestions",
+                            "quicksight:UpdateDataSet",
+                            "quicksight:DeleteDataSet",
+                            "quicksight:CreateIngestion",
+                            "quicksight:CancelIngestion"
+                        ]
+                    }
+                ],
+                "PhysicalTableMap": {
+                    "d2f2bdeb-599c-43dc-8df0-be80db08b656": {
+                        "RelationalTable": {
+                            "DataSourceArn": {
+                                "Fn::GetAtt": [
+                                    "qsdatasource",
+                                    "Arn"
+                                ]
+                            },
+                            "Catalog": "AwsDataCatalog",
+                            "Schema": "admin-console-2025",
+                            "Name": "qs_usage_cur_vw",
+                            "InputColumns": [
+                                {
+                                    "Name": "bill_payer_account_id",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "line_item_usage_account_id",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "month_line_item_usage_start_date",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "line_item_usage_type",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "qs_usage_type",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "line_item_line_item_description",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "line_item_line_item_type",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "product_group",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "pricing_unit",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "line_item_resource_id",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "product_usagetype",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "line_item_unblended_rate",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "line_item_blended_rate",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "line_item_operation",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "sum_line_item_usage_amount",
+                                    "Type": "DECIMAL",
+                                    "SubType": "FLOAT"
+                                },
+                                {
+                                    "Name": "sum_line_item_unblended_cost",
+                                    "Type": "DECIMAL",
+                                    "SubType": "FIXED"
+                                },
+                                {
+                                    "Name": "line_item_blended_cost",
+                                    "Type": "DECIMAL",
+                                    "SubType": "FIXED"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "LogicalTableMap": {
+                    "c95ec398-96f8-4ecf-91e9-e5055ac3605c": {
+                        "Alias": "qs_usage_cur_vw",
+                        "DataTransforms": [
+                            {
+                                "CastColumnTypeOperation": {
+                                    "ColumnName": "month_line_item_usage_start_date",
+                                    "NewColumnType": "DATETIME",
+                                    "Format": "yyyy-MM-dd"
+                                }
+                            },
+                            {
+                                "CastColumnTypeOperation": {
+                                    "ColumnName": "line_item_unblended_rate",
+                                    "NewColumnType": "DECIMAL",
+                                    "SubType": "FIXED"
+                                }
+                            },
+                            {
+                                "CastColumnTypeOperation": {
+                                    "ColumnName": "line_item_blended_rate",
+                                    "NewColumnType": "DECIMAL",
+                                    "SubType": "FIXED"
+                                }
+                            },
+                            {
+                                "CreateColumnsOperation": {
+                                    "Columns": [
+                                        {
+                                            "ColumnName": "custom-anonymoususer",
+                                            "ColumnId": "f3182072-3611-480e-8f5d-4025d709378a",
+                                            "Expression": "ifelse( contains({line_item_resource_id}, 'Anonymous', CASE_INSENSITIVE),1,0)"
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "CreateColumnsOperation": {
+                                    "Columns": [
+                                        {
+                                            "ColumnName": "custom-analysis",
+                                            "ColumnId": "196208d5-2dfd-41cd-bce7-3f3460fbe488",
+                                            "Expression": "ifelse( contains({line_item_resource_id}, 'analysis', CASE_INSENSITIVE),1,0)"
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "CreateColumnsOperation": {
+                                    "Columns": [
+                                        {
+                                            "ColumnName": "custom-dashboard",
+                                            "ColumnId": "3a24c545-8e76-4025-acdd-2355f6aa73d9",
+                                            "Expression": "ifelse( contains({line_item_resource_id}, 'dashboard', CASE_INSENSITIVE),1,0)"
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "CreateColumnsOperation": {
+                                    "Columns": [
+                                        {
+                                            "ColumnName": "custom-namespace-name",
+                                            "ColumnId": "67d60898-0f2b-44e9-a6de-1dfdfcd48894",
+                                            "Expression": "ifelse( ({line_item_resource_id}<>'' AND {custom-anonymoususer}=0 AND {custom-analysis} =0 and {custom-dashboard}=0 ) ,  substring({line_item_resource_id},locate({line_item_resource_id},'/') +1,locate({line_item_resource_id},'/',locate({line_item_resource_id},'/') + 1) - (locate({line_item_resource_id},'/') + 1) ), NULL)"
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "CreateColumnsOperation": {
+                                    "Columns": [
+                                        {
+                                            "ColumnName": "custom-role-user",
+                                            "ColumnId": "9e272d76-4654-422b-b277-23391fc86f56",
+                                            "Expression": "ifelse( ({line_item_resource_id}<>'' AND {custom-anonymoususer}=0) , substring({line_item_resource_id}, locate({line_item_resource_id},'/',locate({line_item_resource_id},'/') + 1)+1 , strlen({line_item_resource_id}) -(  locate({line_item_resource_id},'/',locate({line_item_resource_id},'/') + 1)+1 )+1 ) , NULL)\r\n"
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "CreateColumnsOperation": {
+                                    "Columns": [
+                                        {
+                                            "ColumnName": "custom-role",
+                                            "ColumnId": "17c58323-5c7d-4338-a170-5d0de620390f",
+                                            "Expression": "ifelse(contains({custom-role-user},'/'),substring({custom-role-user},1,locate({custom-role-user},'/')-1),NULL )"
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "CreateColumnsOperation": {
+                                    "Columns": [
+                                        {
+                                            "ColumnName": "cal-quicksight-usage",
+                                            "ColumnId": "6e4913d6-a9b3-415f-b276-4ff763cdacb9",
+                                            "Expression": "ifelse({product_group} = 'SPICE Purchase', 'SPICE', \r\n       {product_group} = 'Reporting', 'Pixel-perfect Reporting', \r\n       {product_group} = 'User Subscription', 'Authors', \r\n       {product_group} = 'Alerts', 'Alerts', \r\n       {product_group} = 'Reader Usage', 'Session usage by Readers', \r\n       {product_group} = 'Reader Subscription', 'Reader Subscriptions', \r\n      in({product_group} , ['Amazon Q in QuickSight Enablement Fee', 'Author Pro Subscription', 'Q Query Capacity Usage','Q Region Fee','Reader Pro Subscription']),'QuickSight Q' ,\r\n        {product_group}\r\n       )"
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "CreateColumnsOperation": {
+                                    "Columns": [
+                                        {
+                                            "ColumnName": "registered-reader",
+                                            "ColumnId": "98217a1e-6a74-4969-93af-fc2f3b0c6619",
+                                            "Expression": "ifelse( ((contains({product_usagetype}, 'Reader-Capacity', CASE_INSENSITIVE) ) OR (contains({product_usagetype}, 'Reader-Usage', CASE_INSENSITIVE))) AND {custom-anonymoususer} =0 AND  contains({line_item_resource_id},'user', CASE_INSENSITIVE) ,{line_item_resource_id},NULL)"
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "ProjectOperation": {
+                                    "ProjectedColumns": [
+                                        "bill_payer_account_id",
+                                        "line_item_usage_account_id",
+                                        "month_line_item_usage_start_date",
+                                        "line_item_usage_type",
+                                        "qs_usage_type",
+                                        "line_item_line_item_description",
+                                        "line_item_line_item_type",
+                                        "product_group",
+                                        "pricing_unit",
+                                        "line_item_resource_id",
+                                        "product_usagetype",
+                                        "line_item_unblended_rate",
+                                        "line_item_blended_rate",
+                                        "line_item_operation",
+                                        "sum_line_item_usage_amount",
+                                        "sum_line_item_unblended_cost",
+                                        "line_item_blended_cost",
+                                        "custom-anonymoususer",
+                                        "custom-analysis",
+                                        "custom-dashboard",
+                                        "custom-namespace-name",
+                                        "custom-role-user",
+                                        "custom-role",
+                                        "cal-quicksight-usage",
+                                        "registered-reader"
+                                    ]
+                                }
+                            }
+                        ],
+                        "Source": {
+                            "PhysicalTableId": "d2f2bdeb-599c-43dc-8df0-be80db08b656"
+                        }
+                    }
+                },
+                "ImportMode": "SPICE",
+                "FieldFolders": {},
+                "DataSetUsageConfiguration": {
+                    "DisableUseAsDirectQuerySource": false,
+                    "DisableUseAsImportedSource": false
+                },
+                "DataSetRefreshProperties": {
+                    "FailureConfiguration": {
+                        "EmailAlert": {
+                            "AlertStatus": "DISABLED"
+                        }
+                    }
+                }
+            }
+        },
+        "AdminConsoleIngestionCapacity2025": {
+            "Type": "AWS::QuickSight::DataSet",
+            "DependsOn": [
+                "qsdatasource"
+            ],
+            "Properties": {
+                "AwsAccountId": {
+                    "Fn::Sub": "${AWS::AccountId}"
+                },
+                "DataSetId": {
+                    "Fn::Sub": "Admin-Console-Ingestion-Capacity-2025-${AWS::AccountId}"
+                },
+                "Name": "Admin-Console-Ingestion-Capacity-2025",
+                "Permissions": [
+                    {
+                        "Principal": {
+                            "Ref": "adminarn"
+                        },
+                        "Actions": [
+                            "quicksight:UpdateDataSetPermissions",
+                            "quicksight:DescribeDataSet",
+                            "quicksight:DescribeDataSetPermissions",
+                            "quicksight:PassDataSet",
+                            "quicksight:DescribeIngestion",
+                            "quicksight:ListIngestions",
+                            "quicksight:UpdateDataSet",
+                            "quicksight:DeleteDataSet",
+                            "quicksight:CreateIngestion",
+                            "quicksight:CancelIngestion"
+                        ]
+                    }
+                ],
+                "PhysicalTableMap": {
+                    "0682e434-8dc3-40ad-966a-0ca6bca63e7e": {
+                        "CustomSql": {
+                            "DataSourceArn": {
+                                "Fn::GetAtt": [
+                                    "qsdatasource",
+                                    "Arn"
+                                ]
+                            },
+                            "Name": "cw_qs_ds_pivot",
+                            "SqlQuery": "SELECT\r\n  p.*,\r\n  s.spicecapacitylimitinmb,\r\n  s.spicecapacitylimitinmb_unit,\r\n  s.spicecapacityconsumedinmb,\r\n  s.spicecapacityconsumedinmb_unit,\r\n  d.datasetname AS dataset_name\r\nFROM \"admin-console-2025\".\"cw_qs_ds_pivot\" AS p\r\nLEFT JOIN (\r\n  SELECT\r\n    datasetid,\r\n    MIN(datasetname) AS datasetname\r\n  FROM \"admin-console-2025\".\"data_dict\"\r\n  WHERE datasetid IS NOT NULL AND datasetid <> ''\r\n  GROUP BY datasetid\r\n) AS d\r\n  ON d.datasetid = p.datasetid\r\nLEFT JOIN \"admin-console-2025\".\"cw_qs_spice_pivot\" AS s\r\n  ON p.account_id = s.account_id AND p.region = s.region",
+                            "Columns": [
+                                {
+                                    "Name": "timestamp",
+                                    "Type": "INTEGER"
+                                },
+                                {
+                                    "Name": "account_id",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "region",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "datasetid",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "IngestionErrorCount",
+                                    "Type": "INTEGER"
+                                },
+                                {
+                                    "Name": "IngestionErrorCount_Unit",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "IngestionInvocationCount",
+                                    "Type": "INTEGER"
+                                },
+                                {
+                                    "Name": "IngestionInvocationCount_Unit",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "IngestionLatency",
+                                    "Type": "DECIMAL"
+                                },
+                                {
+                                    "Name": "IngestionLatency_Unit",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "IngestionRowCount",
+                                    "Type": "INTEGER"
+                                },
+                                {
+                                    "Name": "IngestionRowCount_Unit",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "spicecapacitylimitinmb",
+                                    "Type": "DECIMAL"
+                                },
+                                {
+                                    "Name": "spicecapacitylimitinmb_unit",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "spicecapacityconsumedinmb",
+                                    "Type": "DECIMAL"
+                                },
+                                {
+                                    "Name": "spicecapacityconsumedinmb_unit",
+                                    "Type": "STRING"
+                                },
+                                {
+                                    "Name": "dataset_name",
+                                    "Type": "STRING"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "LogicalTableMap": {
+                    "12e6a8ad-ec49-46c2-9122-316d2d466112": {
+                        "Alias": "cw_qs_ds_pivot",
+                        "DataTransforms": [
+                            {
+                                "CastColumnTypeOperation": {
+                                    "ColumnName": "timestamp",
+                                    "NewColumnType": "DATETIME"
+                                }
+                            },
+                            {
+                                "TagColumnOperation": {
+                                    "ColumnName": "region",
+                                    "Tags": [
+                                        {
+                                            "ColumnGeographicRole": "STATE"
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "ProjectOperation": {
+                                    "ProjectedColumns": [
+                                        "timestamp",
+                                        "account_id",
+                                        "region",
+                                        "datasetid",
+                                        "IngestionErrorCount",
+                                        "IngestionErrorCount_Unit",
+                                        "IngestionInvocationCount",
+                                        "IngestionInvocationCount_Unit",
+                                        "IngestionLatency",
+                                        "IngestionLatency_Unit",
+                                        "IngestionRowCount",
+                                        "IngestionRowCount_Unit",
+                                        "spicecapacitylimitinmb",
+                                        "spicecapacitylimitinmb_unit",
+                                        "spicecapacityconsumedinmb",
+                                        "spicecapacityconsumedinmb_unit",
+                                        "dataset_name"
+                                    ]
+                                }
+                            }
+                        ],
+                        "Source": {
+                            "PhysicalTableId": "0682e434-8dc3-40ad-966a-0ca6bca63e7e"
+                        }
+                    }
+                },
+                "ImportMode": "DIRECT_QUERY",
+                "FieldFolders": {},
+                "DataSetUsageConfiguration": {
+                    "DisableUseAsDirectQuerySource": false,
+                    "DisableUseAsImportedSource": false
+                },
+                "DataSetRefreshProperties": {
+                    "FailureConfiguration": {
+                        "EmailAlert": {
+                            "AlertStatus": "DISABLED"
+                        }
+                    }
+                }
+            }
+        },
+        "adminconsoleanalysis": {
+            "Type": "AWS::QuickSight::Analysis",
+            "DependsOn": [
+                "qsdatasource",
+                "QuickAdminTheme",
+                "AdminConsoleDashboardLoad2025",
+                "AdminConsoleAiEvents2025",
+                "AdminConsoleQindexView",
+                "AdminConsoleFolderContents2025",
+                "AdminConsoleGroupMembership2025",
+                "AdminConsoleCrud2025",
+                "AdminConsoleFeatureCategory2025",
+                "AdminConsoleQInformations2025",
+                "AdminConsoleDatasetInfo2025",
+                "AdminConsoleDatasetsView",
+                "AdminConsoleObjectAccess2025",
+                "AdminConsoleSpiceView",
+                "AdminConsoleFolderPath2025",
+                "AdminConsoleQuerydatabase2025",
+                "AdminConsoleFolderPermissions2025",
+                "AdminConsoleCfnMain2025",
+                "AdminConsoleDatasourceProperties",
+                "AdminConsoleCur2025",
+                "AdminConsoleIngestionCapacity2025"
+            ],
+            "DeletionPolicy": "Retain",
+            "Properties": {
+                "AwsAccountId": {
+                    "Ref": "AWS::AccountId"
+                },
+                "AnalysisId": {
+                    "Fn::Join": [
+                        "",
+                        [
+                            "admin-console-analysis-2025",
+                            {
+                                "Ref": "AWS::AccountId"
+                            }
+                        ]
+                    ]
+                },
+                "Name": "admin-console-analysis-2025",
+                "Permissions": [
+                    {
+                        "Actions": [
+                            "quicksight:RestoreAnalysis",
+                            "quicksight:UpdateAnalysisPermissions",
+                            "quicksight:DeleteAnalysis",
+                            "quicksight:DescribeAnalysisPermissions",
+                            "quicksight:QueryAnalysis",
+                            "quicksight:DescribeAnalysis",
+                            "quicksight:UpdateAnalysis"
+                        ],
+                        "Principal": {
+                            "Ref": "adminarn"
+                        }
+                    }
+                ],
+                "SourceEntity": {
+                    "SourceTemplate": {
+                        "Arn": "arn:aws:quicksight:us-east-1:905178920046:template/quick-suite-admin-template",
+                        "DataSetReferences": [
+                            {
+                                "DataSetArn": {
+                                    "Fn::Sub": "arn:aws:quicksight:${AWS::Region}:${AWS::AccountId}:dataset/Admin-Console-CFN-Main-2025-${AWS::AccountId}"
+                                },
+                                "DataSetPlaceholder": "Admin-Console-CFN-Main-2025"
+                            },
+                            {
+                                "DataSetArn": {
+                                    "Fn::Sub": "arn:aws:quicksight:${AWS::Region}:${AWS::AccountId}:dataset/Admin-Console-CRUD-2025-${AWS::AccountId}"
+                                },
+                                "DataSetPlaceholder": "Admin-Console-CRUD-2025"
+                            },
+                            {
+                                "DataSetArn": {
+                                    "Fn::Sub": "arn:aws:quicksight:${AWS::Region}:${AWS::AccountId}:dataset/Admin-Console-CUR-2025-${AWS::AccountId}"
+                                },
+                                "DataSetPlaceholder": "Admin-Console-CUR-2025"
+                            },
+                            {
+                                "DataSetArn": {
+                                    "Fn::Sub": "arn:aws:quicksight:${AWS::Region}:${AWS::AccountId}:dataset/Admin-Console-Dashboard-Load-2025-${AWS::AccountId}"
+                                },
+                                "DataSetPlaceholder": "Admin-Console-Dashboard-Load-2025"
+                            },
+                            {
+                                "DataSetArn": {
+                                    "Fn::Sub": "arn:aws:quicksight:${AWS::Region}:${AWS::AccountId}:dataset/Admin-Console-Datasets-view-${AWS::AccountId}"
+                                },
+                                "DataSetPlaceholder": "Admin-Console-Datasets-view"
+                            },
+                            {
+                                "DataSetArn": {
+                                    "Fn::Sub": "arn:aws:quicksight:${AWS::Region}:${AWS::AccountId}:dataset/Admin-Console-Datasource_properties-${AWS::AccountId}"
+                                },
+                                "DataSetPlaceholder": "Admin-Console-Datasource_properties"
+                            },
+                            {
+                                "DataSetArn": {
+                                    "Fn::Sub": "arn:aws:quicksight:${AWS::Region}:${AWS::AccountId}:dataset/Admin-Console-Feature-Category-2025-${AWS::AccountId}"
+                                },
+                                "DataSetPlaceholder": "Admin-Console-Feature-Category-2025"
+                            },
+                            {
+                                "DataSetArn": {
+                                    "Fn::Sub": "arn:aws:quicksight:${AWS::Region}:${AWS::AccountId}:dataset/Admin-Console-Folder-Contents-2025-${AWS::AccountId}"
+                                },
+                                "DataSetPlaceholder": "Admin-Console-Folder-Contents-2025"
+                            },
+                            {
+                                "DataSetArn": {
+                                    "Fn::Sub": "arn:aws:quicksight:${AWS::Region}:${AWS::AccountId}:dataset/Admin-Console-Folder-Path-2025-${AWS::AccountId}"
+                                },
+                                "DataSetPlaceholder": "Admin-Console-Folder-Path-2025"
+                            },
+                            {
+                                "DataSetArn": {
+                                    "Fn::Sub": "arn:aws:quicksight:${AWS::Region}:${AWS::AccountId}:dataset/Admin-Console-Folder-Permissions-2025-${AWS::AccountId}"
+                                },
+                                "DataSetPlaceholder": "Admin-Console-Folder-Permissions-2025"
+                            },
+                            {
+                                "DataSetArn": {
+                                    "Fn::Sub": "arn:aws:quicksight:${AWS::Region}:${AWS::AccountId}:dataset/Admin-Console-Group-Membership-2025-${AWS::AccountId}"
+                                },
+                                "DataSetPlaceholder": "Admin-Console-Group-Membership-2025"
+                            },
+                            {
+                                "DataSetArn": {
+                                    "Fn::Sub": "arn:aws:quicksight:${AWS::Region}:${AWS::AccountId}:dataset/Admin-Console-Ingestion-Capacity-2025-${AWS::AccountId}"
+                                },
+                                "DataSetPlaceholder": "Admin-Console-Ingestion-Capacity-2025"
+                            },
+                            {
+                                "DataSetArn": {
+                                    "Fn::Sub": "arn:aws:quicksight:${AWS::Region}:${AWS::AccountId}:dataset/Admin-Console-Object-Access-2025-${AWS::AccountId}"
+                                },
+                                "DataSetPlaceholder": "Admin-Console-Object-Access-2025"
+                            },
+                            {
+                                "DataSetArn": {
+                                    "Fn::Sub": "arn:aws:quicksight:${AWS::Region}:${AWS::AccountId}:dataset/Admin-Console-Q-Informations-2025-${AWS::AccountId}"
+                                },
+                                "DataSetPlaceholder": "Admin-Console-Q-Informations-2025"
+                            },
+                            {
+                                "DataSetArn": {
+                                    "Fn::Sub": "arn:aws:quicksight:${AWS::Region}:${AWS::AccountId}:dataset/Admin-Console-Qindex-View-${AWS::AccountId}"
+                                },
+                                "DataSetPlaceholder": "Admin-Console-Qindex-View"
+                            },
+                            {
+                                "DataSetArn": {
+                                    "Fn::Sub": "arn:aws:quicksight:${AWS::Region}:${AWS::AccountId}:dataset/Admin-Console-QueryDataBase-2025-${AWS::AccountId}"
+                                },
+                                "DataSetPlaceholder": "Admin-Console-QueryDataBase-2025"
+                            },
+                            {
+                                "DataSetArn": {
+                                    "Fn::Sub": "arn:aws:quicksight:${AWS::Region}:${AWS::AccountId}:dataset/Admin-Console-SPICE-View-${AWS::AccountId}"
+                                },
+                                "DataSetPlaceholder": "Admin-Console-SPICE-View"
+                            },
+                            {
+                                "DataSetArn": {
+                                    "Fn::Sub": "arn:aws:quicksight:${AWS::Region}:${AWS::AccountId}:dataset/Admin-Console-ai-events-2025-${AWS::AccountId}"
+                                },
+                                "DataSetPlaceholder": "Admin-Console-ai-events-2025"
+                            },
+                            {
+                                "DataSetArn": {
+                                    "Fn::Sub": "arn:aws:quicksight:${AWS::Region}:${AWS::AccountId}:dataset/Admin-Console-dataset-info-2025-${AWS::AccountId}"
+                                },
+                                "DataSetPlaceholder": "Admin-Console-dataset-info-2025"
+                            }
+                        ]
+                    }
+                },
+                "ThemeArn": {
+                    "Fn::GetAtt": [
+                        "QuickAdminTheme",
+                        "Arn"
+                    ]
+                }
+            }
+        },
+        "qsdatasource": {
+            "Type": "AWS::QuickSight::DataSource",
+            "Properties": {
+                "AwsAccountId": {
+                    "Ref": "AWS::AccountId"
+                },
+                "DataSourceId": "athena-admin-console-2025",
+                "Name": "athena-admin-console-2025",
+                "Permissions": [
+                    {
+                        "Actions": [
+                            "quicksight:UpdateDataSourcePermissions",
+                            "quicksight:DescribeDataSource",
+                            "quicksight:DescribeDataSourcePermissions",
+                            "quicksight:PassDataSource",
+                            "quicksight:UpdateDataSource",
+                            "quicksight:DeleteDataSource"
+                        ],
+                        "Principal": {
+                            "Ref": "adminarn"
+                        }
+                    }
+                ],
+                "SslProperties": {
+                    "DisableSsl": false
+                },
+                "DataSourceParameters": {
+                    "AthenaParameters": {
+                        "WorkGroup": "primary"
+                    }
+                },
+                "Type": "ATHENA"
+            },
+            "DeletionPolicy": "Delete"
+        },
+        "QuickAdminTheme": {
+            "Type": "AWS::QuickSight::Theme",
+            "Properties": {
+                "AwsAccountId": {
+                    "Fn::Sub": "${AWS::AccountId}"
+                },
+                "ThemeId": {
+                    "Fn::Sub": "QuickAdmin-Theme-${AWS::AccountId}"
+                },
+                "Name": "QuickAdmin-Theme",
+                "BaseThemeId": "RAINIER",
+                "Configuration": {
+                    "DataColorPalette": {
+                        "Colors": [
+                            "#268EE5",
+                            "#1659A9",
+                            "#5FAEF0",
+                            "#A1C2FB",
+                            "#A9DFFF",
+                            "#DDEDFF",
+                            "#90D9F6",
+                            "#F0F3F5",
+                            "#6F23C7",
+                            "#1C79F1",
+                            "#DDDDDB",
+                            "#BACDE6",
+                            "#7D008B",
+                            "#EEEE5E",
+                            "#FDE9EB",
+                            "#E1DBF6",
+                            "#F3F3F4",
+                            "#FF02A3",
+                            "#D703B2",
+                            "#1B2250"
+                        ],
+                        "MinMaxGradient": [
+                            "#ADC7FF",
+                            "#7D008B"
+                        ],
+                        "EmptyFillColor": "#F6F7F8"
+                    },
+                    "UIColorPalette": {
+                        "PrimaryForeground": "#243040",
+                        "PrimaryBackground": "#F6F5FB",
+                        "SecondaryForeground": "#4D5A6A",
+                        "SecondaryBackground": "#F6F5FB",
+                        "Accent": "#177199",
+                        "AccentForeground": "#FFFFFF",
+                        "Danger": "#A01106",
+                        "DangerForeground": "#FFFFFF",
+                        "Warning": "#D48104",
+                        "WarningForeground": "#FFFFFF",
+                        "Success": "#218001",
+                        "SuccessForeground": "#FFFFFF",
+                        "Dimension": "#177199",
+                        "DimensionForeground": "#FFFFFF",
+                        "Measure": "#218001",
+                        "MeasureForeground": "#FFFFFF"
+                    },
+                    "Sheet": {
+                        "Tile": {
+                            "Border": {
+                                "Show": true
+                            }
+                        },
+                        "TileLayout": {
+                            "Gutter": {
+                                "Show": false
+                            },
+                            "Margin": {
+                                "Show": false
+                            }
+                        }
+                    },
+                    "Typography": {
+                        "FontFamilies": [
+                            {
+                                "FontFamily": "Amazon Ember"
+                            },
+                            {
+                                "FontFamily": "sans-serif"
+                            }
+                        ]
+                    }
+                },
+                "Permissions": [
+                    {
+                        "Principal": {
+                            "Ref": "adminarn"
+                        },
+                        "Actions": [
+                            "quicksight:DescribeTheme",
+                            "quicksight:DescribeThemeAlias",
+                            "quicksight:ListThemeAliases",
+                            "quicksight:ListThemeVersions",
+                            "quicksight:DeleteTheme",
+                            "quicksight:UpdateTheme",
+                            "quicksight:CreateThemeAlias",
+                            "quicksight:DeleteThemeAlias",
+                            "quicksight:UpdateThemeAlias",
+                            "quicksight:UpdateThemePermissions",
+                            "quicksight:DescribeThemePermissions"
+                        ]
+                    }
+                ]
+            }
+        }
+    }
+}

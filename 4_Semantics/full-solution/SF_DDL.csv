@@ -1,0 +1,46 @@
+,"TO_VARCHAR( GET_DDL(
+  'SEMANTIC_VIEW',
+  'MOVIES.PUBLIC.MOVIE_ANALYTICS_SV'
+))"
+0,"create or replace semantic view MOVIE_ANALYTICS_SV
+	tables (
+		MOVIES as MOVIES.PUBLIC.MOVIES_CURATED primary key (MOVIEID) with synonyms=('movies','films') comment='Movie dimension',
+		USERS as MOVIES.PUBLIC.USERS_CURATED primary key (USERID) with synonyms=('users','audience','viewers') comment='User dimension',
+		RATINGS as MOVIES.PUBLIC.RATINGS_CURATED primary key (USERID,MOVIEID) with synonyms=('ratings','reviews') comment='Movie ratings fact'
+	)
+	relationships (
+		RATINGS_TO_MOVIES as RATINGS(MOVIEID) references MOVIES(MOVIEID),
+		RATINGS_TO_USERS as RATINGS(USERID) references USERS(USERID)
+	)
+	facts (
+		RATINGS.RATING_VALUE as RATINGS.RATING
+	)
+	dimensions (
+		MOVIES.MOVIE_TITLE as MOVIES.TITLE with synonyms=('film title','movie name') comment='Title of the movie',
+		MOVIES.RELEASE_YEAR as MOVIES.RELEASE comment='Year the movie was released',
+		MOVIES.MOVIE_ID as MOVIES.MOVIEID comment='Movie ID',
+		USERS.USER_FULL_NAME as CONCAT(USERS.FIRSTNAME, ' ', USERS.LASTNAME) with synonyms=('audience name','viewer name') comment='Full name of the user',
+		USERS.USER_FIRST_NAME as USERS.FIRSTNAME comment='First name of the user',
+		USERS.USER_EMAIL as USERS.EMAIL with synonyms=('email address','contact email') comment='Email address of the user',
+		USERS.USER_LAST_NAME as USERS.LASTNAME comment='Last name of the user',
+		USERS.USER_CITY as USERS.CITY comment='City where user is located',
+		USERS.USER_STATE as USERS.STATE comment='State where user is located',
+		USERS.USER_COUNTRY as USERS.COUNTRY comment='Country where user is located',
+		USERS.USER_ID as USERS.USERID comment='User ID',
+		RATINGS.RATING_TIMESTAMP as RATINGS.TIMESTAMP with synonyms=('review date','rating date') comment='When the rating was given',
+		RATINGS.RATING_YEAR as YEAR(RATINGS.TIMESTAMP) with synonyms=('review year','year rated') comment='Year when the rating was given',
+		RATINGS.RATING_MONTH as MONTH(RATINGS.TIMESTAMP) with synonyms=('review month','month rated') comment='Month when the rating was given',
+		RATINGS.RATING_DAY as DAY(RATINGS.TIMESTAMP) with synonyms=('review day','day rated') comment='Day when the rating was given',
+		RATINGS.USER_ID as RATINGS.USERID comment='User ID from ratings table',
+		RATINGS.MOVIE_ID as RATINGS.MOVIEID comment='Movie ID from ratings table'
+	)
+	metrics (
+		MOVIES.DISTINCT_MOVIES as COUNT(DISTINCT MOVIES.movie_id) with synonyms=('total movies','movie count','number of movies') comment='Count of distinct movie IDs from the movies table',
+		USERS.DISTINCT_USERS as COUNT(DISTINCT USERS.user_id) with synonyms=('total users','user count','number of users') comment='Count of distinct user IDs from the users table',
+		RATINGS.TOTAL_RATINGS as COUNT(RATINGS.rating_value) with synonyms=('total reviews','rating count','number of ratings') comment='Count of all rating values in the ratings table',
+		RATINGS.AVG_RATING as AVG(RATINGS.rating_value) with synonyms=('average rating','mean score','rating average') comment='Average of all rating values in the ratings table',
+		RATINGS.DISTINCT_USERS as COUNT(DISTINCT RATINGS.user_id) with synonyms=('active users','users who rated','rating participants') comment='Count of distinct user IDs from the ratings table',
+		RATINGS.DISTINCT_MOVIES as COUNT(DISTINCT RATINGS.movie_id) with synonyms=('rated movies','movies with ratings','reviewed films') comment='Count of distinct movie IDs from the ratings table',
+		RATINGS.POPULARITY_SCORE as RATINGS.total_ratings * RATINGS.avg_rating with synonyms=('movie popularity','engagement score','quality index') comment='Popularity score combining volume and quality'
+	)
+	comment='Semantic view for movie ratings and user behavior analytics, including time-grain dimensions and popularity score';"

@@ -1,0 +1,99 @@
+{
+    "Status": 200,
+    "Theme": {
+        "Arn": "arn:aws:quicksight:us-east-1:905178920046:theme/b8aaa86c-317f-4088-97ea-7d7335fdb96e",
+        "Name": "QuickAdmin-Theme",
+        "ThemeId": "b8aaa86c-317f-4088-97ea-7d7335fdb96e",
+        "Version": {
+            "VersionNumber": 15,
+            "Arn": "arn:aws:quicksight:us-east-1:905178920046:theme/b8aaa86c-317f-4088-97ea-7d7335fdb96e/version/15",
+            "BaseThemeId": "RAINIER",
+            "CreatedTime": "2025-12-18T01:05:40.668000+00:00",
+            "Configuration": {
+                "DataColorPalette": {
+                    "Colors": [
+                        "#268EE5",
+                        "#1659A9",
+                        "#5FAEF0",
+                        "#A1C2FB",
+                        "#A9DFFF",
+                        "#DDEDFF",
+                        "#90D9F6",
+                        "#F0F3F5",
+                        "#6F23C7",
+                        "#1C79F1",
+                        "#DDDDDB",
+                        "#BACDE6",
+                        "#7D008B",
+                        "#EEEE5E",
+                        "#FDE9EB",
+                        "#E1DBF6",
+                        "#F3F3F4",
+                        "#FF02A3",
+                        "#D703B2",
+                        "#1B2250"
+                    ],
+                    "MinMaxGradient": [
+                        "#ADC7FF",
+                        "#7D008B"
+                    ],
+                    "EmptyFillColor": "#F6F7F8"
+                },
+                "UIColorPalette": {
+                    "PrimaryForeground": "#243040",
+                    "PrimaryBackground": "#F6F5FB",
+                    "SecondaryForeground": "#4D5A6A",
+                    "SecondaryBackground": "#F6F5FB",
+                    "Accent": "#177199",
+                    "AccentForeground": "#FFFFFF",
+                    "Danger": "#A01106",
+                    "DangerForeground": "#FFFFFF",
+                    "Warning": "#D48104",
+                    "WarningForeground": "#FFFFFF",
+                    "Success": "#218001",
+                    "SuccessForeground": "#FFFFFF",
+                    "Dimension": "#177199",
+                    "DimensionForeground": "#FFFFFF",
+                    "Measure": "#218001",
+                    "MeasureForeground": "#FFFFFF"
+                },
+                "Sheet": {
+                    "Tile": {
+                        "Border": {
+                            "Show": true,
+                            "Width": "2px"
+                        },
+                        "BorderRadius": "12px",
+                        "Padding": "4px"
+                    },
+                    "TileLayout": {
+                        "Gutter": {
+                            "Show": false
+                        },
+                        "Margin": {
+                            "Show": false
+                        }
+                    },
+                    "Background": {
+                        "Color": "#F6F5FB"
+                    }
+                },
+                "Typography": {
+                    "FontFamilies": [
+                        {
+                            "FontFamily": "Amazon Ember"
+                        },
+                        {
+                            "FontFamily": "sans-serif"
+                        }
+                    ]
+                }
+            },
+            "Status": "CREATION_SUCCESSFUL"
+        },
+        "CreatedTime": "2025-09-18T18:39:01.465000+00:00",
+        "LastUpdatedTime": "2025-12-18T01:05:40.668000+00:00",
+        "Type": "CUSTOM"
+    },
+    "RequestId": "1c040c27-9d59-4b5a-b11c-33f54ebb53f7"
+}

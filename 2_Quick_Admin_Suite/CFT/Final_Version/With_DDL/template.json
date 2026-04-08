@@ -1,0 +1,831 @@
+{
+    "Status": 200,
+    "Template": {
+        "Arn": "arn:aws:quicksight:us-east-1:905178920046:template/quick-suite-admin-template",
+        "Name": "Quick Suite Admin Analysis Template",
+        "Version": {
+            "CreatedTime": "2026-01-12T23:28:00.111000+00:00",
+            "VersionNumber": 1,
+            "Status": "CREATION_SUCCESSFUL",
+            "DataSetConfigurations": [
+                {
+                    "Placeholder": "Admin-Console-CFN-Main-2025",
+                    "DataSetSchema": {
+                        "ColumnSchemaList": [
+                            {
+                                "Name": "dashboardid",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "user_arn",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "owner_viewer",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "ownership",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "awsregion",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "accountid",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "first_event_time",
+                                "DataType": "DATETIME"
+                            },
+                            {
+                                "Name": "role",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "event_time",
+                                "DataType": "DATETIME"
+                            },
+                            {
+                                "Name": "identity_type",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "dashboard_name",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "group",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "user_name",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "email",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "last_event_time",
+                                "DataType": "DATETIME"
+                            },
+                            {
+                                "Name": "last_view_dashboard_time",
+                                "DataType": "DATETIME"
+                            },
+                            {
+                                "Name": "namespace",
+                                "DataType": "STRING"
+                            }
+                        ]
+                    },
+                    "ColumnGroupSchemaList": []
+                },
+                {
+                    "Placeholder": "Admin-Console-CRUD-2025",
+                    "DataSetSchema": {
+                        "ColumnSchemaList": [
+                            {
+                                "Name": "region",
+                                "DataType": "STRING",
+                                "GeographicRole": "STATE"
+                            },
+                            {
+                                "Name": "errormessage",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "requestparameters",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "resource_arn",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "eventtime",
+                                "DataType": "DATETIME"
+                            },
+                            {
+                                "Name": "eventid",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "eventname",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "awsregion",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "eventtype",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "errorcode",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "useridentity_arn",
+                                "DataType": "STRING"
+                            }
+                        ]
+                    },
+                    "ColumnGroupSchemaList": []
+                },
+                {
+                    "Placeholder": "Admin-Console-CUR-2025",
+                    "DataSetSchema": {
+                        "ColumnSchemaList": [
+                            {
+                                "Name": "line_item_unblended_rate",
+                                "DataType": "DECIMAL"
+                            },
+                            {
+                                "Name": "registered-reader",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "custom-anonymoususer",
+                                "DataType": "INTEGER"
+                            },
+                            {
+                                "Name": "line_item_blended_rate",
+                                "DataType": "DECIMAL"
+                            },
+                            {
+                                "Name": "cal-quicksight-usage",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "sum_line_item_usage_amount",
+                                "DataType": "DECIMAL"
+                            },
+                            {
+                                "Name": "line_item_operation",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "line_item_resource_id",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "product_usagetype",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "line_item_line_item_description",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "line_item_usage_account_id",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "sum_line_item_unblended_cost",
+                                "DataType": "DECIMAL"
+                            },
+                            {
+                                "Name": "month_line_item_usage_start_date",
+                                "DataType": "DATETIME"
+                            },
+                            {
+                                "Name": "pricing_unit",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "product_group",
+                                "DataType": "STRING"
+                            }
+                        ]
+                    },
+                    "ColumnGroupSchemaList": []
+                },
+                {
+                    "Placeholder": "Admin-Console-Dashboard-Load-2025",
+                    "DataSetSchema": {
+                        "ColumnSchemaList": [
+                            {
+                                "Name": "dashboardid",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "DashboardViewCount",
+                                "DataType": "INTEGER"
+                            },
+                            {
+                                "Name": "dashboard_name",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "VisualLoadErrorCount",
+                                "DataType": "INTEGER"
+                            },
+                            {
+                                "Name": "DashboardViewLoadTime",
+                                "DataType": "DECIMAL"
+                            },
+                            {
+                                "Name": "VisualLoadTime",
+                                "DataType": "DECIMAL"
+                            },
+                            {
+                                "Name": "visualid",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "timestamp",
+                                "DataType": "INTEGER"
+                            }
+                        ]
+                    },
+                    "ColumnGroupSchemaList": []
+                },
+                {
+                    "Placeholder": "Admin-Console-Datasets-view",
+                    "DataSetSchema": {
+                        "ColumnSchemaList": [
+                            {
+                                "Name": "ingestion_status",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "is_file",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "import_mode",
+                                "DataType": "STRING"
+                            }
+                        ]
+                    },
+                    "ColumnGroupSchemaList": []
+                },
+                {
+                    "Placeholder": "Admin-Console-Datasource_properties",
+                    "DataSetSchema": {
+                        "ColumnSchemaList": [
+                            {
+                                "Name": "region",
+                                "DataType": "STRING",
+                                "GeographicRole": "STATE"
+                            },
+                            {
+                                "Name": "dataset_last_updated_time",
+                                "DataType": "DATETIME"
+                            },
+                            {
+                                "Name": "datasource_type",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "dataset_name",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "datasource_name",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "dataset_id",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "datasource_id",
+                                "DataType": "STRING"
+                            }
+                        ]
+                    },
+                    "ColumnGroupSchemaList": []
+                },
+                {
+                    "Placeholder": "Admin-Console-Feature-Category-2025",
+                    "DataSetSchema": {
+                        "ColumnSchemaList": [
+                            {
+                                "Name": "event_category",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "user_name",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "event_ts",
+                                "DataType": "DATETIME"
+                            },
+                            {
+                                "Name": "eventid",
+                                "DataType": "STRING"
+                            }
+                        ]
+                    },
+                    "ColumnGroupSchemaList": []
+                },
+                {
+                    "Placeholder": "Admin-Console-Folder-Contents-2025",
+                    "DataSetSchema": {
+                        "ColumnSchemaList": [
+                            {
+                                "Name": "object_name",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "object_id",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "object_type",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "folder_name",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "namespace",
+                                "DataType": "STRING"
+                            }
+                        ]
+                    },
+                    "ColumnGroupSchemaList": []
+                },
+                {
+                    "Placeholder": "Admin-Console-Folder-Path-2025",
+                    "DataSetSchema": {
+                        "ColumnSchemaList": []
+                    },
+                    "ColumnGroupSchemaList": []
+                },
+                {
+                    "Placeholder": "Admin-Console-Folder-Permissions-2025",
+                    "DataSetSchema": {
+                        "ColumnSchemaList": [
+                            {
+                                "Name": "aws_region",
+                                "DataType": "STRING",
+                                "GeographicRole": "STATE"
+                            },
+                            {
+                                "Name": "principal_type",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "principal_name",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "folder_name",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "actions",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "folder_id",
+                                "DataType": "STRING"
+                            }
+                        ]
+                    },
+                    "ColumnGroupSchemaList": []
+                },
+                {
+                    "Placeholder": "Admin-Console-Group-Membership-2025",
+                    "DataSetSchema": {
+                        "ColumnSchemaList": [
+                            {
+                                "Name": "identity_type",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "account_id",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "user",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "group",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "email",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "role",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "namespace",
+                                "DataType": "STRING"
+                            }
+                        ]
+                    },
+                    "ColumnGroupSchemaList": []
+                },
+                {
+                    "Placeholder": "Admin-Console-Ingestion-Capacity-2025",
+                    "DataSetSchema": {
+                        "ColumnSchemaList": [
+                            {
+                                "Name": "region",
+                                "DataType": "STRING",
+                                "GeographicRole": "STATE"
+                            },
+                            {
+                                "Name": "IngestionLatency",
+                                "DataType": "DECIMAL"
+                            },
+                            {
+                                "Name": "dataset_name",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "spicecapacityconsumedinmb",
+                                "DataType": "DECIMAL"
+                            },
+                            {
+                                "Name": "spicecapacitylimitinmb",
+                                "DataType": "DECIMAL"
+                            },
+                            {
+                                "Name": "datasetid",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "IngestionInvocationCount",
+                                "DataType": "INTEGER"
+                            },
+                            {
+                                "Name": "timestamp",
+                                "DataType": "DATETIME"
+                            },
+                            {
+                                "Name": "IngestionErrorCount",
+                                "DataType": "INTEGER"
+                            },
+                            {
+                                "Name": "IngestionRowCount",
+                                "DataType": "INTEGER"
+                            }
+                        ]
+                    },
+                    "ColumnGroupSchemaList": []
+                },
+                {
+                    "Placeholder": "Admin-Console-Object-Access-2025",
+                    "DataSetSchema": {
+                        "ColumnSchemaList": [
+                            {
+                                "Name": "aws_region",
+                                "DataType": "STRING",
+                                "GeographicRole": "STATE"
+                            },
+                            {
+                                "Name": "principal_type",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "principal_name",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "permissions",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "role",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "identity_type",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "account_id",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "object_name",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "object_id",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "user",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "user_aws_account_id",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "group",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "object_type",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "email",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "namespace",
+                                "DataType": "STRING"
+                            }
+                        ]
+                    },
+                    "ColumnGroupSchemaList": []
+                },
+                {
+                    "Placeholder": "Admin-Console-Q-Informations-2025",
+                    "DataSetSchema": {
+                        "ColumnSchemaList": [
+                            {
+                                "Name": "dataset_arn",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "principal_type",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "principal_name",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "dataset_name",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "topic_name",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "aws_region",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "topic_id",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "permissions",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "namespace",
+                                "DataType": "STRING"
+                            }
+                        ]
+                    },
+                    "ColumnGroupSchemaList": []
+                },
+                {
+                    "Placeholder": "Admin-Console-Qindex-View",
+                    "DataSetSchema": {
+                        "ColumnSchemaList": [
+                            {
+                                "Name": "region",
+                                "DataType": "STRING",
+                                "GeographicRole": "STATE"
+                            },
+                            {
+                                "Name": "quickindexextractedtextsize_unit",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "quickindexdocumentcount_unit",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "quickindexextractedtextsize",
+                                "DataType": "DECIMAL"
+                            },
+                            {
+                                "Name": "timestamp",
+                                "DataType": "DATETIME"
+                            },
+                            {
+                                "Name": "quickindexdocumentcount",
+                                "DataType": "INTEGER"
+                            }
+                        ]
+                    },
+                    "ColumnGroupSchemaList": []
+                },
+                {
+                    "Placeholder": "Admin-Console-QueryDataBase-2025",
+                    "DataSetSchema": {
+                        "ColumnSchemaList": [
+                            {
+                                "Name": "resource_arn",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "eventtime",
+                                "DataType": "DATETIME"
+                            },
+                            {
+                                "Name": "datasourceid",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "datasetid",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "eventid",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "awsregion",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "datasetmode",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "useridentity_arn",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "databaseType",
+                                "DataType": "STRING"
+                            }
+                        ]
+                    },
+                    "ColumnGroupSchemaList": []
+                },
+                {
+                    "Placeholder": "Admin-Console-SPICE-View",
+                    "DataSetSchema": {
+                        "ColumnSchemaList": [
+                            {
+                                "Name": "spicecapacityconsumedinmb",
+                                "DataType": "DECIMAL"
+                            },
+                            {
+                                "Name": "spicecapacitylimitinmb",
+                                "DataType": "DECIMAL"
+                            },
+                            {
+                                "Name": "timestamp",
+                                "DataType": "DATETIME"
+                            }
+                        ]
+                    },
+                    "ColumnGroupSchemaList": []
+                },
+                {
+                    "Placeholder": "Admin-Console-ai-events-2025",
+                    "DataSetSchema": {
+                        "ColumnSchemaList": []
+                    },
+                    "ColumnGroupSchemaList": []
+                },
+                {
+                    "Placeholder": "Admin-Console-dataset-info-2025",
+                    "DataSetSchema": {
+                        "ColumnSchemaList": [
+                            {
+                                "Name": "aws_region",
+                                "DataType": "STRING",
+                                "GeographicRole": "STATE"
+                            },
+                            {
+                                "Name": "dashboardid",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "sqlquery/table_name",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "columnname",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "dataset_name",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "analysis",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "sqlname/schema",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "data_source_id",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "lastupdatedtime",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "analysis_id",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "dashboard_name",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "data_source_name",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "datasetname",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "dataset_id",
+                                "DataType": "STRING"
+                            },
+                            {
+                                "Name": "catalog",
+                                "DataType": "STRING"
+                            }
+                        ]
+                    },
+                    "ColumnGroupSchemaList": []
+                }
+            ],
+            "SourceEntityArn": "arn:aws:quicksight:us-east-1:905178920046:analysis/e6ab8b8e-bec9-4fa9-84ba-0d6d5787bd03",
+            "ThemeArn": "arn:aws:quicksight:us-east-1:905178920046:theme/b8aaa86c-317f-4088-97ea-7d7335fdb96e",
+            "Sheets": [
+                {
+                    "SheetId": "b88c2953-9c32-4749-a232-6ba6fb250b46",
+                    "Name": "Introduction"
+                },
+                {
+                    "SheetId": "42f128e3-d3cb-4f4e-9235-bb7a00ea9ad8",
+                    "Name": "Summary"
+                },
+                {
+                    "SheetId": "cd36caab-8ddb-4056-ad3e-f51973ad729d",
+                    "Name": "User"
+                },
+                {
+                    "SheetId": "2f4a73b5-ce1d-4b39-8bf7-d95a8f16ca8b",
+                    "Name": "Dashboard"
+                },
+                {
+                    "SheetId": "7e7b76fb-83e3-4abe-af5b-99c026bf3681",
+                    "Name": "Cost & Usage"
+                },
+                {
+                    "SheetId": "02b9c767-3b30-4070-b504-d1ac05a24758",
+                    "Name": "Performance"
+                },
+                {
+                    "SheetId": "c7c924df-012d-4ea4-bf80-f6aba8093e59",
+                    "Name": "Ingestion"
+                },
+                {
+                    "SheetId": "605e4ecd-62cc-475e-bc0c-383fbfb0bc04",
+                    "Name": "QueryDB"
+                },
+                {
+                    "SheetId": "d739c458-feac-40b0-bdb8-ec4eeddc7481",
+                    "Name": "CRUD"
+                },
+                {
+                    "SheetId": "fedf1c9b-8fcb-4187-b253-6c0106e72cc7",
+                    "Name": "Q Index"
+                },
+                {
+                    "SheetId": "79fb4f40-710e-45e3-a9f0-747f0af53929",
+                    "Name": "Permissions"
+                },
+                {
+                    "SheetId": "28cc8ae9-d40d-46f8-89a0-54e385fbd2e5",
+                    "Name": "Q Topics"
+                },
+                {
+                    "SheetId": "b9eaa11e-a5d8-4cf7-b01d-30d973512d87",
+                    "Name": "Overview"
+                }
+            ]
+        },
+        "TemplateId": "quick-suite-admin-template",
+        "LastUpdatedTime": "2026-01-12T23:32:43.284000+00:00",
+        "CreatedTime": "2026-01-12T23:28:00.105000+00:00"
+    },
+    "RequestId": "a88bec9b-a412-49d9-b864-d66762e4ee61"
+}

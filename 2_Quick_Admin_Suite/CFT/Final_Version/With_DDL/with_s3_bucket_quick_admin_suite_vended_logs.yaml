@@ -1,13 +1,65 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: 'CloudWatch Vended Logs for QuickSight Chat and Feedback Logs'
+Description: 'Complete CloudWatch Vended Logs Pipeline for QuickSight with S3, IAM, and Glue Database'
 
 Resources:
+  # S3 Bucket
+  AdminSuiteBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub admin-suite-${AWS::AccountId}
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  # S3 Bucket Policy for CloudWatch Logs
+  AdminSuiteBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref AdminSuiteBucket
+      PolicyDocument:
+        Statement:
+          - Sid: AWSLogDeliveryWrite
+            Effect: Allow
+            Principal:
+              Service: logs.amazonaws.com
+            Action: s3:PutObject
+            Resource: !Sub ${AdminSuiteBucket.Arn}/monitoring/quicksight/cw-vended-log/*
+            Condition:
+              StringEquals:
+                s3:x-amz-acl: bucket-owner-full-control
+                aws:SourceAccount: !Ref AWS::AccountId
+          - Sid: AWSLogDeliveryAclCheck
+            Effect: Allow
+            Principal:
+              Service: logs.amazonaws.com
+            Action: s3:GetBucketAcl
+            Resource: !GetAtt AdminSuiteBucket.Arn
+            Condition:
+              StringEquals:
+                aws:SourceAccount: !Ref AWS::AccountId
+
+  # Glue Database
+  GlueDatabase:
+    Type: AWS::Glue::Database
+    Properties:
+      CatalogId: !Ref AWS::AccountId
+      DatabaseInput:
+        Name: admin-console-2025
+        Description: Database for QuickSight vended logs
+
   # Glue Tables
   ChatLogTable:
     Type: AWS::Glue::Table
+    DependsOn: GlueDatabase
     Properties:
       CatalogId: !Ref AWS::AccountId
-      DatabaseName: admin-console-2025
+      DatabaseName: !Ref GlueDatabase
       TableInput:
         Name: qs_chat_log
         TableType: EXTERNAL_TABLE
@@ -15,62 +67,43 @@ Resources:
           Columns:
             - Name: user_arn
               Type: string
-              Comment: from deserializer
             - Name: user_type
               Type: string
-              Comment: from deserializer
             - Name: status_code
               Type: string
-              Comment: from deserializer
             - Name: conversation_id
               Type: string
-              Comment: from deserializer
             - Name: system_message_id
               Type: string
-              Comment: from deserializer
             - Name: message_scope
               Type: string
-              Comment: from deserializer
             - Name: user_message_id
               Type: string
-              Comment: from deserializer
             - Name: user_message
               Type: string
-              Comment: from deserializer
             - Name: agent_id
               Type: string
-              Comment: from deserializer
             - Name: flow_id
               Type: string
-              Comment: from deserializer
             - Name: system_text_message
               Type: string
-              Comment: from deserializer
             - Name: user_selected_resources
               Type: array<struct<resourceid:string,resourcetype:string>>
-              Comment: from deserializer
             - Name: action_connectors
               Type: array<struct<actionconnectorid:string>>
-              Comment: from deserializer
             - Name: cited_resource
               Type: array<struct<citedresourcetype:string,citedresourceid:string,citedresourcename:string>>
-              Comment: from deserializer
             - Name: file_attachment
               Type: array<string>
-              Comment: from deserializer
             - Name: resource_arn
               Type: string
-              Comment: from deserializer
             - Name: event_timestamp
               Type: bigint
-              Comment: from deserializer
             - Name: logtype
               Type: string
-              Comment: from deserializer
             - Name: accountid
               Type: string
-              Comment: from deserializer
-          Location: !Sub s3://admin-suite-${AWS::AccountId}/monitoring/quicksight/cw-vended-log/chat-log/AWSLogs/${AWS::AccountId}/quicksuitelogs/
+          Location: !Sub s3://${AdminSuiteBucket}/monitoring/quicksight/cw-vended-log/chat-log/AWSLogs/${AWS::AccountId}/quicksuitelogs/
           InputFormat: org.apache.hadoop.mapred.TextInputFormat
           OutputFormat: org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat
           SerdeInfo:
@@ -107,13 +140,7 @@ Resources:
           projection.hour.type: integer
           projection.hour.range: '00,23'
           projection.hour.digits: '2'
-          storage.location.template: !Join
-            - ''
-            - - 's3://admin-suite-'
-              - !Ref AWS::AccountId
-              - '/monitoring/quicksight/cw-vended-log/chat-log/AWSLogs/'
-              - !Ref AWS::AccountId
-              - '/quicksuitelogs/${region}/${account_id}/${year}/${month}/${day}/${hour}/'
+          storage.location.template: !Sub s3://${AdminSuiteBucket}/monitoring/quicksight/cw-vended-log/chat-log/AWSLogs/${AWS::AccountId}/quicksuitelogs/$${region}/$${account_id}/$${year}/$${month}/$${day}/$${hour}/
           classification: json
           compressionType: gzip
           partition_filtering.enabled: 'true'
@@ -121,9 +148,10 @@ Resources:
 
   FeedbackLogTable:
     Type: AWS::Glue::Table
+    DependsOn: GlueDatabase
     Properties:
       CatalogId: !Ref AWS::AccountId
-      DatabaseName: admin-console-2025
+      DatabaseName: !Ref GlueDatabase
       TableInput:
         Name: qs_feedback_log
         TableType: EXTERNAL_TABLE
@@ -131,47 +159,33 @@ Resources:
           Columns:
             - Name: user_arn
               Type: string
-              Comment: Amazon QuickSight user ARN who provided feedback
             - Name: user_type
               Type: string
-              Comment: QuickSight user type (ADMIN_PRO, AUTHOR_PRO, etc.)
             - Name: status_code
               Type: string
-              Comment: Status of the feedback event delivery
             - Name: conversation_id
               Type: string
-              Comment: Unique identifier of the conversation
             - Name: research_id
               Type: string
-              Comment: Unique identifier of the research session
             - Name: system_message_id
               Type: string
-              Comment: System generated message identifier
             - Name: user_message_id
               Type: string
-              Comment: User message identifier being rated
             - Name: feedback_type
               Type: string
-              Comment: Type of feedback provided (thumbs up/down, rating)
             - Name: feedback_reason
               Type: string
-              Comment: Reason or category for the feedback
             - Name: rating
               Type: string
-              Comment: Numerical or categorical rating provided
             - Name: resource_arn
               Type: string
-              Comment: QuickSight resource ARN associated with feedback
             - Name: event_timestamp
               Type: bigint
-              Comment: Timestamp when feedback was provided (epoch ms)
             - Name: logtype
               Type: string
-              Comment: Type of log entry (Feedback)
             - Name: accountid
               Type: string
-              Comment: AWS account ID where feedback occurred
-          Location: !Sub s3://admin-suite-${AWS::AccountId}/monitoring/quicksight/cw-vended-log/feedback-log/AWSLogs/${AWS::AccountId}/quicksuitelogs/
+          Location: !Sub s3://${AdminSuiteBucket}/monitoring/quicksight/cw-vended-log/feedback-log/AWSLogs/${AWS::AccountId}/quicksuitelogs/
           InputFormat: org.apache.hadoop.mapred.TextInputFormat
           OutputFormat: org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat
           SerdeInfo:
@@ -208,13 +222,7 @@ Resources:
           projection.hour.type: integer
           projection.hour.range: '00,23'
           projection.hour.digits: '2'
-          storage.location.template: !Join
-            - ''
-            - - 's3://admin-suite-'
-              - !Ref AWS::AccountId
-              - '/monitoring/quicksight/cw-vended-log/feedback-log/AWSLogs/'
-              - !Ref AWS::AccountId
-              - '/quicksuitelogs/${region}/${account_id}/${year}/${month}/${day}/${hour}/'
+          storage.location.template: !Sub s3://${AdminSuiteBucket}/monitoring/quicksight/cw-vended-log/feedback-log/AWSLogs/${AWS::AccountId}/quicksuitelogs/$${region}/$${account_id}/$${year}/$${month}/$${day}/$${hour}/
           classification: json
           compressionType: gzip
           partition_filtering.enabled: 'true'
@@ -222,9 +230,10 @@ Resources:
 
   AgentHoursLogTable:
     Type: AWS::Glue::Table
+    DependsOn: GlueDatabase
     Properties:
       CatalogId: !Ref AWS::AccountId
-      DatabaseName: admin-console-2025
+      DatabaseName: !Ref GlueDatabase
       TableInput:
         Name: qs_agent_hours_log
         TableType: EXTERNAL_TABLE
@@ -232,29 +241,21 @@ Resources:
           Columns:
             - Name: subscription_type
               Type: string
-              Comment: ENTERPRISE or PROFESSIONAL
             - Name: reporting_service
               Type: string
-              Comment: Service corresponding to the agent - RESEARCH, FLOWS OR AUTOMATIONS
             - Name: usage_group
               Type: string
-              Comment: Included or Extra based on subscription type and usage
             - Name: usage_hours
               Type: decimal(10,2)
-              Comment: Decimal value indicating usage hours
             - Name: service_resource_arn
               Type: string
-              Comment: ARN of the corresponding Agent's service
             - Name: event_timestamp
               Type: bigint
-              Comment: from deserializer
             - Name: logtype
               Type: string
-              Comment: from deserializer
             - Name: accountid
               Type: string
-              Comment: from deserializer
-          Location: !Sub s3://admin-suite-${AWS::AccountId}/monitoring/quicksight/cw-vended-log/agent-hours-log/AWSLogs/${AWS::AccountId}/quicksuitelogs/
+          Location: !Sub s3://${AdminSuiteBucket}/monitoring/quicksight/cw-vended-log/agent-hours-log/AWSLogs/${AWS::AccountId}/quicksuitelogs/
           InputFormat: org.apache.hadoop.mapred.TextInputFormat
           OutputFormat: org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat
           SerdeInfo:
@@ -291,13 +292,7 @@ Resources:
           projection.hour.type: integer
           projection.hour.range: '00,23'
           projection.hour.digits: '2'
-          storage.location.template: !Join
-            - ''
-            - - 's3://admin-suite-'
-              - !Ref AWS::AccountId
-              - '/monitoring/quicksight/cw-vended-log/agent-hours-log/AWSLogs/'
-              - !Ref AWS::AccountId
-              - '/quicksuitelogs/${region}/${account_id}/${year}/${month}/${day}/${hour}/'
+          storage.location.template: !Sub s3://${AdminSuiteBucket}/monitoring/quicksight/cw-vended-log/agent-hours-log/AWSLogs/${AWS::AccountId}/quicksuitelogs/$${region}/$${account_id}/$${year}/$${month}/$${day}/$${hour}/
           classification: json
           compressionType: gzip
           partition_filtering.enabled: 'true'
@@ -307,21 +302,21 @@ Resources:
   ChatLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: qs-chat-log-group
+      LogGroupName: !Sub /aws/quicksight/chat-logs-${AWS::StackName}
       LogGroupClass: STANDARD
       RetentionInDays: 30
 
   FeedbackLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: qs-feedback-log-group
+      LogGroupName: !Sub /aws/quicksight/feedback-logs-${AWS::StackName}
       LogGroupClass: STANDARD
       RetentionInDays: 30
 
   AgentHoursLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: qs-agent-hours-log-group
+      LogGroupName: !Sub /aws/quicksight/agent-hours-logs-${AWS::StackName}
       LogGroupClass: STANDARD
       RetentionInDays: 30
 
@@ -329,42 +324,45 @@ Resources:
   ChatLogDeliverySource:
     Type: AWS::Logs::DeliverySource
     Properties:
-      Name: qs-chat-log
+      Name: !Sub qs-chat-log-${AWS::StackName}
       ResourceArn: !Sub arn:aws:quicksight:${AWS::Region}:${AWS::AccountId}:account/${AWS::AccountId}
       LogType: CHAT_LOGS
 
   FeedbackLogDeliverySource:
     Type: AWS::Logs::DeliverySource
     Properties:
-      Name: qs-feedback-log
+      Name: !Sub qs-feedback-log-${AWS::StackName}
       ResourceArn: !Sub arn:aws:quicksight:${AWS::Region}:${AWS::AccountId}:account/${AWS::AccountId}
       LogType: FEEDBACK_LOGS
 
   AgentHoursLogDeliverySource:
     Type: AWS::Logs::DeliverySource
     Properties:
-      Name: my-quick-suite-delivery-source
+      Name: !Sub qs-agent-hours-${AWS::StackName}
       ResourceArn: !Sub arn:aws:quicksight:${AWS::Region}:${AWS::AccountId}:account/${AWS::AccountId}
       LogType: AGENT_HOURS_LOGS
 
   # Delivery Destinations
   ChatLogS3Destination:
     Type: AWS::Logs::DeliveryDestination
+    DependsOn: AdminSuiteBucketPolicy
     Properties:
-      Name: qs-chat-log-s3
-      DestinationResourceArn: !Sub arn:aws:s3:::admin-suite-${AWS::AccountId}/monitoring/quicksight/cw-vended-log/chat-log/
+      Name: !Sub qs-chat-log-s3-${AWS::StackName}
+      DestinationResourceArn: !Sub ${AdminSuiteBucket.Arn}/monitoring/quicksight/cw-vended-log/chat-log/
 
   FeedbackLogS3Destination:
     Type: AWS::Logs::DeliveryDestination
+    DependsOn: AdminSuiteBucketPolicy
     Properties:
-      Name: qs-feedback-log-s3
-      DestinationResourceArn: !Sub arn:aws:s3:::admin-suite-${AWS::AccountId}/monitoring/quicksight/cw-vended-log/feedback-log/
+      Name: !Sub qs-feedback-log-s3-${AWS::StackName}
+      DestinationResourceArn: !Sub ${AdminSuiteBucket.Arn}/monitoring/quicksight/cw-vended-log/feedback-log/
 
   AgentHoursLogS3Destination:
     Type: AWS::Logs::DeliveryDestination
+    DependsOn: AdminSuiteBucketPolicy
     Properties:
-      Name: qs-agent-hours-log-s3
-      DestinationResourceArn: !Sub arn:aws:s3:::admin-suite-${AWS::AccountId}/monitoring/quicksight/cw-vended-log/agent-hours-log/
+      Name: !Sub qs-agent-hours-log-s3-${AWS::StackName}
+      DestinationResourceArn: !Sub ${AdminSuiteBucket.Arn}/monitoring/quicksight/cw-vended-log/agent-hours-log/
 
   # Deliveries
   ChatLogDelivery:
@@ -372,49 +370,48 @@ Resources:
     Properties:
       DeliverySourceName: !Ref ChatLogDeliverySource
       DeliveryDestinationArn: !GetAtt ChatLogS3Destination.Arn
-    DependsOn:
-      - ChatLogDeliverySource
-      - ChatLogS3Destination
 
   FeedbackLogDelivery:
     Type: AWS::Logs::Delivery
     Properties:
       DeliverySourceName: !Ref FeedbackLogDeliverySource
       DeliveryDestinationArn: !GetAtt FeedbackLogS3Destination.Arn
-    DependsOn:
-      - FeedbackLogDeliverySource
-      - FeedbackLogS3Destination
 
   AgentHoursLogDelivery:
     Type: AWS::Logs::Delivery
     Properties:
       DeliverySourceName: !Ref AgentHoursLogDeliverySource
       DeliveryDestinationArn: !GetAtt AgentHoursLogS3Destination.Arn
-    DependsOn:
-      - AgentHoursLogDeliverySource
-      - AgentHoursLogS3Destination
 
 Outputs:
+  S3BucketName:
+    Description: S3 bucket for vended logs
+    Value: !Ref AdminSuiteBucket
+
+  GlueDatabaseName:
+    Description: Glue database name
+    Value: !Ref GlueDatabase
+
   ChatLogS3Location:
     Description: S3 location for QuickSight chat logs
-    Value: !Sub s3://admin-suite-${AWS::AccountId}/monitoring/quicksight/cw-vended-log/chat-log/
+    Value: !Sub s3://${AdminSuiteBucket}/monitoring/quicksight/cw-vended-log/chat-log/
 
   FeedbackLogS3Location:
     Description: S3 location for QuickSight feedback logs
-    Value: !Sub s3://admin-suite-${AWS::AccountId}/monitoring/quicksight/cw-vended-log/feedback-log/
-
-  ChatLogGroupArn:
-    Description: ARN of the chat log group
-    Value: !GetAtt ChatLogGroup.Arn
-
-  FeedbackLogGroupArn:
-    Description: ARN of the feedback log group
-    Value: !GetAtt FeedbackLogGroup.Arn
+    Value: !Sub s3://${AdminSuiteBucket}/monitoring/quicksight/cw-vended-log/feedback-log/
 
   AgentHoursLogS3Location:
     Description: S3 location for QuickSight agent hours logs
-    Value: !Sub s3://admin-suite-${AWS::AccountId}/monitoring/quicksight/cw-vended-log/agent-hours-log/
+    Value: !Sub s3://${AdminSuiteBucket}/monitoring/quicksight/cw-vended-log/agent-hours-log/
 
-  AgentHoursLogGroupArn:
-    Description: ARN of the agent hours log group
-    Value: !GetAtt AgentHoursLogGroup.Arn
+  ChatLogTableName:
+    Description: Glue table for chat logs
+    Value: !Ref ChatLogTable
+
+  FeedbackLogTableName:
+    Description: Glue table for feedback logs
+    Value: !Ref FeedbackLogTable
+
+  AgentHoursLogTableName:
+    Description: Glue table for agent hours logs
+    Value: !Ref AgentHoursLogTable

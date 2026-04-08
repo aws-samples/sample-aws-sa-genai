@@ -1,0 +1,309 @@
+{
+    "Status": 200,
+    "DataSet": {
+        "Arn": "arn:aws:quicksight:us-east-1:905178920046:dataset/b187897b-5797-4f5e-abcc-b0533126ac9c",
+        "DataSetId": "b187897b-5797-4f5e-abcc-b0533126ac9c",
+        "Name": "Admin-Console-Feature-Category-2025",
+        "CreatedTime": "2026-01-22T18:06:16.632000+00:00",
+        "LastUpdatedTime": "2026-01-22T18:09:32.113000+00:00",
+        "PhysicalTableMap": {
+            "03236699-07b7-4200-8c8c-81683c81c306": {
+                "CustomSql": {
+                    "DataSourceArn": "arn:aws:quicksight:us-east-1:905178920046:datasource/athena-admin-console-2025",
+                    "Name": "Admin-Console-Feature-Category-2025",
+                    "SqlQuery": "SELECT \n    CASE\n        WHEN regexp_like(eventname, 'Flow') THEN 'Flow'\n        WHEN regexp_like(eventname, 'Research') THEN 'Research'\n        WHEN regexp_like(eventname, '(Document|KnowledgeBase)') THEN 'KnowledgeBase'\n        WHEN regexp_like(eventname, 'Agent') THEN 'Agent'\n        WHEN regexp_like(eventname, 'Action') THEN 'Action'\n        WHEN regexp_like(eventname, 'Space') THEN 'Space'\n        WHEN regexp_like(eventname, 'Automation') THEN 'Automation'\n        WHEN regexp_like(eventname, '(Chat|Conversation)') THEN 'Chat'\n        WHEN regexp_like(eventname, 'Workflow') THEN 'Workflow'\n        ELSE 'Other'\n    END AS event_category,\n    \"date_parse\"(\"eventtime\", '%Y-%m-%dT%H:%i:%sZ') AS event_ts,\n    \"useridentity\".\"arn\" \"user_arn\",\n\t\t\t\t\tCOALESCE(\n\t\t\t\t\t\t\"useridentity\".\"username\",\n\t\t\t\t\t\t\"concat\"(\n\t\t\t\t\t\t\t\"split_part\"(\"useridentity\".\"arn\", '/', 2),\n\t\t\t\t\t\t\t'/',\n\t\t\t\t\t\t\t\"split_part\"(\"useridentity\".\"arn\", '/', 3)\n\t\t\t\t\t\t)\n\t\t\t\t\t) \"user_name\",\n    *\nFROM awsdatacatalog.\"admin-console-2025\".cloudtrail_logs_pp\nWHERE eventsource = 'quicksight.amazonaws.com'\n  AND parse_datetime(eventtime, 'yyyy-MM-dd''T''HH:mm:ss''Z')\n      >= current_timestamp - INTERVAL '40' DAY\nORDER BY event_category",
+                    "Columns": [
+                        {
+                            "Name": "event_category",
+                            "Type": "STRING"
+                        },
+                        {
+                            "Name": "event_ts",
+                            "Type": "DATETIME"
+                        },
+                        {
+                            "Name": "user_arn",
+                            "Type": "STRING"
+                        },
+                        {
+                            "Name": "user_name",
+                            "Type": "STRING"
+                        },
+                        {
+                            "Name": "eventversion",
+                            "Type": "STRING"
+                        },
+                        {
+                            "Name": "useridentity",
+                            "Type": "STRING"
+                        },
+                        {
+                            "Name": "eventtime",
+                            "Type": "STRING"
+                        },
+                        {
+                            "Name": "eventsource",
+                            "Type": "STRING"
+                        },
+                        {
+                            "Name": "eventname",
+                            "Type": "STRING"
+                        },
+                        {
+                            "Name": "awsregion",
+                            "Type": "STRING"
+                        },
+                        {
+                            "Name": "sourceipaddress",
+                            "Type": "STRING"
+                        },
+                        {
+                            "Name": "useragent",
+                            "Type": "STRING"
+                        },
+                        {
+                            "Name": "errorcode",
+                            "Type": "STRING"
+                        },
+                        {
+                            "Name": "errormessage",
+                            "Type": "STRING"
+                        },
+                        {
+                            "Name": "requestparameters",
+                            "Type": "STRING"
+                        },
+                        {
+                            "Name": "responseelements",
+                            "Type": "STRING"
+                        },
+                        {
+                            "Name": "additionaleventdata",
+                            "Type": "STRING"
+                        },
+                        {
+                            "Name": "requestid",
+                            "Type": "STRING"
+                        },
+                        {
+                            "Name": "eventid",
+                            "Type": "STRING"
+                        },
+                        {
+                            "Name": "eventtype",
+                            "Type": "STRING"
+                        },
+                        {
+                            "Name": "apiversion",
+                            "Type": "STRING"
+                        },
+                        {
+                            "Name": "readonly",
+                            "Type": "STRING"
+                        },
+                        {
+                            "Name": "recipientaccountid",
+                            "Type": "STRING"
+                        },
+                        {
+                            "Name": "serviceeventdetails",
+                            "Type": "STRING"
+                        },
+                        {
+                            "Name": "sharedeventid",
+                            "Type": "STRING"
+                        },
+                        {
+                            "Name": "vpcendpointid",
+                            "Type": "STRING"
+                        },
+                        {
+                            "Name": "region",
+                            "Type": "STRING"
+                        },
+                        {
+                            "Name": "timestamp",
+                            "Type": "STRING"
+                        }
+                    ]
+                }
+            }
+        },
+        "LogicalTableMap": {
+            "3f7b5202-6a54-4c3e-b5d2-337d657ca1fa": {
+                "Alias": "Admin-Console-Feature-Category-2025",
+                "DataTransforms": [
+                    {
+                        "TagColumnOperation": {
+                            "ColumnName": "region",
+                            "Tags": [
+                                {
+                                    "ColumnGeographicRole": "STATE"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "ProjectOperation": {
+                            "ProjectedColumns": [
+                                "event_category",
+                                "event_ts",
+                                "user_arn",
+                                "user_name",
+                                "eventversion",
+                                "useridentity",
+                                "eventtime",
+                                "eventsource",
+                                "eventname",
+                                "awsregion",
+                                "sourceipaddress",
+                                "useragent",
+                                "errorcode",
+                                "errormessage",
+                                "requestparameters",
+                                "responseelements",
+                                "additionaleventdata",
+                                "requestid",
+                                "eventid",
+                                "eventtype",
+                                "apiversion",
+                                "readonly",
+                                "recipientaccountid",
+                                "serviceeventdetails",
+                                "sharedeventid",
+                                "vpcendpointid",
+                                "region",
+                                "timestamp"
+                            ]
+                        }
+                    }
+                ],
+                "Source": {
+                    "PhysicalTableId": "03236699-07b7-4200-8c8c-81683c81c306"
+                }
+            }
+        },
+        "OutputColumns": [
+            {
+                "Name": "event_category",
+                "Type": "STRING"
+            },
+            {
+                "Name": "event_ts",
+                "Type": "DATETIME"
+            },
+            {
+                "Name": "user_arn",
+                "Type": "STRING"
+            },
+            {
+                "Name": "user_name",
+                "Type": "STRING"
+            },
+            {
+                "Name": "eventversion",
+                "Type": "STRING"
+            },
+            {
+                "Name": "useridentity",
+                "Type": "STRING"
+            },
+            {
+                "Name": "eventtime",
+                "Type": "STRING"
+            },
+            {
+                "Name": "eventsource",
+                "Type": "STRING"
+            },
+            {
+                "Name": "eventname",
+                "Type": "STRING"
+            },
+            {
+                "Name": "awsregion",
+                "Type": "STRING"
+            },
+            {
+                "Name": "sourceipaddress",
+                "Type": "STRING"
+            },
+            {
+                "Name": "useragent",
+                "Type": "STRING"
+            },
+            {
+                "Name": "errorcode",
+                "Type": "STRING"
+            },
+            {
+                "Name": "errormessage",
+                "Type": "STRING"
+            },
+            {
+                "Name": "requestparameters",
+                "Type": "STRING"
+            },
+            {
+                "Name": "responseelements",
+                "Type": "STRING"
+            },
+            {
+                "Name": "additionaleventdata",
+                "Type": "STRING"
+            },
+            {
+                "Name": "requestid",
+                "Type": "STRING"
+            },
+            {
+                "Name": "eventid",
+                "Type": "STRING"
+            },
+            {
+                "Name": "eventtype",
+                "Type": "STRING"
+            },
+            {
+                "Name": "apiversion",
+                "Type": "STRING"
+            },
+            {
+                "Name": "readonly",
+                "Type": "STRING"
+            },
+            {
+                "Name": "recipientaccountid",
+                "Type": "STRING"
+            },
+            {
+                "Name": "serviceeventdetails",
+                "Type": "STRING"
+            },
+            {
+                "Name": "sharedeventid",
+                "Type": "STRING"
+            },
+            {
+                "Name": "vpcendpointid",
+                "Type": "STRING"
+            },
+            {
+                "Name": "region",
+                "Type": "STRING"
+            },
+            {
+                "Name": "timestamp",
+                "Type": "STRING"
+            }
+        ],
+        "ImportMode": "SPICE",
+        "ConsumedSpiceCapacityInBytes": 2167090940,
+        "FieldFolders": {},
+        "DataSetUsageConfiguration": {
+            "DisableUseAsDirectQuerySource": false,
+            "DisableUseAsImportedSource": false
+        }
+    },
+    "RequestId": "9fcae896-29ce-4d4b-b2d6-791c2dbb7863"
+}

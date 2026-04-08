@@ -178,29 +178,14 @@ Resources:
             t.*
         FROM (
             SELECT 
-                dsp.region,
-                dsp.dataset_id,
-                dsp.name,
-                NULLIF(dsp.last_updated_time, '') AS last_updated_time,
-                dsp.import_mode,
-                dsp.consumed_spice_capacity_bytes,
-                dsp.rows_ingested,
-                dsp.rows_dropped,
-                NULLIF(dsp.refresh_triggered_time, '') AS refresh_triggered_time,
-                dsp.refresh_time_seconds,
-                dsp.request_source,
-                dsp.request_type,
-                dsp.ingestion_status,
-                dsp.error_info_type,
-                dsp.error_info_message,
-                dsp.is_file,
+                dsp.*,
                 dsi.data_source_name,
                 dsi.data_source_id,
                 dsi.catalog,
                 dsi."sqlname/schema",
                 dsi."sqlquery/table_name"
             FROM datasets_properties AS dsp
-            Left JOIN (
+            JOIN (
                 SELECT aws_region, dataset_id, data_source_name, data_source_id, catalog, 
                        "sqlname/schema", "sqlquery/table_name"
                 FROM datasets_info
