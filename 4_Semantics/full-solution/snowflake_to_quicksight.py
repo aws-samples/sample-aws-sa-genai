@@ -406,7 +406,183 @@ def _create_snowflake_datasource(qs, account_id: str, creds: Dict, region: str) 
     return arn
 
 
-# ── Dataset creation ──────────────────────────────────────────────────────────
+# ── Dataset creation / update ─────────────────────────────────────────────────
+
+def list_quicksight_datasets(qs, account_id: str) -> List[Dict]:
+    """Return all QuickSight dataset summaries (paginated)."""
+    datasets: List[Dict] = []
+    kwargs: Dict = {'AwsAccountId': account_id}
+    while True:
+        resp = qs.list_data_sets(**kwargs)
+        datasets.extend(resp.get('DataSetSummaries', []))
+        next_token = resp.get('NextToken')
+        if not next_token:
+            break
+        kwargs['NextToken'] = next_token
+    return datasets
+
+
+def _dataset_uses_datasource(qs, account_id: str, dataset_id: str, datasource_arn: str) -> bool:
+    """Return True if any physical table in the dataset references the given datasource ARN."""
+    try:
+        resp = qs.describe_data_set(AwsAccountId=account_id, DataSetId=dataset_id)
+        physical_tables = resp.get('DataSet', {}).get('PhysicalTableMap', {})
+        for table in physical_tables.values():
+            for source_type in ('RelationalTable', 'CustomSql', 'S3Source'):
+                if table.get(source_type, {}).get('DataSourceArn') == datasource_arn:
+                    return True
+    except Exception:
+        pass
+    return False
+
+
+def filter_datasets_by_datasource(
+    qs, account_id: str, datasets: List[Dict], datasource_arn: str
+) -> List[Dict]:
+    """Return only datasets whose physical tables use the given datasource ARN."""
+    return [
+        ds for ds in datasets
+        if _dataset_uses_datasource(qs, account_id, ds['DataSetId'], datasource_arn)
+    ]
+
+
+def _search_datasets(datasets: List[Dict], term: str) -> List[Dict]:
+    """Case-insensitive substring search on dataset name and ID."""
+    t = term.lower()
+    return [
+        ds for ds in datasets
+        if t in ds['Name'].lower() or t in ds['DataSetId'].lower()
+    ]
+
+
+def _display_dataset_list(datasets: List[Dict]):
+    """Print a numbered list of datasets."""
+    if not datasets:
+        warn("No datasets to display.")
+        return
+    print()
+    for i, ds in enumerate(datasets):
+        mode_str = ds.get('ImportMode', '?')
+        print(f"  [{i + 1}] {ds['Name']}")
+        print(f"        ID: {ds['DataSetId']}  |  Mode: {mode_str}")
+    print()
+
+
+def _pick_dataset_from_list(
+    qs, account_id: str, datasource_arn: str
+) -> Optional[Tuple[str, str]]:
+    """
+    Show datasets filtered by datasource ARN.
+    Supports free-text search to narrow the list.
+    Returns (dataset_id, dataset_name) or None to go back.
+    """
+    info("Fetching datasets for the selected data source…")
+    all_datasets = list_quicksight_datasets(qs, account_id)
+
+    if datasource_arn:
+        info("Filtering by selected Snowflake data source (this may take a moment)…")
+        filtered = filter_datasets_by_datasource(qs, account_id, all_datasets, datasource_arn)
+    else:
+        filtered = all_datasets
+
+    if not filtered:
+        warn("No datasets found for this data source.")
+        return None
+
+    current_view = filtered[:]
+    _display_dataset_list(current_view)
+    print("  Enter a number to select, a search term to filter, or B to go back.")
+    print()
+
+    while True:
+        raw = ask("Selection").strip()
+        if raw.upper() == 'B':
+            return None
+
+        # Try numeric selection first
+        try:
+            idx = int(raw) - 1
+            if 0 <= idx < len(current_view):
+                ds           = current_view[idx]
+                dataset_id   = ds['DataSetId']
+                dataset_name = ask("Dataset name", ds['Name'])
+                ok(f"Will update: {dataset_name}  ({dataset_id})")
+                return dataset_id, dataset_name
+            warn(f"Enter a number between 1 and {len(current_view)}.")
+            continue
+        except (ValueError, TypeError):
+            pass
+
+        # Treat as search term — filter and re-display
+        results = _search_datasets(filtered, raw)
+        if results:
+            current_view = results
+            ok(f"{len(results)} match(es) for '{raw}':")
+        else:
+            warn(f"No matches for '{raw}' — showing full list.")
+            current_view = filtered[:]
+        _display_dataset_list(current_view)
+        print("  Enter a number to select, a search term to filter, or B to go back.")
+        print()
+
+
+def select_dataset_mode(
+    qs, account_id: str, datasource_arn: str = ''
+) -> Tuple[str, str, str]:
+    """
+    Ask whether to create a new dataset or update an existing one.
+
+    For 'update', the user can either:
+      [A] Pick from a list filtered to the selected Snowflake data source (with search)
+      [B] Type a dataset ID directly
+
+    Returns (mode, dataset_id, dataset_name) where mode is 'create' or 'update'.
+    """
+    print()
+    print("  [1] Create new dataset")
+    print("  [2] Update existing dataset")
+    print()
+
+    while True:
+        choice = ask("Select", "1").strip()
+
+        # ── Create ────────────────────────────────────────────────────────────
+        if choice == '1':
+            dataset_id   = ask("Dataset ID",   "movie-analytics-dataset")
+            dataset_name = ask("Dataset name", "Movie Analytics Dataset")
+            return 'create', dataset_id, dataset_name
+
+        # ── Update ────────────────────────────────────────────────────────────
+        if choice == '2':
+            print()
+            print("  [A] Pick from list (datasets using the selected Snowflake data source)")
+            print("  [B] Type dataset ID directly")
+            print()
+
+            while True:
+                sub = ask("Select", "A").strip().upper()
+
+                if sub == 'A':
+                    result = _pick_dataset_from_list(qs, account_id, datasource_arn)
+                    if result is None:
+                        break   # user pressed B inside — re-show outer sub-menu
+                    dataset_id, dataset_name = result
+                    return 'update', dataset_id, dataset_name
+
+                if sub == 'B':
+                    dataset_id = ask("Dataset ID") or ''
+                    if not dataset_id:
+                        warn("Dataset ID cannot be empty.")
+                        continue
+                    dataset_name = ask("Dataset name", dataset_id)
+                    ok(f"Will update: {dataset_name}  ({dataset_id})")
+                    return 'update', dataset_id, dataset_name
+
+                warn("Invalid choice — enter A or B.")
+            continue  # back to outer menu
+
+        warn("Invalid choice — enter 1 or 2.")
+
 
 def create_or_replace_dataset(qs, account_id: str, schema: Dict) -> Dict:
     """Delete any existing dataset with the same ID, then create the new one."""
@@ -422,6 +598,16 @@ def create_or_replace_dataset(qs, account_id: str, schema: Dict) -> Dict:
     info("Creating QuickSight dataset…")
     response = qs.create_data_set(AwsAccountId=account_id, **schema)
     ok(f"Dataset created: {response['DataSetId']}")
+    ok(f"Status: {response['Status']}")
+    return response
+
+
+def update_existing_dataset(qs, account_id: str, schema: Dict) -> Dict:
+    """Update an existing QuickSight dataset in place (no delete/recreate)."""
+    dataset_id = schema['DataSetId']
+    info(f"Updating QuickSight dataset: {dataset_id}…")
+    response = qs.update_data_set(AwsAccountId=account_id, **schema)
+    ok(f"Dataset updated: {response['DataSetId']}")
     ok(f"Status: {response['Status']}")
     return response
 
@@ -730,8 +916,7 @@ def main():
 
     # ── Dataset configuration ─────────────────────────────────────────────────
     hdr("Dataset Configuration")
-    dataset_id   = ask("Dataset ID",   "movie-analytics-dataset")
-    dataset_name = ask("Dataset name", "Movie Analytics Dataset")
+    dataset_mode, dataset_id, dataset_name = select_dataset_mode(qs, account_id, datasource_arn)
     ok("Import mode: SPICE (default)")
 
     # ── Generate schema ───────────────────────────────────────────────────────
@@ -765,13 +950,21 @@ def main():
     ok(f"Physical tables: {len(schema['PhysicalTableMap'])}")
     ok(f"Logical tables:  {len(schema['LogicalTableMap'])}")
 
-    # ── Create dataset ────────────────────────────────────────────────────────
-    hdr("Create QuickSight Dataset")
-    try:
-        create_or_replace_dataset(qs, account_id, schema)
-    except Exception as e:
-        err(f"Dataset creation failed: {e}")
-        sys.exit(1)
+    # ── Create or update dataset ──────────────────────────────────────────────
+    if dataset_mode == 'create':
+        hdr("Create QuickSight Dataset")
+        try:
+            create_or_replace_dataset(qs, account_id, schema)
+        except Exception as e:
+            err(f"Dataset creation failed: {e}")
+            sys.exit(1)
+    else:
+        hdr("Update QuickSight Dataset")
+        try:
+            update_existing_dataset(qs, account_id, schema)
+        except Exception as e:
+            err(f"Dataset update failed: {e}")
+            sys.exit(1)
 
     # ── Trigger SPICE ingestion ───────────────────────────────────────────────
     hdr("SPICE Ingestion")

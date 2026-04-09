@@ -13,7 +13,7 @@ cd Solution_Package
 python run_workflow.py
 ```
 
-`run_workflow.py` is the single entry point. It walks you through all six steps interactively — AWS setup, data source selection or creation, schema generation, dataset creation, ingestion monitoring, and sharing.
+`run_workflow.py` is the single entry point. It walks you through all seven steps interactively — AWS setup, data source selection or creation, dataset configuration (create new or update existing), schema generation, dataset creation or update, ingestion monitoring, and sharing.
 
 ---
 
@@ -82,7 +82,7 @@ The secret is stored as:
 
 ---
 
-## Steps 2–6 — Run the Interactive Workflow
+## Steps 2–7 — Run the Interactive Workflow
 
 Once the secret is created, run the single interactive script:
 
@@ -90,7 +90,7 @@ Once the secret is created, run the single interactive script:
 python run_workflow.py
 ```
 
-The script walks through five steps:
+The script walks through six steps:
 
 ### Step 2 — Select or Create a QuickSight Data Source
 
@@ -112,7 +112,16 @@ Select:
 
 Choose an existing source by number, or `N` to create a new one. When creating, the script reads credentials from the Secrets Manager secret created in Step 1.
 
-### Step 3 — Generate the QuickSight Schema
+### Step 3 — Dataset Configuration
+
+Choose how to apply the dataset:
+
+- **[1] Create new dataset** — enter a new dataset ID and display name. If a dataset with the same ID already exists it will be deleted and recreated. Import mode is always **SPICE**.
+- **[2] Update existing dataset** — update an existing dataset in place (no delete/recreate). Two ways to identify it:
+  - **[A] Pick from list** — lists only datasets that use the Snowflake data source selected in Step 2. Type a search term at any time to filter the list by name or ID; type a number to select.
+  - **[B] Type dataset ID** — enter the dataset ID directly if you already know it.
+
+### Step 4 — Generate the QuickSight Schema
 
 The script parses `SF_DDL.csv` and generates `quicksight_schema_complete.json`.
 
@@ -135,16 +144,23 @@ The schema includes **25 output columns**:
 | Rating | RATING_VALUE, RATING_TIMESTAMP, RATING_YEAR, RATING_MONTH, RATING_DAY, RATINGS_USER_ID, RATINGS_MOVIE_ID |
 | Metrics | MOVIES_DISTINCT_MOVIES, USERS_DISTINCT_USERS, RATINGS_TOTAL_RATINGS, RATINGS_AVG_RATING, RATINGS_DISTINCT_USERS, RATINGS_DISTINCT_MOVIES, RATINGS_POPULARITY_SCORE |
 
-### Step 4 — Create the Dataset
+### Step 5 — Create or Update the Dataset
 
-**Expected output:**
+**Expected output (create):**
 ```
   ✓ Dataset created: movie-analytics-dataset
   ✓ Status: 201
   ✓ Ingestion started: ingestion-1769081615
 ```
 
-### Step 5 — Monitor SPICE Ingestion
+**Expected output (update):**
+```
+  ✓ Dataset updated: movie-analytics-dataset
+  ✓ Status: 200
+  ✓ Ingestion started: ingestion-1769081615
+```
+
+### Step 6 — Monitor SPICE Ingestion
 
 The script polls ingestion status and shows live progress. Press Ctrl+C to stop monitoring — ingestion continues in the background.
 
@@ -164,7 +180,7 @@ aws quicksight describe-ingestion \
   --region us-east-1
 ```
 
-### Step 6 — Share the Dataset (Optional)
+### Step 7 — Share the Dataset (Optional)
 
 The script lists available QuickSight users and prompts for a username. Press Enter to skip.
 

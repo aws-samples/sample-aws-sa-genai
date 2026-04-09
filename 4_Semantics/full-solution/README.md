@@ -89,12 +89,15 @@ Lists existing Snowflake data sources in QuickSight. Choose one or create a new 
 - Creating a new source prompts for an ID and display name, then provisions it using your Snowflake credentials.
 
 ### Step 8 — Dataset Configuration
-Enter a dataset ID and display name. Import mode is always **SPICE**.
+Choose how to apply the dataset:
 
-### Step 9 — Create QuickSight Dataset
-Generates the full QuickSight dataset schema (physical tables, joins, column renames, type casts, calculated fields, and column descriptions) and creates the dataset. The schema is also saved locally as `<dataset-id>_schema.json` for reference.
+- **[1] Create new dataset** — enter a new dataset ID and display name. If a dataset with the same ID already exists it will be deleted and recreated. Import mode is always **SPICE**.
+- **[2] Update existing dataset** — update an existing dataset in place (no delete/recreate). Two ways to identify it:
+  - **[A] Pick from list** — lists only datasets that use the Snowflake data source selected in Step 7. Type a search term at any time to filter the list by name or ID; type a number to select.
+  - **[B] Type dataset ID** — enter the dataset ID directly if you already know it.
 
-Any existing dataset with the same ID is replaced.
+### Step 9 — Create or Update QuickSight Dataset
+Generates the full QuickSight dataset schema (physical tables, joins, column renames, type casts, calculated fields, and column descriptions) and either creates or updates the dataset depending on the choice made in Step 8. The schema is also saved locally as `<dataset-id>_schema.json` for reference.
 
 ### Step 10 — SPICE Ingestion
 Triggers a `FULL_REFRESH` ingestion and polls every 10 seconds until it completes (up to 5 minutes). On completion, the number of ingested rows is displayed.
