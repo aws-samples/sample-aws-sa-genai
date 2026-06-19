@@ -1,0 +1,20 @@
+# Local configuration — contains real account IDs and profile names
+# Use config.env.template to create your own config.env
+config.env
+
+# Python packaging artifacts
+__pycache__/
+*.pyc
+*.pyo
+package/
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+
+# Temp zip packages created by deploy.sh
+*.zip
+
+# macOS
+.DS_Store

@@ -1,0 +1,12 @@
+CREATE EXTERNAL TABLE IF NOT EXISTS NAMESPACE_PLACEHOLDER.fields (
+  organizationId  STRING,
+  id              STRING,
+  name            STRING,
+  archived        STRING
+)
+ROW FORMAT DELIMITED
+  FIELDS TERMINATED BY ','
+  LINES TERMINATED BY '\n'
+STORED AS TEXTFILE
+LOCATION 's3://STATIC_DATA_BUCKET_PLACEHOLDER/static/fields/'
+TBLPROPERTIES ('skip.header.line.count' = '1');
