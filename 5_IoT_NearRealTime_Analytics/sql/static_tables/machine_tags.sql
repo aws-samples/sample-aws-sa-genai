@@ -1,0 +1,11 @@
+CREATE EXTERNAL TABLE IF NOT EXISTS NAMESPACE_PLACEHOLDER.machine_tags (
+  machine_id       STRING,
+  organization_id  STRING,
+  tag              STRING
+)
+ROW FORMAT DELIMITED
+  FIELDS TERMINATED BY ','
+  LINES TERMINATED BY '\n'
+STORED AS TEXTFILE
+LOCATION 's3://STATIC_DATA_BUCKET_PLACEHOLDER/static/machine_tags/'
+TBLPROPERTIES ('skip.header.line.count' = '1');
